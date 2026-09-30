@@ -25,3 +25,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S1.13 ✅ Client-side validation with Spanish errors (src/lib/validation.ts + src/lib/phone.ts E.164, tests); focuses first invalid field.
 - S1.14 ✅ Success screen "¡Listo!" with date (Spanish long format, src/lib/format.ts + tests), time and people.
 - S1.15 ✅ Steps 2–4 locked until the previous step is done; chosen values shown as summaries; next step scrolls into view; party change drops a slot that no longer fits.
+- S1.16 ✅ Notes box "¿Niños menores de 14 o festejo? Escríbenos por WhatsApp" (WhatsApp link, placeholder while number is empty).

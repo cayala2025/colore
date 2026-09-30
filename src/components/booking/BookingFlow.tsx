@@ -9,6 +9,7 @@ import { formatDateLong, formatTimeRange } from "@/lib/format";
 import type { DaySlot } from "@/lib/types";
 import { BookingForm, type BookingFormValues } from "./BookingForm";
 import { CalendarStep } from "./CalendarStep";
+import { NotesBox } from "./NotesBox";
 import { PartyStep } from "./PartyStep";
 import { StepCard } from "./StepCard";
 import { SuccessScreen } from "./SuccessScreen";
@@ -135,6 +136,8 @@ export function BookingFlow({ today }: Props) {
       >
         <BookingForm submitting={submitting} onSubmit={handleSubmit} />
       </StepCard>
+
+      <NotesBox />
     </div>
   );
 }
