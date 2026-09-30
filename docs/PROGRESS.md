@@ -28,3 +28,10 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S1.16 ✅ Notes box "¿Niños menores de 14 o festejo? Escríbenos por WhatsApp" (WhatsApp link, placeholder while number is empty).
 - S1.17 ✅ 375px check: fixed phone row overflow (select width) + truncated country label; e2e test asserts no element passes the right edge.
 - S1.18 ✅ Playwright: 2 people → date → slot → form (validation) → success; step locking; 9 o más link.
+
+### Sprint 1 done
+- Works: booking page (header, 4 locked steps: party 1–8 + "9 o más" WhatsApp, Monday-first calendar with Mondays/past/>60 days greyed, slot chips with "Lleno", form with +52/+1 and Spanish validation, success screen, notes box). Mobile 375px verified. Unit tests 23 ✅, Playwright 4 ✅.
+- Mocked: availability is fake (`src/lib/fakeAvailability.ts`); submit does not persist; WhatsApp number empty → links go to `#` with dev warning.
+- Left: real data (Sprint 2); `/privacidad` page is linked but comes in Sprint 6.
+
+## Sprint 2 — Booking goes real
