@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { es } from "@/content/es";
-
-export type CountryCode = "52" | "1";
+import type { CountryCode } from "@/lib/phone";
+import { hasErrors, validateContact, type ContactErrors } from "@/lib/validation";
 
 export type BookingFormValues = {
   name: string;
@@ -36,18 +36,46 @@ const checkbox = "mt-0.5 h-5 w-5 shrink-0 accent-accent";
 
 export function BookingForm({ submitting, onSubmit }: Props) {
   const [values, setValues] = useState<BookingFormValues>(initialValues);
+  const [errors, setErrors] = useState<ContactErrors>({});
+  const [touched, setTouched] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
   const t = es.booking.form;
 
-  const set = <K extends keyof BookingFormValues>(key: K, value: BookingFormValues[K]) =>
-    setValues((v) => ({ ...v, [key]: value }));
+  const set = <K extends keyof BookingFormValues>(key: K, value: BookingFormValues[K]) => {
+    const next = { ...values, [key]: value };
+    setValues(next);
+    // After the first submit attempt, re-validate live so errors disappear as they get fixed.
+    if (touched) setErrors(validateContact(next));
+  };
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    const found = validateContact(values);
+    setErrors(found);
+    setTouched(true);
+    if (hasErrors(found)) {
+      // Wait for the error state to render, then focus the first invalid field.
+      requestAnimationFrame(() =>
+        formRef.current?.querySelector<HTMLElement>("[aria-invalid='true']")?.focus(),
+      );
+      return;
+    }
     onSubmit(values);
   }
 
+  const errorText = (field: keyof ContactErrors) => {
+    const key = errors[field];
+    return key ? (
+      <p id={`bk-${field}-error`} role="alert" className="mt-1 text-sm text-danger">
+        {es.booking.errors[key]}
+      </p>
+    ) : null;
+  };
+  const invalidProps = (field: keyof ContactErrors) =>
+    errors[field] ? { "aria-invalid": true, "aria-describedby": `bk-${field}-error` } : {};
+
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form ref={formRef} noValidate onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div>
         <label htmlFor="bk-name" className={labelClass}>
           {t.name}
@@ -60,7 +88,9 @@ export function BookingForm({ submitting, onSubmit }: Props) {
           className={inputClass}
           value={values.name}
           onChange={(e) => set("name", e.target.value)}
+          {...invalidProps("name")}
         />
+        {errorText("name")}
       </div>
 
       <div>
@@ -88,8 +118,10 @@ export function BookingForm({ submitting, onSubmit }: Props) {
             className={inputClass}
             value={values.phone}
             onChange={(e) => set("phone", e.target.value)}
+            {...invalidProps("phone")}
           />
         </div>
+        {errorText("phone")}
       </div>
 
       <div>
@@ -106,7 +138,9 @@ export function BookingForm({ submitting, onSubmit }: Props) {
           className={inputClass}
           value={values.email}
           onChange={(e) => set("email", e.target.value)}
+          {...invalidProps("email")}
         />
+        {errorText("email")}
       </div>
 
       <label className={checkRow}>
@@ -128,12 +162,14 @@ export function BookingForm({ submitting, onSubmit }: Props) {
           className={checkbox}
           checked={values.privacy}
           onChange={(e) => set("privacy", e.target.checked)}
+          {...invalidProps("privacy")}
         />
         <span>
           <label htmlFor="bk-privacy">{t.privacy}</label>{" "}
           <a href="/privacidad" target="_blank" className="text-accent underline">
             {t.privacyLink}
           </a>
+          {errorText("privacy")}
         </span>
       </div>
 
