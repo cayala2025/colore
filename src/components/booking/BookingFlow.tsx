@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { es } from "@/content/es";
+import { bookableMonths, isMonday, isWithinBookingWindow } from "@/lib/bookingWindow";
 import { monthOf } from "@/lib/calendar";
 import { CalendarStep } from "./CalendarStep";
 import { PartyStep } from "./PartyStep";
@@ -16,6 +17,8 @@ export function BookingFlow({ today }: Props) {
   const [party, setParty] = useState<number | null>(null);
   const [date, setDate] = useState<string | null>(null);
   const [month, setMonth] = useState(monthOf(today));
+  const months = bookableMonths(today);
+  const isDisabled = (d: string) => isMonday(d) || !isWithinBookingWindow(d, today);
 
   return (
     <div className="flex flex-col gap-4">
@@ -32,10 +35,10 @@ export function BookingFlow({ today }: Props) {
       <StepCard id="step-date" label={es.booking.date.stepLabel} title={es.booking.date.title} locked={false}>
         <CalendarStep
           month={month}
-          minMonth={monthOf(today)}
-          maxMonth={monthOf(today)}
+          minMonth={months.min}
+          maxMonth={months.max}
           selected={date}
-          isDisabled={() => false}
+          isDisabled={isDisabled}
           onSelect={setDate}
           onMonthChange={setMonth}
         />
