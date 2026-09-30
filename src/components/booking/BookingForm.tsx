@@ -28,8 +28,9 @@ type Props = {
   onSubmit: (values: BookingFormValues) => void;
 };
 
-const inputClass =
-  "mt-1 block h-12 w-full rounded-xl border border-line bg-bg px-3 text-base placeholder:text-muted/70 focus:border-accent";
+const fieldClass =
+  "mt-1 block h-12 rounded-xl border border-line bg-bg px-3 text-base placeholder:text-muted/70 focus:border-accent";
+const inputClass = `${fieldClass} w-full min-w-0`;
 const labelClass = "block text-sm font-medium";
 const checkRow = "flex min-h-11 items-start gap-3 text-sm";
 const checkbox = "mt-0.5 h-5 w-5 shrink-0 accent-accent";
@@ -101,7 +102,7 @@ export function BookingForm({ submitting, onSubmit }: Props) {
           <select
             aria-label={t.country}
             name="country"
-            className={`${inputClass} w-32 shrink-0`}
+            className={`${fieldClass} w-28 shrink-0 px-2`}
             value={values.country}
             onChange={(e) => set("country", e.target.value as CountryCode)}
           >
