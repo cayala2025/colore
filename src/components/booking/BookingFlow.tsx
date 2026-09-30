@@ -51,7 +51,7 @@ export function BookingFlow({ today }: Props) {
       </StepCard>
 
       <StepCard id="step-time" label={es.booking.time.stepLabel} title={es.booking.time.title} locked={false}>
-        <TimeStep slots={date ? fakeSlotsFor(date) : []} selected={slot} onSelect={setSlot} />
+        <TimeStep slots={date ? fakeSlotsFor(date) : []} party={party ?? 1} selected={slot} onSelect={setSlot} />
       </StepCard>
     </div>
   );

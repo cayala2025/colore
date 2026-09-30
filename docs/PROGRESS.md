@@ -20,3 +20,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S1.8 ✅ Step 2: Monday-first month calendar (L M M J V S D) with pure grid helpers in src/lib/calendar.ts (tests); page renders per request with studio-tz today.
 - S1.9 ✅ Calendar greys out Mondays, past days and days >60 ahead (src/lib/bookingWindow.ts + tests); month nav limited to bookable range.
 - S1.10 ✅ Step 3: time slot chips from fake data (src/lib/fakeAvailability.ts, follows CLAUDE.md schedule).
+- S1.11 ✅ Slots show "Lleno" (disabled) when seats left < party size; otherwise seats left.
