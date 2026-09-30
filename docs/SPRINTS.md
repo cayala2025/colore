@@ -140,7 +140,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Build the header: "Colore" wordmark placeholder + short tagline.
 - [x] [CC] Step 1 component: buttons 1–8 + "9 o más".
 - [x] [CC] "9 o más" opens the WhatsApp link with prefilled text (placeholder while the number is empty).
-- [ ] [CC] Step 2 component: month calendar, Monday first (L M M J V S D).
+- [x] [CC] Step 2 component: month calendar, Monday first (L M M J V S D).
 - [ ] [CC] Calendar greys out Mondays, past days, and days > 60 days away.
 - [ ] [CC] Step 3 component: time slot chips for the chosen day (fake data).
 - [ ] [CC] Show "Lleno" on slots that don't fit the party size (fake data).
