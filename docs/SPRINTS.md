@@ -142,7 +142,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] "9 o más" opens the WhatsApp link with prefilled text (placeholder while the number is empty).
 - [x] [CC] Step 2 component: month calendar, Monday first (L M M J V S D).
 - [x] [CC] Calendar greys out Mondays, past days, and days > 60 days away.
-- [ ] [CC] Step 3 component: time slot chips for the chosen day (fake data).
+- [x] [CC] Step 3 component: time slot chips for the chosen day (fake data).
 - [ ] [CC] Show "Lleno" on slots that don't fit the party size (fake data).
 - [ ] [CC] Step 4: form (name, phone with +52/+1 selector, email, 2 checkboxes).
 - [ ] [CC] Client-side validation with Spanish error messages.

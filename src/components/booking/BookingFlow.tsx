@@ -4,9 +4,11 @@ import { useState } from "react";
 import { es } from "@/content/es";
 import { bookableMonths, isMonday, isWithinBookingWindow } from "@/lib/bookingWindow";
 import { monthOf } from "@/lib/calendar";
+import { fakeSlotsFor } from "@/lib/fakeAvailability";
 import { CalendarStep } from "./CalendarStep";
 import { PartyStep } from "./PartyStep";
 import { StepCard } from "./StepCard";
+import { TimeStep } from "./TimeStep";
 
 type Props = {
   /** Today's date in the studio timezone ("YYYY-MM-DD"), computed on the server. */
@@ -16,6 +18,7 @@ type Props = {
 export function BookingFlow({ today }: Props) {
   const [party, setParty] = useState<number | null>(null);
   const [date, setDate] = useState<string | null>(null);
+  const [slot, setSlot] = useState<string | null>(null);
   const [month, setMonth] = useState(monthOf(today));
   const months = bookableMonths(today);
   const isDisabled = (d: string) => isMonday(d) || !isWithinBookingWindow(d, today);
@@ -39,9 +42,16 @@ export function BookingFlow({ today }: Props) {
           maxMonth={months.max}
           selected={date}
           isDisabled={isDisabled}
-          onSelect={setDate}
+          onSelect={(d) => {
+            setDate(d);
+            setSlot(null);
+          }}
           onMonthChange={setMonth}
         />
+      </StepCard>
+
+      <StepCard id="step-time" label={es.booking.time.stepLabel} title={es.booking.time.title} locked={false}>
+        <TimeStep slots={date ? fakeSlotsFor(date) : []} selected={slot} onSelect={setSlot} />
       </StepCard>
     </div>
   );
