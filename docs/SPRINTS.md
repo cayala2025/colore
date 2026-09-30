@@ -136,7 +136,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Create the Next.js app (TypeScript, Tailwind, App Router, `src/` dir, ESLint). The folder already has files (`CLAUDE.md`, `docs/`, `.gitignore`, `.env.local`): scaffold in a temporary folder and move the app files in, keeping the existing files. Merge `.gitignore` entries.
 - [x] [CC] Add scripts: `typecheck`, `test` (Vitest), `test:e2e` (Playwright). Add `.env.example` (names only, no values).
 - [x] [CC] Add design tokens (CSS variables) and the temporary palette.
-- [ ] [CC] Create `src/content/es.ts` with all booking copy in Spanish.
+- [x] [CC] Create `src/content/es.ts` with all booking copy in Spanish.
 - [ ] [CC] Build the header: "Colore" wordmark placeholder + short tagline.
 - [ ] [CC] Step 1 component: buttons 1–8 + "9 o más".
 - [ ] [CC] "9 o más" opens the WhatsApp link with prefilled text (placeholder while the number is empty).
