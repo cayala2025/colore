@@ -11,3 +11,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 
 ## Log
 - S1.1 ✅ Scaffolded Next.js 16 (TS, Tailwind v4, App Router, src/, ESLint); merged .gitignore; kept CLAUDE.md, added Next's AGENTS.md.
+- S1.2 ✅ Scripts typecheck/test (Vitest)/test:e2e (Playwright, mobile Chromium, port 3100) + .env.example.
