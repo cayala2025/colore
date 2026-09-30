@@ -5,6 +5,7 @@ import { es } from "@/content/es";
 import { bookableMonths, isMonday, isWithinBookingWindow } from "@/lib/bookingWindow";
 import { monthOf } from "@/lib/calendar";
 import { fakeSlotsFor } from "@/lib/fakeAvailability";
+import { BookingForm } from "./BookingForm";
 import { CalendarStep } from "./CalendarStep";
 import { PartyStep } from "./PartyStep";
 import { StepCard } from "./StepCard";
@@ -52,6 +53,10 @@ export function BookingFlow({ today }: Props) {
 
       <StepCard id="step-time" label={es.booking.time.stepLabel} title={es.booking.time.title} locked={false}>
         <TimeStep slots={date ? fakeSlotsFor(date) : []} party={party ?? 1} selected={slot} onSelect={setSlot} />
+      </StepCard>
+
+      <StepCard id="step-form" label={es.booking.form.stepLabel} title={es.booking.form.title} locked={false}>
+        <BookingForm submitting={false} onSubmit={() => {}} />
       </StepCard>
     </div>
   );

@@ -144,7 +144,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Calendar greys out Mondays, past days, and days > 60 days away.
 - [x] [CC] Step 3 component: time slot chips for the chosen day (fake data).
 - [x] [CC] Show "Lleno" on slots that don't fit the party size (fake data).
-- [ ] [CC] Step 4: form (name, phone with +52/+1 selector, email, 2 checkboxes).
+- [x] [CC] Step 4: form (name, phone with +52/+1 selector, email, 2 checkboxes).
 - [ ] [CC] Client-side validation with Spanish error messages.
 - [ ] [CC] Success screen: "¡Listo!" with date, time, people.
 - [ ] [CC] Steps stay locked until the previous one is done (like Artefacto).
