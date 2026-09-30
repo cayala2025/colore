@@ -1,3 +1,4 @@
+import { WhatsAppLink } from "@/components/WhatsAppLink";
 import { es } from "@/content/es";
 
 export const MAX_ONLINE_PARTY = 8;
@@ -30,12 +31,13 @@ export function PartyStep({ value, onChange }: Props) {
           </button>
         );
       })}
-      <a
-        href="#"
+      <WhatsAppLink
+        text={es.booking.people.whatsappText}
         className="col-span-4 flex h-12 items-center justify-center rounded-xl border border-line bg-bg font-medium hover:border-accent"
       >
         {es.booking.people.more}
-      </a>
+      </WhatsAppLink>
+      <p className="col-span-4 text-xs text-muted">{es.booking.people.moreHint}</p>
     </div>
   );
 }

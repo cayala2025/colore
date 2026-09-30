@@ -16,3 +16,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S1.4 ✅ src/content/es.ts with all booking copy (steps, calendar, errors, success).
 - S1.5 ✅ Header with placeholder "Colore" wordmark + tagline.
 - S1.6 ✅ Step 1: party-size buttons 1–8 + "9 o más" inside a reusable StepCard.
+- S1.7 ✅ "9 o más" → wa.me link with prefilled text via waLink() (tests); '#' + dev warning while number is empty.
