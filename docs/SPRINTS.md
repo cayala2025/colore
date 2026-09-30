@@ -147,7 +147,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Step 4: form (name, phone with +52/+1 selector, email, 2 checkboxes).
 - [x] [CC] Client-side validation with Spanish error messages.
 - [x] [CC] Success screen: "¡Listo!" with date, time, people.
-- [ ] [CC] Steps stay locked until the previous one is done (like Artefacto).
+- [x] [CC] Steps stay locked until the previous one is done (like Artefacto).
 - [ ] [CC] Notes box: "¿Niños menores de 14 o festejo? Escríbenos por WhatsApp".
 - [ ] [CC] Check it on a 375px-wide screen. Fix anything that overflows.
 - [ ] [CC] Playwright test: pick 2 people → a date → a slot → fill form → see success.

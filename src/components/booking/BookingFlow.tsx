@@ -5,6 +5,7 @@ import { es } from "@/content/es";
 import { bookableMonths, isMonday, isWithinBookingWindow } from "@/lib/bookingWindow";
 import { monthOf } from "@/lib/calendar";
 import { fakeSlotsFor } from "@/lib/fakeAvailability";
+import { formatDateLong, formatTimeRange } from "@/lib/format";
 import type { DaySlot } from "@/lib/types";
 import { BookingForm, type BookingFormValues } from "./BookingForm";
 import { CalendarStep } from "./CalendarStep";
@@ -32,6 +33,31 @@ export function BookingFlow({ today }: Props) {
   const isDisabled = (d: string) => isMonday(d) || !isWithinBookingWindow(d, today);
   const slots = date ? fakeSlotsFor(date) : [];
   const chosenSlot = slots.find((s) => s.start === slot) ?? null;
+
+  /** Bring the next step into view once it unlocks (it renders on the next frame). */
+  function reveal(stepId: string) {
+    requestAnimationFrame(() =>
+      document.querySelector(`[data-testid="${stepId}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    );
+  }
+
+  function chooseParty(n: number) {
+    setParty(n);
+    // Keep the chosen slot only if the new party still fits.
+    if (chosenSlot && chosenSlot.seatsLeft < n) setSlot(null);
+    if (!date) reveal("step-date");
+  }
+
+  function chooseDate(d: string) {
+    setDate(d);
+    setSlot(null);
+    reveal("step-time");
+  }
+
+  function chooseSlot(start: string) {
+    setSlot(start);
+    reveal("step-form");
+  }
 
   function reset() {
     setParty(null);
@@ -70,29 +96,43 @@ export function BookingFlow({ today }: Props) {
         locked={false}
         summary={party ? es.booking.people.summary(party) : undefined}
       >
-        <PartyStep value={party} onChange={setParty} />
+        <PartyStep value={party} onChange={chooseParty} />
       </StepCard>
 
-      <StepCard id="step-date" label={es.booking.date.stepLabel} title={es.booking.date.title} locked={false}>
+      <StepCard
+        id="step-date"
+        label={es.booking.date.stepLabel}
+        title={es.booking.date.title}
+        locked={!party}
+        summary={date ? formatDateLong(date) : undefined}
+      >
         <CalendarStep
           month={month}
           minMonth={months.min}
           maxMonth={months.max}
           selected={date}
           isDisabled={isDisabled}
-          onSelect={(d) => {
-            setDate(d);
-            setSlot(null);
-          }}
+          onSelect={chooseDate}
           onMonthChange={setMonth}
         />
       </StepCard>
 
-      <StepCard id="step-time" label={es.booking.time.stepLabel} title={es.booking.time.title} locked={false}>
-        <TimeStep slots={slots} party={party ?? 1} selected={slot} onSelect={setSlot} />
+      <StepCard
+        id="step-time"
+        label={es.booking.time.stepLabel}
+        title={es.booking.time.title}
+        locked={!party || !date}
+        summary={chosenSlot ? formatTimeRange(chosenSlot.start, chosenSlot.end) : undefined}
+      >
+        <TimeStep slots={slots} party={party ?? 1} selected={slot} onSelect={chooseSlot} />
       </StepCard>
 
-      <StepCard id="step-form" label={es.booking.form.stepLabel} title={es.booking.form.title} locked={false}>
+      <StepCard
+        id="step-form"
+        label={es.booking.form.stepLabel}
+        title={es.booking.form.title}
+        locked={!party || !date || !chosenSlot}
+      >
         <BookingForm submitting={submitting} onSubmit={handleSubmit} />
       </StepCard>
     </div>
