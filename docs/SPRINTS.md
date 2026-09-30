@@ -146,7 +146,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Show "Lleno" on slots that don't fit the party size (fake data).
 - [x] [CC] Step 4: form (name, phone with +52/+1 selector, email, 2 checkboxes).
 - [x] [CC] Client-side validation with Spanish error messages.
-- [ ] [CC] Success screen: "¡Listo!" with date, time, people.
+- [x] [CC] Success screen: "¡Listo!" with date, time, people.
 - [ ] [CC] Steps stay locked until the previous one is done (like Artefacto).
 - [ ] [CC] Notes box: "¿Niños menores de 14 o festejo? Escríbenos por WhatsApp".
 - [ ] [CC] Check it on a 375px-wide screen. Fix anything that overflows.
