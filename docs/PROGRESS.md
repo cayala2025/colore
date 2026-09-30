@@ -27,3 +27,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S1.15 ✅ Steps 2–4 locked until the previous step is done; chosen values shown as summaries; next step scrolls into view; party change drops a slot that no longer fits.
 - S1.16 ✅ Notes box "¿Niños menores de 14 o festejo? Escríbenos por WhatsApp" (WhatsApp link, placeholder while number is empty).
 - S1.17 ✅ 375px check: fixed phone row overflow (select width) + truncated country label; e2e test asserts no element passes the right edge.
+- S1.18 ✅ Playwright: 2 people → date → slot → form (validation) → success; step locking; 9 o más link.

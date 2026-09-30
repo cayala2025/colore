@@ -150,7 +150,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Steps stay locked until the previous one is done (like Artefacto).
 - [x] [CC] Notes box: "¿Niños menores de 14 o festejo? Escríbenos por WhatsApp".
 - [x] [CC] Check it on a 375px-wide screen. Fix anything that overflows.
-- [ ] [CC] Playwright test: pick 2 people → a date → a slot → fill form → see success.
+- [x] [CC] Playwright test: pick 2 people → a date → a slot → fill form → see success.
 - [ ] [YOU] **See it on your phone**. App: Terminal + phone browser.
   1. Terminal: `cd ~/Documents/colore` → `npm run dev` → Enter. Leave this window open (closing it stops the site).
   2. It prints two addresses. **Local** (`http://localhost:3000`) works on the Mac. **Network** (like `http://192.168.1.23:3000`) works on your phone.
