@@ -137,7 +137,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Add scripts: `typecheck`, `test` (Vitest), `test:e2e` (Playwright). Add `.env.example` (names only, no values).
 - [x] [CC] Add design tokens (CSS variables) and the temporary palette.
 - [x] [CC] Create `src/content/es.ts` with all booking copy in Spanish.
-- [ ] [CC] Build the header: "Colore" wordmark placeholder + short tagline.
+- [x] [CC] Build the header: "Colore" wordmark placeholder + short tagline.
 - [ ] [CC] Step 1 component: buttons 1–8 + "9 o más".
 - [ ] [CC] "9 o más" opens the WhatsApp link with prefilled text (placeholder while the number is empty).
 - [ ] [CC] Step 2 component: month calendar, Monday first (L M M J V S D).
