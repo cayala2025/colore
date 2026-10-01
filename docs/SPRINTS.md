@@ -238,7 +238,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] `/admin/calendario`: week view with bookings per slot.
 - [x] [CC] `/admin/horario`: edit slot times/capacity, turn slots on/off.
 - [x] [CC] `/admin/bloqueos`: add/remove blocked dates.
-- [ ] [CC] `/admin/piezas`: board with columns Recibida / En horno / Lista / Recogida.
+- [x] [CC] `/admin/piezas`: board with columns Recibida / En horno / Lista / Recogida.
 - [ ] [CC] Search pieces by code, name, or phone (for pickup at the counter).
 - [ ] [CC] Buttons per piece: marcar en horno, marcar lista, retrasada, entregada.
 - [ ] [CC] Bulk select → "marcar lista" (for a whole kiln load).

@@ -262,6 +262,21 @@ export const es = {
         generic: "No se pudo guardar.",
       },
     },
+    pieces: {
+      title: "Piezas",
+      columns: {
+        received: "Recibida",
+        firing: "En horno",
+        ready: "Lista",
+        picked_up: "Recogida",
+      },
+      empty: "Nada aquí.",
+      day: (n: number) => `Día ${n}`,
+      delayed: "Retrasada",
+      photoAlt: (code: string) => `Foto de la pieza ${code}`,
+      noPhoto: "Sin foto",
+      recentPickedUp: (days: number) => `Últimos ${days} días`,
+    },
     bookingActions: {
       attended: "Llegó",
       noShow: "No vino",

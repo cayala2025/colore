@@ -3,6 +3,7 @@ import type { ScheduleSlotRow } from "../availability";
 import { addDays, isoWeekday } from "../calendar";
 import { supabaseAdmin } from "../supabase/admin";
 import { groupBookingsBySlot, type AdminBooking, type AdminSlot } from "./daySlots";
+import { PICKED_UP_VISIBLE_DAYS, type AdminPiece } from "./pieceBoard";
 import { buildWeek, type AdminWeekDay } from "./week";
 
 export const ADMIN_BOOKING_COLUMNS =
@@ -51,4 +52,30 @@ export async function getAdminWeek(monday: string): Promise<AdminWeekDay[]> {
     (blocked.data ?? []).map((b) => b.date as string),
     bookings.data as AdminBooking[],
   );
+}
+
+export const ADMIN_PIECE_COLUMNS =
+  "id, code, name, phone, email, status, delayed, photo_path, checked_in_at, ready_at, picked_up_at";
+
+/** Active pieces plus recent pickups, for the board. */
+export async function getBoardPieces(): Promise<AdminPiece[]> {
+  const db = supabaseAdmin();
+  const since = new Date(Date.now() - (PICKED_UP_VISIBLE_DAYS + 1) * 86_400_000).toISOString();
+  const [active, picked] = await Promise.all([
+    db.from("pieces").select(ADMIN_PIECE_COLUMNS).in("status", ["received", "firing", "ready"]),
+    db.from("pieces").select(ADMIN_PIECE_COLUMNS).eq("status", "picked_up").gte("picked_up_at", since),
+  ]);
+  const error = active.error ?? picked.error;
+  if (error) throw new Error(`pieces query failed: ${error.message}`);
+  return [...(active.data ?? []), ...(picked.data ?? [])] as AdminPiece[];
+}
+
+/** Short-lived signed URLs for piece photos (private bucket), keyed by path. */
+export async function signedPhotoUrls(paths: (string | null)[], expiresIn = 3600): Promise<Record<string, string>> {
+  const unique = [...new Set(paths.filter((p): p is string => Boolean(p)))];
+  if (!unique.length) return {};
+  const { data } = await supabaseAdmin().storage.from("pieces").createSignedUrls(unique, expiresIn);
+  const urls: Record<string, string> = {};
+  for (const d of data ?? []) if (d.path && d.signedUrl) urls[d.path] = d.signedUrl;
+  return urls;
 }
