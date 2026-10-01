@@ -99,3 +99,44 @@ export async function insertBooking(date: string, start = "18:00") {
   if (error) throw new Error(error.message);
   return data as { id: string; manage_token: string };
 }
+
+/** Insert a "ZZ Test" piece checked in `daysAgo` days ago, with optional already-logged templates. */
+export async function insertPiece(
+  daysAgo: number,
+  opts: { status?: string; delayed?: boolean; readyDaysAgo?: number; logged?: string[] } = {},
+) {
+  const at = (d: number) => new Date(Date.now() - d * 86_400_000).toISOString();
+  const { data, error } = await db
+    .from("pieces")
+    .insert({
+      name: "ZZ Test",
+      phone: phone(),
+      email: "zz-test@example.com",
+      policy_accepted_at: at(daysAgo),
+      checked_in_at: at(daysAgo),
+      status: opts.status ?? "received",
+      delayed: opts.delayed ?? false,
+      ready_at: opts.readyDaysAgo === undefined ? null : at(opts.readyDaysAgo),
+    })
+    .select("id, code")
+    .single();
+  if (error) throw new Error(error.message);
+  for (const template of opts.logged ?? []) {
+    await db.from("notifications_log").insert({
+      piece_id: data.id,
+      template,
+      recipient: "zz-test@example.com",
+      status: "sent",
+      sent_at: new Date().toISOString(),
+    });
+  }
+  return data as { id: string; code: string };
+}
+
+export async function pieceState(id: string) {
+  const [{ data: piece }, { data: logs }] = await Promise.all([
+    db.from("pieces").select("status, ready_at, donated_at").eq("id", id).single(),
+    db.from("notifications_log").select("template").eq("piece_id", id).order("created_at"),
+  ]);
+  return { status: piece!.status as string, templates: (logs ?? []).map((l) => l.template as string) };
+}

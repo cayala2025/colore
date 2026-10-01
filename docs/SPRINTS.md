@@ -212,7 +212,7 @@ Rule for Claude Code: finish a step â†’ lint + typecheck + test + build green â†
 - [x] [CC] Send confirmation email right after booking; "received" email right after check-in.
 - [x] [CC] Route `GET /api/cron/daily` protected by `CRON_SECRET`.
 - [x] [CC] Daily job part 1: reminders for tomorrow's bookings.
-- [ ] [CC] Daily job part 2: piece timeline (ready / 21 / 30 / 40 / mark donated at 45).
+- [x] [CC] Daily job part 2: piece timeline (ready / 21 / 30 / 40 / mark donated at 45).
 - [ ] [CC] `vercel.json` cron: once a day at 17:00 UTC.
 - [ ] [CC] Test: running the job twice sends nothing twice.
 - [ ] [YOU] **Test the emails**. App: browser + Terminal + your email inbox.
