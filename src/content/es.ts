@@ -5,7 +5,8 @@ const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
 export const es = {
   brand: {
     name: "Colore",
-    tagline: "Pinta tu propia cerámica en Mexicali",
+    tagline: "El arte está en todas partes",
+    logoAlt: "Colore. El arte está en todas partes",
   },
 
   booking: {

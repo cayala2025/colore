@@ -2,21 +2,25 @@
 
 /*
  * Colore design tokens. Swap the brand here, in one place.
- * Temporary palette: warm cream background, near-black ink, one terracotta accent.
+ * Brand palette sampled from the Colore logo (public/brand/colore-logo.jpg):
+ * soft pink, terracotta letters, tan tagline.
  * Each token becomes a CSS variable (e.g. var(--color-accent)) and a Tailwind
  * utility (e.g. bg-accent, text-ink, border-line).
  */
 @theme {
-  --color-bg: #faf5ec;
-  --color-surface: #fffdf8;
-  --color-ink: #1d1a17;
-  --color-muted: #6b625a;
-  --color-line: #e6dccd;
-  --color-disabled: #d9d0c3;
-  --color-accent: #b5532f;
-  --color-accent-hover: #9a4526;
+  --color-bg: #fbf0ef;
+  --color-surface: #fffafa;
+  --color-ink: #2a1a17;
+  --color-muted: #7a5f58;
+  --color-line: #eed6d3;
+  --color-disabled: #d9c3bf;
+  --color-accent: #b04a38;
+  --color-accent-hover: #963c2c;
   --color-accent-ink: #ffffff;
-  --color-accent-soft: #f5e1d6;
+  --color-accent-soft: #f5d5d6;
+  /* Exact background of the logo image, so the logo sits on it without a visible box. */
+  --color-brand-bg: #f5d5d6;
+  --color-tagline: #bc9478;
   --color-danger: #b42318;
   --color-success: #2f6b3a;
 

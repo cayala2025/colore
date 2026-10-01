@@ -11,6 +11,7 @@ describe("email Layout", () => {
     );
     expect(html).toContain('lang="es-MX"');
     expect(html).toContain("Colore");
+    expect(html).toMatch(/src="https?:\/\/[^"]+\/brand\/colore-logo\.jpg"/);
     expect(html).toContain("Vista previa");
     expect(html).toContain("Hola");
     expect(html).toContain("Mexicali");

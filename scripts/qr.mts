@@ -11,12 +11,12 @@ nextEnv.loadEnvConfig(process.cwd());
 const site = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/+$/, "");
 const url = `${site}/pieza`;
 const outDir = path.join(process.cwd(), "print");
-const ink = rgb(0x1d / 255, 0x1a / 255, 0x17 / 255);
-const accent = rgb(0xb5 / 255, 0x53 / 255, 0x2f / 255);
+const ink = rgb(0x2a / 255, 0x1a / 255, 0x17 / 255);
+const accent = rgb(0xb0 / 255, 0x4a / 255, 0x38 / 255);
 
 await mkdir(outDir, { recursive: true });
 
-const png = await QRCode.toBuffer(url, { errorCorrectionLevel: "M", margin: 2, width: 1200, color: { dark: "#1d1a17", light: "#ffffff" } });
+const png = await QRCode.toBuffer(url, { errorCorrectionLevel: "M", margin: 2, width: 1200, color: { dark: "#2a1a17", light: "#ffffff" } });
 await writeFile(path.join(outDir, "pieza-qr.png"), png);
 
 // Letter-size page with a centered table card (title, QR, instructions, URL).

@@ -27,3 +27,5 @@ ANSWERS (Carlos):
 - Pieces (4) REJECTED: never auto-move to "Lista". The "lista" message is sent only when staff marks it ready. Instead, at day 14+ if not ready, show the piece in a new admin list "Revisar: pasaron 14 días" (on /admin/piezas and as a count on /admin home). No customer message until staff marks it ready.
 - Cron: keep 0 17 * * * (09:00 in winter is fine).
 - Studio address: still pending, keep the placeholder. I'll send it later.
+## Follow-ups (session 2)
+- [Brand — FYI] Logo cropped into `public/brand/colore-logo.jpg` and used in the site header (on a band matching its pink) and emails; palette retuned to the logo (pink `#f5d5d6`, terracotta `#b04a38`). The logo spells **"Coloré"** (with accent). The site text says "Colore". Should the name be written "Coloré" everywhere?

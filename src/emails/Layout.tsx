@@ -1,6 +1,7 @@
-import { Body, Container, Head, Hr, Html, Preview, Section, Text } from "@react-email/components";
+import { Body, Container, Head, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
 import type { CSSProperties, ReactNode } from "react";
 import { es } from "@/content/es";
+import { siteUrl } from "@/lib/site";
 import { theme } from "./theme";
 
 type Props = {
@@ -17,9 +18,14 @@ export function Layout({ preview, children }: Props) {
       <Preview>{preview}</Preview>
       <Body style={{ backgroundColor: theme.bg, fontFamily: theme.font, color: theme.ink, margin: 0, padding: "24px 0" }}>
         <Container style={{ maxWidth: 520, margin: "0 auto", padding: "0 16px" }}>
-          <Text style={{ fontSize: 32, fontWeight: 700, color: theme.accent, textAlign: "center", margin: "8px 0 16px" }}>
-            {es.brand.name}
-          </Text>
+          <Section style={{ backgroundColor: theme.brandBg, borderRadius: 16, padding: "12px 0", marginBottom: 16 }}>
+            <Img
+              src={`${siteUrl()}/brand/colore-logo.jpg`}
+              alt={es.brand.logoAlt}
+              width="240"
+              style={{ margin: "0 auto", display: "block", color: theme.accent, fontSize: 28, fontWeight: 700 }}
+            />
+          </Section>
           <Section
             style={{
               backgroundColor: theme.surface,
