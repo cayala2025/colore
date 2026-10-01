@@ -27,6 +27,8 @@ export default defineConfig({
       // Never send real emails from tests: empty key → emails are logged to the console.
       RESEND_API_KEY: "",
       CRON_SECRET: "e2e-cron-secret",
+      // Admin pages accept the e2e_admin=1 cookie as a signed-in admin (dev server only).
+      E2E_ADMIN_BYPASS: "1",
     },
     timeout: 120_000,
   },

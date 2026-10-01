@@ -1,6 +1,7 @@
 import "server-only";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { adminBypassEnabled, BYPASS_ADMIN_EMAIL } from "./adminBypass";
+import { adminBypassEnabled, BYPASS_ADMIN_EMAIL, BYPASS_COOKIE } from "./adminBypass";
 import { supabaseAdmin } from "./supabase/admin";
 import { supabaseServer } from "./supabase/server";
 
@@ -14,7 +15,7 @@ export async function isAdminEmail(email: string): Promise<boolean> {
 
 /** The signed-in admin, or null (not signed in, or signed in but not in `admins`). */
 export async function getAdmin(): Promise<Admin | null> {
-  if (adminBypassEnabled()) return { email: BYPASS_ADMIN_EMAIL };
+  if (adminBypassEnabled((await cookies()).get(BYPASS_COOKIE)?.value)) return { email: BYPASS_ADMIN_EMAIL };
   const supabase = await supabaseServer();
   const { data } = await supabase.auth.getUser(); // verified with Supabase Auth, not just the cookie
   const email = data.user?.email;
