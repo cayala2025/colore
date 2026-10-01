@@ -82,3 +82,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S4.2 ✅ Booking confirmation email (date, time, people, address, "Ver mi reservación" → /r/[token]) + tests.
 - S4.3 ✅ Booking reminder email (day before) with Confirmar/Cancelar → /r/[token]?accion=… (links only preselect; never mutate on GET) + tests.
 - S4.4 ✅ /r/[token]: shows booking + status; "Confirmar que voy" server action (only upcoming confirmed); GET never mutates; noindex; manageView() rules tested; e2e 3 ✅.
+- S4.5 ✅ Cancel (with "¿Seguro?" step; email link preselects it) → status cancelled + cancelled_at; e2e proves seats freed in DB and in /api/availability.

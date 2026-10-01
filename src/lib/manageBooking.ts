@@ -40,3 +40,21 @@ export async function confirmBookingByToken(token: string): Promise<boolean> {
   if (error) throw new Error(`confirm failed: ${error.message}`);
   return (data ?? []).length === 1;
 }
+
+/**
+ * Customer cancels. Seats are freed because availability and create_booking only count
+ * confirmed/attended bookings. Only upcoming confirmed bookings can be cancelled.
+ */
+export async function cancelBookingByToken(token: string): Promise<boolean> {
+  if (!isManageToken(token)) return false;
+  const now = new Date().toISOString();
+  const { data, error } = await supabaseAdmin()
+    .from("bookings")
+    .update({ status: "cancelled", cancelled_at: now, updated_at: now })
+    .eq("manage_token", token)
+    .eq("status", "confirmed")
+    .gt("starts_at", now)
+    .select("id");
+  if (error) throw new Error(`cancel failed: ${error.message}`);
+  return (data ?? []).length === 1;
+}
