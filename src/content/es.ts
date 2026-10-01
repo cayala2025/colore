@@ -210,6 +210,38 @@ export const es = {
       manageButton: "Ver mi reservación",
       note: "La sesión dura 2 horas. Llega unos minutos antes para elegir tu pieza.",
     },
+    pieceReceived: {
+      subject: (code: string) => `Recibimos tu pieza ${code}`,
+      preview: "Te avisaremos cuando esté lista.",
+      title: "¡Recibimos tu pieza!",
+      intro: "Gracias por pintar con nosotros. Guarda este correo: tiene tu código.",
+      photoAlt: "Foto de tu pieza",
+      next: (readyDays: number) =>
+        `Ahora la vamos a hornear. Tarda unos ${readyDays} días; te escribiremos cuando puedas pasar por ella.`,
+      policy: (donateDays: number) =>
+        `Importante: si no la recoges en ${donateDays} días desde hoy, la donaremos.`,
+    },
+    pieceReady: {
+      subject: (code: string) => `Tu pieza ${code} está lista`,
+      preview: "Ya puedes pasar por ella.",
+      title: "¡Tu pieza está lista!",
+      intro: "Ya salió del horno. Pasa por ella en nuestro horario y muestra tu código.",
+      policy: (date: string) => `Puedes recogerla hasta el ${date}. Después la donaremos.`,
+    },
+    pieceReminder: {
+      subject: (code: string) => `Tu pieza ${code} te espera`,
+      preview: "Tu pieza sigue en Colore.",
+      title: "Tu pieza te espera",
+      intro: "Tu pieza ya está lista y sigue con nosotros. ¡Pasa por ella!",
+      policy: (date: string) => `Puedes recogerla hasta el ${date}.`,
+    },
+    pieceFinalNotice: {
+      subject: (code: string) => `Último aviso: tu pieza ${code} se donará en 5 días`,
+      preview: "Se donará en 5 días.",
+      title: "Último aviso",
+      intro: "Tu pieza sigue en Colore. Si no pasas por ella, se donará en 5 días.",
+      policy: (date: string) => `Último día para recogerla: ${date}.`,
+    },
     bookingReminder: {
       subject: "Mañana pintas en Colore",
       preview: "Te esperamos mañana. Confirma o cancela tu lugar.",

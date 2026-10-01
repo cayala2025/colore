@@ -206,7 +206,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Template: booking reminder (day before, "Confirmar" / "Cancelar").
 - [x] [CC] Page `/r/[token]`: shows the booking, confirm and cancel buttons.
 - [x] [CC] Cancel frees the seats (status → cancelled).
-- [ ] [CC] Templates: piece received, piece ready, pickup reminder, final notice.
+- [x] [CC] Templates: piece received, piece ready, pickup reminder, final notice.
 - [ ] [CC] `src/lib/notify.ts`: write to `notifications_log` first, then send; skip if already sent.
 - [ ] [CC] If `RESEND_API_KEY` is missing, log emails to the console instead.
 - [ ] [CC] Send confirmation email right after booking; "received" email right after check-in.
