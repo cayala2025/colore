@@ -51,3 +51,11 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S2.14 ✅ Turnstile widget (explicit render, invisible unless needed; test site key fallback) on the form; submit posts to /api/bookings; token reset after failures. E2E uses CF test keys, random 555 phones, teardown cancels ZZ Test rows.
 - S2.15 ✅ Friendly errors: slot full/started → clears slot, reloads availability, notice on step 3; blocked date → back to step 2; phone already booked / Turnstile / generic → form message. E2E for phone-twice and slot-filled-meanwhile (6 ✅).
 - S2.16 ✅ DB test: 2 parallel bookings for the last seats → exactly one succeeds; burst of 12 never exceeds capacity (DB tests 19 ✅).
+
+### Sprint 2 done
+- Works: real schedule/blocked dates/bookings in Supabase (migrations 0100–0800 applied to dev); RLS on every table + no public writes + auto-RLS event trigger; DST-safe tz helpers; pure availability function; GET /api/availability; POST /api/bookings (Turnstile → E.164 → `create_booking` RPC with per-phone + per-slot advisory locks); friendly errors. Unit 46 ✅, DB integration (`npm run test:db`) 19 ✅, Playwright 6 ✅.
+- Mocked: Playwright uses Cloudflare's always-pass Turnstile test keys.
+- Notes: `SUPABASE_DB_URL` switched to the IPv4 session pooler (see QUESTIONS). Test rows ("ZZ Test", 555 phones) are cancelled, never deleted.
+- Left: emails (Sprint 4), admin (Sprint 5).
+
+## Sprint 3 — Piece check-in (QR)
