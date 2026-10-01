@@ -112,6 +112,24 @@ describe("pieceTimeline: day by day", () => {
     }
   });
 
+  it("never sends a second message on the same day", () => {
+    const a = pieceTimeline({
+      checkedInAt,
+      now: onDay(21),
+      status: "ready",
+      delayed: false,
+      readyAt: onDay(14),
+      sent: new Set(["piece_ready"]),
+      sentToday: true,
+    });
+    expect(a.send).toBeNull();
+  });
+
+  it("still marks ready / donates on a day a message was already sent", () => {
+    const a = pieceTimeline({ checkedInAt, now: onDay(14), status: "received", delayed: false, readyAt: null, sent: new Set(), sentToday: true });
+    expect(a).toMatchObject({ send: null, markReady: true });
+  });
+
   it("missed days: sends only the latest milestone, never a backlog", () => {
     expect(run(33, { status: "ready", readyAt: onDay(14), sent: ["piece_ready"] }).send).toBe("piece_reminder_30");
   });

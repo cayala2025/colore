@@ -1,12 +1,13 @@
 import "server-only";
 import { sendPieceMessage, type PieceForEmail } from "../messages";
 import { MAX_ATTEMPTS } from "../notify";
-import { PIECE_TEMPLATES, pieceTimeline, type PieceStatus, type PieceTemplate } from "../pieceTimeline";
+import { PIECE_TEMPLATES, pieceTimeline, READY_DAYS, type PieceStatus, type PieceTemplate } from "../pieceTimeline";
 import { supabaseAdmin } from "../supabase/admin";
+import { toStudio } from "../time";
 import { emptyCounts, type JobCounts } from "./bookingReminders";
 
 type PieceRow = PieceForEmail & { status: PieceStatus; delayed: boolean };
-type LogRow = { piece_id: string; template: string; status: string; attempts: number };
+type LogRow = { piece_id: string; template: string; status: string; attempts: number; created_at: string };
 
 export type PieceJobResult = JobCounts & { markedReady: number; donated: number };
 
@@ -39,25 +40,31 @@ export async function runPieceTimeline(now = new Date()): Promise<PieceJobResult
     const batch = rows.slice(i, i + 200);
     const { data: logs, error: logError } = await db
       .from("notifications_log")
-      .select("piece_id, template, status, attempts")
+      .select("piece_id, template, status, attempts, created_at")
       .in(
         "piece_id",
         batch.map((p) => p.id),
       );
     if (logError) throw new Error(`notifications query failed: ${logError.message}`);
 
+    const today = toStudio(now).date;
     for (const piece of batch) {
+      const pieceLogs = ((logs ?? []) as LogRow[]).filter((l) => l.piece_id === piece.id);
       const action = pieceTimeline({
         checkedInAt: new Date(piece.checked_in_at),
         now,
         status: piece.status,
         delayed: piece.delayed,
         readyAt: piece.ready_at ? new Date(piece.ready_at) : null,
-        sent: doneTemplates(((logs ?? []) as LogRow[]).filter((l) => l.piece_id === piece.id)),
+        sent: doneTemplates(pieceLogs),
+        sentToday: pieceLogs.some((l) => l.status !== "failed" && toStudio(new Date(l.created_at)).date === today),
       });
 
       if (action.markReady) {
-        const readyAt = now.toISOString();
+        // Auto-ready counts from the scheduled ready time (check-in + 14 days), not from when the
+        // job happened to run, so a late run never shifts the pickup clock.
+        const scheduled = new Date(new Date(piece.checked_in_at).getTime() + READY_DAYS * 86_400_000);
+        const readyAt = new Date(Math.min(scheduled.getTime(), now.getTime())).toISOString();
         const { data } = await db
           .from("pieces")
           .update({ status: "ready", ready_at: readyAt, updated_at: readyAt })

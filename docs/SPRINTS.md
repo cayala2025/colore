@@ -214,7 +214,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Daily job part 1: reminders for tomorrow's bookings.
 - [x] [CC] Daily job part 2: piece timeline (ready / 21 / 30 / 40 / mark donated at 45).
 - [x] [CC] `vercel.json` cron: once a day at 17:00 UTC.
-- [ ] [CC] Test: running the job twice sends nothing twice.
+- [x] [CC] Test: running the job twice sends nothing twice.
 - [ ] [YOU] **Test the emails**. App: browser + Terminal + your email inbox.
   1. Start the site (`cd ~/Documents/colore` → `npm run dev`).
   2. Book a slot for **tomorrow** using the **same email you signed up to Resend with** (the test sender can only email that address).

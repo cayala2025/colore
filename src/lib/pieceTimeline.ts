@@ -42,6 +42,8 @@ export type PieceTimelineInput = {
   readyAt: Date | null;
   /** Templates already logged for this piece. */
   sent: ReadonlySet<PieceTemplate>;
+  /** A message already went out to this piece today (studio date): send nothing more today. */
+  sentToday?: boolean;
 };
 
 export type PieceTimelineAction = {
@@ -56,7 +58,8 @@ export type PieceTimelineAction = {
 };
 
 /**
- * Decide what is due for a piece today. At most one message per day:
+ * Decide what is due for a piece today. At most one message per day (also across job runs,
+ * via `sentToday`):
  * - picked_up / donated: nothing, ever.
  * - Not ready yet (before day 14, or delayed): only the "received" message (as a backup if it failed).
  * - Ready (marked by staff, or day 14 and not delayed): "ready" first, then the latest pickup milestone
@@ -66,6 +69,11 @@ export type PieceTimelineAction = {
  * - Donation (day 45) only after the final notice was sent.
  */
 export function pieceTimeline(input: PieceTimelineInput): PieceTimelineAction {
+  const action = decide(input);
+  return input.sentToday ? { ...action, send: null } : action;
+}
+
+function decide(input: PieceTimelineInput): PieceTimelineAction {
   const { checkedInAt, now, status, delayed, readyAt, sent } = input;
   const day = studioDaysBetween(checkedInAt, now);
   const none = { day, send: null, markReady: false, donate: false };
