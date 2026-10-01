@@ -25,7 +25,7 @@ describe("piece emails", () => {
       const html = await render(<PieceEmail kind={kind} data={{ ...data, photoUrl: null }} />);
       expect(html).toContain("C-0042");
       expect(html).toContain("domingo 15 de noviembre");
-      expect(html).not.toContain("<img");
+      expect(html).not.toContain("storage/v1/object/sign"); // no piece photo (only the logo)
     }
     expect(pieceEmailSubject("ready", data)).toBe("Tu pieza C-0042 está lista");
     expect(pieceEmailSubject("finalNotice", data)).toBe("Último aviso: tu pieza C-0042 se donará en 5 días");
