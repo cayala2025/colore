@@ -244,6 +244,24 @@ export const es = {
         generic: "No se pudo guardar.",
       },
     },
+    blocks: {
+      title: "Bloqueos",
+      intro: "Días completos cerrados (festivos, eventos privados). Nadie puede reservar esos días.",
+      date: "Fecha",
+      reason: "Motivo (opcional)",
+      reasonPlaceholder: "Ej. Día festivo",
+      add: "Bloquear día",
+      adding: "Guardando…",
+      remove: "Quitar",
+      empty: "No hay días bloqueados.",
+      hasBookings: (n: number) =>
+        `Ojo: este día tiene ${n} ${n === 1 ? "reservación" : "reservaciones"}. Avísales por WhatsApp; siguen en el sistema.`,
+      errors: {
+        date: "Elige una fecha de hoy en adelante.",
+        duplicate: "Ese día ya está bloqueado.",
+        generic: "No se pudo guardar.",
+      },
+    },
     bookingActions: {
       attended: "Llegó",
       noShow: "No vino",
