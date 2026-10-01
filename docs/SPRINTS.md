@@ -191,7 +191,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] If the phone has a booking today, prefill name/email and link `booking_id`.
 - [x] [CC] API route `POST /api/pieces`: verify Turnstile → upload photo → insert → return code.
 - [x] [CC] Success screen: HUGE code (e.g. C-0042), ready date, "muéstrale este código al staff".
-- [ ] [CC] `src/lib/pieceTimeline.ts`: pure function (checked_in_at, today, status, delayed) → which message is due. Tests for every day in the timeline.
+- [x] [CC] `src/lib/pieceTimeline.ts`: pure function (checked_in_at, today, status, delayed) → which message is due. Tests for every day in the timeline.
 - [ ] [CC] Script `npm run qr` → generates a printable PNG/PDF QR pointing to `NEXT_PUBLIC_SITE_URL/pieza`, saved in `print/`.
 - [ ] [YOU] **Check in a real piece from your phone**. App: Terminal + phone.
   1. Terminal: `cd ~/Documents/colore` → `npm run dev`. Note the **Network** address.
