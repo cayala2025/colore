@@ -137,3 +137,4 @@ All [CC] steps in Sprints 1–5 are ticked (75), each committed after lint + typ
 7. Cron is 09:00 local in winter — OK, or must be 10:00 year-round?
 8. FYI: `SUPABASE_DB_URL` was fixed to the IPv4 session pooler (original kept as a comment); use the pooler for prod.
 9. FYI: test data in dev ("ZZ Test", 555 phones, `pieces/test/` images); admin emails must be lowercase; add prod domain to Turnstile; run e2e before (not between) your email test.
+- Fix: buttons dead on Network address (allowedDevOrigins); calendar skips a month with no free days; e2e runs alongside npm run dev.
