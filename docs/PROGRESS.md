@@ -47,3 +47,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S2.10 ✅ Calendar + slot chips use /api/availability (per month+party cache, loading/error/retry, keeps chosen date's slots while browsing months); removed fake data.
 - S2.11 ✅ create_booking() RPC: per-slot pg_advisory_xact_lock, re-checks window/blocked/slot/started/capacity in-transaction; service_role only (revoked from anon). DB tests 14 ✅ (test rows cancelled, never deleted).
 - S2.12 ✅ create_booking enforces one upcoming confirmed booking per phone (per-phone advisory lock, taken before slot lock) + E.164 check. DB tests 17 ✅.
+- S2.13 ✅ POST /api/bookings: parse/validate body (shared validation) → verify Turnstile (fails closed; dev-only test secret if key missing) → E.164 → create_booking RPC; errors mapped to codes (tests). Verified live: 201, phoneHasBooking, invalid, turnstile.
