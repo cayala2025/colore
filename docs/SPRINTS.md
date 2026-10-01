@@ -163,7 +163,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Seed the schedule from CLAUDE.md.
 - [x] [CC] Migration: `blocked_dates` (date, reason).
 - [x] [CC] Migration: `bookings` (see CLAUDE.md) + index on (date, start_time).
-- [ ] [CC] Migration: `admins` (email).
+- [x] [CC] Migration: `admins` (email).
 - [ ] [CC] Turn on RLS for every table. No public insert/update policies.
 - [ ] [CC] `src/lib/time.ts`: timezone helpers for America/Tijuana + tests.
 - [ ] [CC] `src/lib/availability.ts`: pure function (schedule, blocks, bookings, party size) → available slots. Tests for: Monday, blocked day, full slot, 8 people when 7 seats left, slot already started.

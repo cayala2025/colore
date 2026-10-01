@@ -39,3 +39,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S2.2 ✅ Seeded schedule as an idempotent migration (Tue–Wed 3 slots, Thu–Sun 4, 30 seats; Mon closed). Verified in dev DB.
 - S2.3 ✅ Migration blocked_dates (date PK, reason; RLS on).
 - S2.4 ✅ Migration bookings (status enum, E.164 check, starts_at UTC, random manage_token) + index (date, start_time) + partial index on confirmed phone; RLS on.
+- S2.5 ✅ Migration admins (lowercase email PK; RLS on; authenticated users may read only their own row).
