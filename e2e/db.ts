@@ -127,7 +127,9 @@ export async function insertPiece(
       template,
       recipient: "zz-test@example.com",
       status: "sent",
-      sent_at: new Date().toISOString(),
+      // History happened on earlier days (the job sends at most one message per day).
+      created_at: at(Math.max(1, daysAgo - 1)),
+      sent_at: at(Math.max(1, daysAgo - 1)),
     });
   }
   return data as { id: string; code: string };
