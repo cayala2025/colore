@@ -80,3 +80,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 ## Sprint 4 — Emails + daily cron
 - S4.1 ✅ Installed resend + @react-email/components; shared Spanish email Layout (wordmark, card, footer with address placeholder) + render test.
 - S4.2 ✅ Booking confirmation email (date, time, people, address, "Ver mi reservación" → /r/[token]) + tests.
+- S4.3 ✅ Booking reminder email (day before) with Confirmar/Cancelar → /r/[token]?accion=… (links only preselect; never mutate on GET) + tests.
