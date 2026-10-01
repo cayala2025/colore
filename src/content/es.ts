@@ -212,6 +212,18 @@ export const es = {
       offSchedule: "Fuera de horario",
       totals: (bookings: number, people: number) => `${bookings} reservaciones · ${people} personas`,
     },
+    calendar: {
+      title: "Calendario",
+      weekOf: (from: string, to: string) => `Semana del ${from} al ${to}`,
+      prevWeek: "Semana anterior",
+      nextWeek: "Semana siguiente",
+      thisWeek: "Esta semana",
+      closed: "Cerrado",
+      blocked: "Bloqueado",
+      seats: (used: number, capacity: number) => `${used}/${capacity}`,
+      more: (n: number) => `+${n} más`,
+      openDay: "Ver día",
+    },
     bookingActions: {
       attended: "Llegó",
       noShow: "No vino",
