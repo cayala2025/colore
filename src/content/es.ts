@@ -207,6 +207,7 @@ export const es = {
       seats: (used: number, capacity: number) => `${used} de ${capacity} lugares`,
       free: (n: number) => `${n} libres`,
       noBookings: "Sin reservaciones.",
+      cancelledToggle: (n: number) => `${n} ${n === 1 ? "cancelada" : "canceladas"}`,
       people: (n: number) => `${n} ${n === 1 ? "persona" : "personas"}`,
       customerConfirmed: "Confirmó",
       noShowBadge: (n: number) => (n === 1 ? "Faltó 1 vez" : `Faltó ${n} veces`),

@@ -44,6 +44,8 @@ test("Llegó / No vino / Cancelar update the booking", async ({ page }) => {
   const rowC = page.getByTestId(`booking-${c.id}`);
   await rowC.getByRole("button", { name: "Cancelar" }).click();
   await rowC.getByRole("button", { name: "Sí" }).click();
+  // Cancelled bookings fold into a collapsed "N canceladas" section.
+  await page.getByTestId("slot-11:00").getByText(/canceladas?$/).click();
   await expect(rowC).toContainText("Cancelada");
   await expect(rowC.getByRole("button")).toHaveCount(0);
 
