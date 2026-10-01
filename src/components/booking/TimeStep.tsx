@@ -1,20 +1,19 @@
 import { es } from "@/content/es";
-import type { DaySlot } from "@/lib/types";
+import type { PublicSlot } from "@/lib/types";
 
 type Props = {
-  slots: DaySlot[];
-  party: number;
+  slots: PublicSlot[];
   selected: string | null;
   onSelect: (start: string) => void;
 };
 
-export function TimeStep({ slots, party, selected, onSelect }: Props) {
+export function TimeStep({ slots, selected, onSelect }: Props) {
   if (slots.length === 0) return <p className="text-sm text-muted">{es.booking.time.none}</p>;
   return (
     <div className="grid grid-cols-2 gap-2">
       {slots.map((slot) => {
         const isSelected = selected === slot.start;
-        const full = slot.seatsLeft < party;
+        const full = !slot.available;
         return (
           <button
             key={slot.start}
@@ -35,7 +34,7 @@ export function TimeStep({ slots, party, selected, onSelect }: Props) {
               {es.format.timeRange(slot.start, slot.end)}
             </span>
             <span className={`text-xs ${isSelected ? "" : full ? "font-medium text-muted" : "text-muted"}`}>
-              {full ? es.booking.time.full : es.booking.time.seatsLeft(slot.seatsLeft)}
+              {full ? es.booking.time.unavailable : es.booking.time.available}
             </span>
           </button>
         );

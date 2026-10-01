@@ -58,8 +58,9 @@ export const es = {
     time: {
       stepLabel: "Paso 3",
       title: "Elige el horario",
-      full: "Lleno",
-      seatsLeft: (n: number) => `${n} ${plural(n, "lugar", "lugares")}`,
+      // Customers never see seat counts, only whether their party fits.
+      available: "Disponible",
+      unavailable: "No disponible",
       none: "No hay horarios disponibles este día.",
       started: "Ya empezó",
     },

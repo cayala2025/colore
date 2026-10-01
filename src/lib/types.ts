@@ -7,12 +7,26 @@ export type DaySlot = {
   seatsLeft: number;
 };
 
-/** Availability for one calendar day. */
+/** What customers see for a slot: whether their party fits. Seat counts never leave the server. */
+export type PublicSlot = {
+  start: string;
+  end: string;
+  available: boolean;
+};
+
+/** Public availability for one day (GET /api/availability). */
+export type PublicDay = {
+  date: string;
+  bookable: boolean;
+  slots: PublicSlot[];
+};
+
+/** Availability for one calendar day (server-side, includes seat counts). */
 export type DayAvailability = {
   date: string; // "YYYY-MM-DD"
   /** True when at least one slot fits the party and has not started. */
   bookable: boolean;
-  /** Slots that have not started yet (including full ones, shown as "Lleno"). */
+  /** Slots that have not started yet (including full ones). */
   slots: DaySlot[];
 };
 

@@ -98,3 +98,14 @@ describe("computeAvailability", () => {
     expect(days).toHaveLength(31);
   });
 });
+
+describe("toPublicDays", () => {
+  it("hides seat counts and only says whether the party fits", async () => {
+    const { toPublicDays } = await import("./availability");
+    const days = [{ date: "2026-10-08", bookable: true, slots: [{ start: "16:00", end: "18:00", capacity: 30, seatsLeft: 7 }] }];
+    expect(toPublicDays(days, 8)).toEqual([
+      { date: "2026-10-08", bookable: true, slots: [{ start: "16:00", end: "18:00", available: false }] },
+    ]);
+    expect(JSON.stringify(toPublicDays(days, 7))).not.toMatch(/seats|capacity/);
+  });
+});

@@ -6,7 +6,7 @@ import type { BookingApiError } from "@/lib/bookingErrors";
 import { bookableMonths } from "@/lib/bookingWindow";
 import { addMonths, monthOf } from "@/lib/calendar";
 import { formatDateLong, formatTimeRange } from "@/lib/format";
-import type { DaySlot } from "@/lib/types";
+import type { PublicSlot } from "@/lib/types";
 import { ContactForm, type ContactFormValues } from "@/components/ContactForm";
 import { CalendarStep } from "./CalendarStep";
 import { NotesBox } from "./NotesBox";
@@ -21,7 +21,7 @@ type Props = {
   today: string;
 };
 
-type Confirmed = { date: string; slot: DaySlot; party: number };
+type Confirmed = { date: string; slot: PublicSlot; party: number };
 
 export function BookingFlow({ today }: Props) {
   const [party, setParty] = useState<number | null>(null);
@@ -60,8 +60,8 @@ export function BookingFlow({ today }: Props) {
 
   function chooseParty(n: number) {
     setParty(n);
-    // Keep the chosen slot only if the new party still fits.
-    if (chosenSlot && chosenSlot.seatsLeft < n) setSlot(null);
+    // Availability depends on the party size: pick the time again with fresh data.
+    if (n !== party) setSlot(null);
     if (!date) reveal("step-date");
   }
 
@@ -222,7 +222,7 @@ export function BookingFlow({ today }: Props) {
             {slotNotice}
           </p>
         )}
-        <TimeStep slots={slots} party={party ?? 1} selected={slot} onSelect={chooseSlot} />
+        <TimeStep slots={slots} selected={slot} onSelect={chooseSlot} />
       </StepCard>
 
       <StepCard

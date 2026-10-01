@@ -47,9 +47,9 @@ test("cancel from the email link frees the seats", async ({ page }) => {
   expect(data?.status).toBe("cancelled");
   expect(await seatsTaken()).toBe(before - 8);
 
-  // The availability API sees the freed seats too.
+  // The public API never exposes seat counts.
   const res = await page.request.get(`/api/availability?month=${date.slice(0, 7)}&party=1`);
   const day = (await res.json()).days.find((d: { date: string }) => d.date === date);
   const slot = day.slots.find((s: { start: string }) => s.start === "16:00");
-  expect(slot.seatsLeft).toBe(30 - (before - 8));
+  expect(slot).toEqual({ start: "16:00", end: "18:00", available: true });
 });

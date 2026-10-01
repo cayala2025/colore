@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { DayAvailability } from "@/lib/types";
+import type { PublicDay } from "@/lib/types";
 
-type Entry = { days?: DayAvailability[]; error?: boolean };
+type Entry = { days?: PublicDay[]; error?: boolean };
 
 /**
  * Fetches /api/availability for each month in `months` (for the given party),
@@ -24,7 +24,7 @@ export function useAvailability(party: number | null, months: string[]) {
       fetch(`/api/availability?month=${month}&party=${party}`, { cache: "no-store" })
         .then(async (res) => {
           if (!res.ok) throw new Error(String(res.status));
-          const body = (await res.json()) as { days: DayAvailability[] };
+          const body = (await res.json()) as { days: PublicDay[] };
           setCache((c) => ({ ...c, [key]: { days: body.days } }));
         })
         .catch(() => setCache((c) => ({ ...c, [key]: { error: true } })))
@@ -33,7 +33,7 @@ export function useAvailability(party: number | null, months: string[]) {
   }, [party, monthsKey, cache, version]);
 
   const day = useCallback(
-    (date: string): DayAvailability | undefined =>
+    (date: string): PublicDay | undefined =>
       party ? cache[`${date.slice(0, 7)}|${party}`]?.days?.find((d) => d.date === date) : undefined,
     [cache, party],
   );

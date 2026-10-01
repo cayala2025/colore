@@ -32,5 +32,5 @@ test("slot fills up before submit → friendly error and fresh slots", async ({ 
   await expect(page.getByTestId("slot-notice")).toContainText("se acaba de llenar");
   await expect(page.getByTestId("step-form")).toHaveAttribute("data-locked", "true");
   await expect(page.locator(`[data-slot="${start}"]`)).toBeDisabled();
-  await expect(page.locator(`[data-slot="${start}"]`)).toContainText("Lleno");
+  await expect(page.locator(`[data-slot="${start}"]`)).toContainText("No disponible");
 });

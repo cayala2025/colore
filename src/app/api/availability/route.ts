@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { toPublicDays } from "@/lib/availability";
 import { getMonthAvailability } from "@/lib/availabilityQuery";
 import { MAX_ONLINE_PARTY } from "@/lib/bookingWindow";
 
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const days = await getMonthAvailability(month, party);
+    const days = toPublicDays(await getMonthAvailability(month, party), party);
     return NextResponse.json({ month, party, days }, { headers: { "Cache-Control": "no-store" } });
   } catch (err) {
     console.error(err);

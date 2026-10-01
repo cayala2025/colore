@@ -1,7 +1,7 @@
 import { isWithinBookingWindow } from "./bookingWindow";
 import { addDays, isoWeekday } from "./calendar";
 import { studioToUtc, todayInStudio } from "./time";
-import type { BookingStatus, DayAvailability, DaySlot } from "./types";
+import type { BookingStatus, DayAvailability, DaySlot, PublicDay } from "./types";
 
 export type ScheduleSlotRow = {
   weekday: number; // ISO 1 = Monday … 7 = Sunday
@@ -42,6 +42,15 @@ export function seatsTaken(bookings: BookingRow[], date: string, start: string):
 /** A party fits when capacity - taken >= party. */
 export function fits(slot: DaySlot, party: number): boolean {
   return slot.seatsLeft >= party;
+}
+
+/** Strip seat counts: customers only learn whether their party fits each slot. */
+export function toPublicDays(days: DayAvailability[], party: number): PublicDay[] {
+  return days.map((d) => ({
+    date: d.date,
+    bookable: d.bookable,
+    slots: d.slots.map((s) => ({ start: s.start, end: s.end, available: fits(s, party) })),
+  }));
 }
 
 export function computeAvailability(input: AvailabilityInput): DayAvailability[] {
