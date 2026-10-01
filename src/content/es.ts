@@ -167,6 +167,32 @@ export const es = {
   email: {
     footer: "Colore · Estudio de pintura en cerámica · Mexicali",
     footerAuto: "Este es un correo automático. Si tienes dudas, contesta este correo o escríbenos por WhatsApp.",
+    labels: {
+      date: "Día",
+      time: "Horario",
+      people: "Personas",
+      address: "Dónde",
+      code: "Código",
+      readyBy: "Lista aproximadamente el",
+    },
+    bookingConfirmation: {
+      subject: (date: string) => `Tu reservación en Colore: ${date}`,
+      preview: "Tu lugar está reservado.",
+      title: (name: string) => `¡Listo, ${name}!`,
+      intro: "Tu lugar está reservado. Estos son los detalles:",
+      manageText: "¿Cambio de planes? Puedes confirmar o cancelar aquí:",
+      manageButton: "Ver mi reservación",
+      note: "La sesión dura 2 horas. Llega unos minutos antes para elegir tu pieza.",
+    },
+    bookingReminder: {
+      subject: "Mañana pintas en Colore",
+      preview: "Te esperamos mañana. Confirma o cancela tu lugar.",
+      title: (name: string) => `¡Nos vemos mañana, ${name}!`,
+      intro: "Te recordamos tu reservación:",
+      ask: "¿Vienes? Avísanos para guardar tu lugar o liberarlo para alguien más.",
+      confirm: "Confirmar",
+      cancel: "Cancelar",
+    },
   },
 
   qrCard: {
