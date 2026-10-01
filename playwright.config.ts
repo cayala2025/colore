@@ -22,6 +22,7 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     // Cloudflare's always-pass Turnstile test keys, so the widget never blocks automation.
     env: {
+      NEXT_DIST_DIR: ".next-e2e",
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: "1x00000000000000000000AA",
       TURNSTILE_SECRET_KEY: "1x0000000000000000000000000000000AA",
       // Never send real emails from tests: empty key → emails are logged to the console.

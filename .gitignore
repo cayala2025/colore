@@ -40,3 +40,4 @@ supabase/.temp/
 
 # generated QR codes (npm run qr)
 /print/
+/.next-e2e/

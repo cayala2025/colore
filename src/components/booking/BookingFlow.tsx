@@ -4,7 +4,7 @@ import { useState } from "react";
 import { es } from "@/content/es";
 import type { BookingApiError } from "@/lib/bookingErrors";
 import { bookableMonths } from "@/lib/bookingWindow";
-import { monthOf } from "@/lib/calendar";
+import { addMonths, monthOf } from "@/lib/calendar";
 import { formatDateLong, formatTimeRange } from "@/lib/format";
 import type { DaySlot } from "@/lib/types";
 import { ContactForm, type ContactFormValues } from "@/components/ContactForm";
@@ -27,7 +27,8 @@ export function BookingFlow({ today }: Props) {
   const [party, setParty] = useState<number | null>(null);
   const [date, setDate] = useState<string | null>(null);
   const [slot, setSlot] = useState<string | null>(null);
-  const [month, setMonth] = useState(monthOf(today));
+  /** Month the customer navigated to; null until they use the arrows. */
+  const [pickedMonth, setMonth] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [confirmed, setConfirmed] = useState<Confirmed | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
@@ -36,6 +37,14 @@ export function BookingFlow({ today }: Props) {
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
 
   const months = bookableMonths(today);
+  // Late on the last day of a month every remaining day can be closed: until the customer navigates,
+  // show next month when this one has no free day left.
+  const firstMonth = months.min;
+  const probe = useAvailability(party, [firstMonth]);
+  const autoMonth =
+    probe.monthHasBookableDay(firstMonth) === false && firstMonth < months.max ? addMonths(firstMonth, 1) : firstMonth;
+  const month = pickedMonth ?? (date ? monthOf(date) : autoMonth);
+
   // Load the month on screen and the month of the chosen date.
   const availability = useAvailability(party, date ? [month, monthOf(date)] : [month]);
   const isDisabled = (d: string) => !availability.day(d)?.bookable;
@@ -103,7 +112,7 @@ export function BookingFlow({ today }: Props) {
     setParty(null);
     setDate(null);
     setSlot(null);
-    setMonth(monthOf(today));
+    setMonth(null);
     setConfirmed(null);
     setFormError(null);
     setSlotNotice(null);

@@ -40,6 +40,15 @@ export function useAvailability(party: number | null, months: string[]) {
 
   const current = party ? cache[`${months[0]}|${party}`] : undefined;
 
+  /** true/false once the month is loaded; null while unknown. */
+  const monthHasBookableDay = useCallback(
+    (month: string): boolean | null => {
+      const days = party ? cache[`${month}|${party}`]?.days : undefined;
+      return days ? days.some((d) => d.bookable) : null;
+    },
+    [cache, party],
+  );
+
   /** Drop cached data and fetch again (e.g. after "slot just filled"). */
   const reload = useCallback(() => {
     setCache({});
@@ -48,6 +57,7 @@ export function useAvailability(party: number | null, months: string[]) {
 
   return {
     day,
+    monthHasBookableDay,
     loading: Boolean(party) && !current,
     error: Boolean(current?.error),
     reload,
