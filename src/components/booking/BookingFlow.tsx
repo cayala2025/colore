@@ -126,6 +126,7 @@ export function BookingFlow({ today }: Props) {
       if (res.ok && body.booking) {
         const b = body.booking;
         setConfirmed({ date: b.date, slot: { ...chosenSlot, start: b.start, end: b.end }, party: b.party });
+        window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
       handleApiError(body.error as BookingApiError | undefined);

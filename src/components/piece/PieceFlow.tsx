@@ -8,6 +8,7 @@ import { compressImage } from "@/lib/compressImage";
 import type { CountryCode } from "@/lib/phone";
 import { DONATE_DAY, READY_DAYS } from "@/lib/pieceTimeline";
 import { PhotoStep } from "./PhotoStep";
+import { PieceSuccess } from "./PieceSuccess";
 
 async function lookupTodaysBooking(country: CountryCode, phone: string) {
   const res = await fetch("/api/pieces/lookup", {
@@ -68,6 +69,7 @@ export function PieceFlow() {
       };
       if (res.ok && body.piece) {
         setResult(body.piece);
+        window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
       setFormError(
@@ -85,13 +87,14 @@ export function PieceFlow() {
     setTurnstileResetKey((k) => k + 1);
   }
 
-  if (result) {
-    return (
-      <section data-testid="piece-success" className="rounded-card border border-line bg-surface p-6 text-center">
-        <p className="text-5xl font-bold">{result.code}</p>
-      </section>
-    );
+  function reset() {
+    setPhoto(null);
+    setAccepted(false);
+    setResult(null);
+    setFormError(null);
   }
+
+  if (result) return <PieceSuccess code={result.code} readyDate={result.readyDate} onReset={reset} />;
 
   return (
     <div className="flex flex-col gap-4">

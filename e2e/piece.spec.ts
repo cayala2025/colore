@@ -49,5 +49,11 @@ test("check in a piece → code is shown", async ({ page }) => {
   await page.getByRole("button", { name: "Usar esta" }).click();
   await fillPieceForm(page);
   await page.getByRole("button", { name: "Registrar mi pieza" }).click();
-  await expect(page.getByTestId("piece-success")).toContainText(/C-\d{4,}/);
+  await expect(page.getByTestId("piece-code")).toHaveText(/^C-\d{4,}$/);
+  await expect(page.getByTestId("piece-success")).toContainText("Muéstrale este código al staff");
+  await expect(page.getByTestId("piece-success")).toContainText("Lista aproximadamente el");
+  // Code fits a 375px screen.
+  const box = await page.getByTestId("piece-code").boundingBox();
+  expect(box!.x + box!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+  await page.screenshot({ path: "test-results/piece-success.png" });
 });
