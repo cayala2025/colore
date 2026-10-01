@@ -232,7 +232,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
   4. Do the same for your own email so you can log in too.
 - [x] [CC] `/admin/login` (email + password via Supabase Auth).
 - [x] [CC] Middleware: `/admin/*` requires login + admin email.
-- [ ] [CC] `/admin` home "Hoy": today's slots, seats used/free, list of bookings.
+- [x] [CC] `/admin` home "Hoy": today's slots, seats used/free, list of bookings.
 - [ ] [CC] Buttons per booking: Llegó (attended), No vino (no_show), Cancelar.
 - [ ] [CC] "Enviar WhatsApp" button per booking (wa.me link to the customer's number with prefilled reminder).
 - [ ] [CC] `/admin/calendario`: week view with bookings per slot.

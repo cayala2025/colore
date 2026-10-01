@@ -102,3 +102,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 ## Sprint 5 — Admin
 - S5.1 ✅ /admin/login (email + password via Supabase Auth browser client; Spanish errors); SSR server client; getAdmin/requireAdmin (getUser + admins table); test-only bypass guarded by non-production AND E2E_ADMIN_BYPASS=1 (unit-tested).
 - S5.2 ✅ src/proxy.ts (Next 16 'middleware'): /admin/* refreshes session, requires Supabase user (getUser) + own row in admins (RLS) else → /admin/login(?error=not_admin); panel layout re-checks requireAdmin(); nav + logout. E2E: redirect, forged cookie rejected, bypass needs cookie.
+- S5.3 ✅ /admin "Hoy": day navigation (?fecha), totals, per-slot used/free seats + bar, bookings list with status; blocked/closed notices; groupBookingsBySlot() tested (incl. off-schedule bookings).

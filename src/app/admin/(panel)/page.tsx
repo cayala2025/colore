@@ -1,5 +1,58 @@
+import Link from "next/link";
+import { connection } from "next/server";
+import { DaySlotCard } from "@/components/admin/DaySlotCard";
 import { es } from "@/content/es";
+import { getAdminDay } from "@/lib/admin/queries";
+import { requireAdmin } from "@/lib/adminAuth";
+import { SEAT_HOLDING_STATUSES } from "@/lib/availability";
+import { addDays } from "@/lib/calendar";
+import { formatDateLong } from "@/lib/format";
+import { todayInStudio } from "@/lib/time";
 
-export default function AdminTodayPage() {
-  return <h1 className="text-2xl font-semibold">{es.admin.nav.today}</h1>;
+const navBtn = "flex min-h-11 items-center rounded-lg border border-line bg-surface px-3 text-sm font-medium hover:border-accent";
+
+export default async function AdminTodayPage({ searchParams }: PageProps<"/admin">) {
+  await requireAdmin();
+  await connection();
+  const { fecha } = await searchParams;
+  const today = todayInStudio();
+  const date = typeof fecha === "string" && /^\d{4}-\d{2}-\d{2}$/.test(fecha) ? fecha : today;
+  const day = await getAdminDay(date);
+  const t = es.admin.today;
+
+  const active = day.slots.flatMap((s) => s.bookings).filter((b) => SEAT_HOLDING_STATUSES.includes(b.status));
+  const people = active.reduce((sum, b) => sum + b.party_size, 0);
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold first-letter:uppercase">{formatDateLong(date)}</h1>
+          <p className="text-sm text-muted">{t.totals(active.length, people)}</p>
+        </div>
+        <div className="flex gap-2">
+          <Link href={`/admin?fecha=${addDays(date, -1)}`} className={navBtn} aria-label={t.prevDay}>
+            ‹
+          </Link>
+          {date !== today && (
+            <Link href="/admin" className={navBtn}>
+              {t.goToday}
+            </Link>
+          )}
+          <Link href={`/admin?fecha=${addDays(date, 1)}`} className={navBtn} aria-label={t.nextDay}>
+            ›
+          </Link>
+        </div>
+      </div>
+
+      {day.blocked && <p className="rounded-xl bg-danger/10 p-3 text-sm text-danger">{t.blocked(day.blocked.reason)}</p>}
+      {day.slots.length === 0 && <p className="text-muted">{t.closed}</p>}
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        {day.slots.map((slot) => (
+          <DaySlotCard key={slot.start} slot={slot} />
+        ))}
+      </div>
+    </div>
+  );
 }
