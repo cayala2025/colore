@@ -23,7 +23,7 @@ test("photo step: take photo → preview → Otra foto / Usar esta", async ({ pa
   await expect(page.getByRole("button", { name: "Usar esta" })).toHaveCount(0);
 });
 
-test("phone with a booking today prefills name and email", async ({ page }) => {
+test("phone with a booking today: nothing is prefilled, but the piece is linked to the booking", async ({ page }) => {
   const local = randomTestPhone();
   const bookingId = await insertTodaysBooking(`+52${local}`, "zz-prefill@example.com");
 
@@ -32,10 +32,14 @@ test("phone with a booking today prefills name and email", async ({ page }) => {
   await page.getByRole("button", { name: "Usar esta" }).click();
 
   await page.getByLabel("Teléfono (WhatsApp)").fill(local);
-  await expect(page.getByTestId("prefilled-note")).toBeVisible();
-  await expect(page.getByLabel("Nombre completo")).toHaveValue("ZZ Test");
-  await expect(page.getByLabel("Correo electrónico")).toHaveValue("zz-prefill@example.com");
+  await page.waitForTimeout(500);
+  // Privacy: a phone number must never reveal someone's name or email.
+  await expect(page.getByLabel("Nombre completo")).toHaveValue("");
+  await expect(page.getByLabel("Correo electrónico")).toHaveValue("");
+  expect((await page.request.post("/api/pieces/lookup", { data: { country: "52", phone: local } })).status()).toBe(404);
 
+  await page.getByLabel("Nombre completo").fill("ZZ Test");
+  await page.getByLabel("Correo electrónico").fill("zz-test@example.com");
   await page.getByLabel("Acepto la política de recolección").check();
   await page.getByRole("button", { name: "Registrar mi pieza" }).click();
   await expect(page.getByTestId("piece-success")).toBeVisible();

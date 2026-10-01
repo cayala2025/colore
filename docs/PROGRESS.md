@@ -139,3 +139,4 @@ All [CC] steps in Sprints 1–5 are ticked (75), each committed after lint + typ
 9. FYI: test data in dev ("ZZ Test", 555 phones, `pieces/test/` images); admin emails must be lowercase; add prod domain to Turnstile; run e2e before (not between) your email test.
 - Fix: buttons dead on Network address (allowedDevOrigins); calendar skips a month with no free days; e2e runs alongside npm run dev.
 - Owner answer: slots show only Disponible / No disponible; /api/availability no longer sends seat counts (toPublicDays, tested).
+- Owner answer (privacy): removed /pieza prefill, POST /api/pieces/lookup and the rate limiter; today's booking is still linked silently on the server (e2e checks form stays empty, lookup 404s, booking_id set).

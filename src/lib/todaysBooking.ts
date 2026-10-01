@@ -4,7 +4,10 @@ import { todayInStudio } from "./time";
 
 export type TodaysBooking = { id: string; name: string; email: string };
 
-/** The customer's booking for today (studio date), if any. */
+/**
+ * The customer's booking for today (studio date), if any. Used only on the server to link a piece
+ * to its booking; never returned to the browser (no prefill, so phones can't be used to look up people).
+ */
 export async function findTodaysBooking(phone: string, now = new Date()): Promise<TodaysBooking | null> {
   const { data, error } = await supabaseAdmin()
     .from("bookings")

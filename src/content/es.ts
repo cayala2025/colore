@@ -136,7 +136,6 @@ export const es = {
     form: {
       stepLabel: "Paso 2",
       title: "Tus datos",
-      prefilled: "Encontramos tu reservación de hoy y llenamos tus datos.",
       optIn: "Quiero recibir avisos por WhatsApp",
       policy: "Acepto la política de recolección",
       policyText: (readyDays: number, donateDays: number) =>
