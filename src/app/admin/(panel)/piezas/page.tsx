@@ -31,7 +31,12 @@ export default async function AdminPiecesPage({ searchParams }: PageProps<"/admi
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold">{t.title}</h1>
+        <div className="flex items-baseline gap-4">
+          <h1 className="text-2xl font-semibold">{t.title}</h1>
+          <Link href="/admin/piezas/donar" className="min-h-11 content-center text-sm font-medium text-accent underline">
+            {t.donate.link}
+          </Link>
+        </div>
         <form action="/admin/piezas" className="flex w-full gap-2 sm:w-auto" role="search">
           <label htmlFor="piece-search" className="sr-only">
             {t.search}

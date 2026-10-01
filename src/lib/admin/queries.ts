@@ -94,3 +94,16 @@ export async function searchPieces(raw: string): Promise<AdminPiece[]> {
   if (error) throw new Error(`piece search failed: ${error.message}`);
   return (data ?? []) as AdminPiece[];
 }
+
+/** Pieces for the "Por donar" page: donated in the last 30 days, and ready pieces near their last day. */
+export async function getDonationPieces() {
+  const db = supabaseAdmin();
+  const since = new Date(Date.now() - 30 * 86_400_000).toISOString();
+  const [donated, ready] = await Promise.all([
+    db.from("pieces").select(`${ADMIN_PIECE_COLUMNS}, donated_at`).eq("status", "donated").gte("donated_at", since),
+    db.from("pieces").select(`${ADMIN_PIECE_COLUMNS}, donated_at`).eq("status", "ready"),
+  ]);
+  const error = donated.error ?? ready.error;
+  if (error) throw new Error(`donation query failed: ${error.message}`);
+  return [...(donated.data ?? []), ...(ready.data ?? [])] as (AdminPiece & { donated_at: string | null })[];
+}

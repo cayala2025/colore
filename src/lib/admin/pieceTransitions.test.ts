@@ -7,7 +7,7 @@ describe("piece actions", () => {
     expect(availableActions({ status: "firing", delayed: true })).toEqual(["ready", "undelay", "pickedUp"]);
     expect(availableActions({ status: "ready", delayed: false })).toEqual(["pickedUp"]);
     expect(availableActions({ status: "picked_up", delayed: false })).toEqual([]);
-    expect(availableActions({ status: "donated", delayed: false })).toEqual([]);
+    expect(availableActions({ status: "donated", delayed: false })).toEqual(["pickedUp"]);
   });
 
   it("marking ready clears the delay and stamps ready_at", () => {

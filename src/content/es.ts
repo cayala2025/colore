@@ -298,6 +298,17 @@ export const es = {
         selectColumn: "Seleccionar todas",
         done: (n: number) => `${n} ${n === 1 ? "pieza marcada" : "piezas marcadas"} como lista`,
       },
+      donate: {
+        link: "Por donar",
+        title: "Por donar",
+        intro: "Piezas que cumplieron su plazo. Sácalas del estante para donarlas.",
+        due: "Para donar (día 45 cumplido)",
+        soon: "Se donan pronto (último aviso enviado)",
+        lastDay: (date: string) => `Último día: ${date}`,
+        donatedOn: (date: string) => `Pasó a donación el ${date}`,
+        empty: "Nada por ahora.",
+        back: "Volver al tablero",
+      },
       statusLabel: {
         received: "Recibida",
         firing: "En horno",

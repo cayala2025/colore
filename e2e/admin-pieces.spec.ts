@@ -76,3 +76,18 @@ test("bulk select a kiln load → marcar lista", async ({ page }) => {
   await expect(page.getByTestId("column-firing").getByTestId(`piece-${c.code}`)).toBeVisible();
   await expect.poll(async () => (await pieceState(a.id)).templates).toEqual(["piece_ready"]);
 });
+
+test("Por donar lists donated pieces and ones about to be donated", async ({ page }) => {
+  const soon = await insertPiece(41, { status: "ready", readyDaysAgo: 27 });
+  const donated = await insertPiece(46, { status: "ready", readyDaysAgo: 32 });
+  await db.from("pieces").update({ status: "donated", donated_at: new Date().toISOString() }).eq("id", donated.id);
+
+  await page.goto("/admin/piezas");
+  await page.getByRole("link", { name: "Por donar" }).click();
+  await expect(page.getByTestId("donate-due").getByTestId(`piece-${donated.code}`)).toBeVisible();
+  await expect(page.getByTestId("donate-soon").getByTestId(`piece-${soon.code}`)).toContainText("Último día");
+
+  // A late customer can still pick up a donated piece that hasn't left yet.
+  await page.getByTestId(`piece-${donated.code}`).getByRole("button", { name: "Entregada" }).click();
+  await expect(page.getByTestId("donate-due").getByTestId(`piece-${donated.code}`)).toHaveCount(0);
+});

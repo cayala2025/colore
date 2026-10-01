@@ -9,7 +9,8 @@ export const ACTION_FROM: Record<PieceAction, PieceStatus[]> = {
   ready: ["received", "firing"],
   delay: ["received", "firing"],
   undelay: ["received", "firing"],
-  pickedUp: ["received", "firing", "ready"],
+  // "donated" too: the customer may still show up before the piece physically leaves the studio.
+  pickedUp: ["received", "firing", "ready", "donated"],
 };
 
 /** Buttons to show for a piece. */

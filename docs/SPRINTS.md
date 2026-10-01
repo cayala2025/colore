@@ -242,7 +242,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Search pieces by code, name, or phone (for pickup at the counter).
 - [x] [CC] Buttons per piece: marcar en horno, marcar lista, retrasada, entregada.
 - [x] [CC] Bulk select → "marcar lista" (for a whole kiln load).
-- [ ] [CC] "Por donar" list: pieces at day 45.
+- [x] [CC] "Por donar" list: pieces at day 45.
 - [ ] [CC] "Enviar WhatsApp" button per piece (ready / reminder text).
 - [ ] [CC] Show a no-show badge next to phones with past no-shows.
 - [ ] [YOU] **Usability test with her**. App: browser on the Mac or a tablet.
