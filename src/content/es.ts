@@ -212,6 +212,16 @@ export const es = {
       offSchedule: "Fuera de horario",
       totals: (bookings: number, people: number) => `${bookings} reservaciones · ${people} personas`,
     },
+    bookingActions: {
+      attended: "Llegó",
+      noShow: "No vino",
+      cancel: "Cancelar",
+      cancelConfirm: "¿Cancelar?",
+      cancelYes: "Sí",
+      cancelNo: "No",
+      undo: "Deshacer",
+      error: "No se pudo actualizar. Intenta de nuevo.",
+    },
     bookingStatus: {
       confirmed: "Reservada",
       cancelled: "Cancelada",

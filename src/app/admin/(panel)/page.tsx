@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { connection } from "next/server";
+import { BookingActions } from "@/components/admin/BookingActions";
 import { DaySlotCard } from "@/components/admin/DaySlotCard";
 import { es } from "@/content/es";
 import { getAdminDay } from "@/lib/admin/queries";
@@ -50,7 +51,11 @@ export default async function AdminTodayPage({ searchParams }: PageProps<"/admin
 
       <div className="grid gap-4 lg:grid-cols-2">
         {day.slots.map((slot) => (
-          <DaySlotCard key={slot.start} slot={slot} />
+          <DaySlotCard
+            key={slot.start}
+            slot={slot}
+            renderActions={(b) => <BookingActions id={b.id} status={b.status} />}
+          />
         ))}
       </div>
     </div>
