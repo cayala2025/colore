@@ -236,7 +236,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Buttons per booking: Llegó (attended), No vino (no_show), Cancelar.
 - [x] [CC] "Enviar WhatsApp" button per booking (wa.me link to the customer's number with prefilled reminder).
 - [x] [CC] `/admin/calendario`: week view with bookings per slot.
-- [ ] [CC] `/admin/horario`: edit slot times/capacity, turn slots on/off.
+- [x] [CC] `/admin/horario`: edit slot times/capacity, turn slots on/off.
 - [ ] [CC] `/admin/bloqueos`: add/remove blocked dates.
 - [ ] [CC] `/admin/piezas`: board with columns Recibida / En horno / Lista / Recogida.
 - [ ] [CC] Search pieces by code, name, or phone (for pickup at the counter).
