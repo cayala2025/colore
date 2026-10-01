@@ -282,6 +282,14 @@ export const es = {
       clearSearch: "Ver tablero",
       results: (n: number, q: string) => `${n} ${n === 1 ? "resultado" : "resultados"} para “${q}”`,
       noResults: "No encontramos piezas con esa búsqueda.",
+      actions: {
+        firing: "Marcar en horno",
+        ready: "Marcar lista",
+        delay: "Retrasada",
+        undelay: "Ya no está retrasada",
+        pickedUp: "Entregada",
+        error: "No se pudo actualizar.",
+      },
       statusLabel: {
         received: "Recibida",
         firing: "En horno",

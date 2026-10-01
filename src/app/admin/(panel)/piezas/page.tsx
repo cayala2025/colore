@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { connection } from "next/server";
+import { PieceActions } from "@/components/admin/PieceActions";
 import { PieceCard } from "@/components/admin/PieceCard";
 import { es } from "@/content/es";
 import { BOARD_COLUMNS, groupPiecesByColumn, PICKED_UP_VISIBLE_DAYS, type BoardPiece } from "@/lib/admin/pieceBoard";
@@ -60,6 +61,7 @@ export default async function AdminPiecesPage({ searchParams }: PageProps<"/admi
               <PieceCard key={p.id} piece={p} photoUrl={photoFor(p)}>
                 <span className="rounded-full bg-accent-soft px-2 py-0.5 text-xs font-medium">{t.statusLabel[p.status]}</span>
                 <span className="text-xs text-muted">{p.phone}</span>
+                <PieceActions id={p.id} status={p.status} delayed={p.delayed} />
               </PieceCard>
             ))}
           </div>
@@ -78,7 +80,9 @@ export default async function AdminPiecesPage({ searchParams }: PageProps<"/admi
               <div className="flex flex-col gap-2">
                 {board![col].length === 0 && <p className="text-sm text-muted">{t.empty}</p>}
                 {board![col].map((p) => (
-                  <PieceCard key={p.id} piece={p} photoUrl={photoFor(p)} />
+                  <PieceCard key={p.id} piece={p} photoUrl={photoFor(p)}>
+                    <PieceActions id={p.id} status={p.status} delayed={p.delayed} />
+                  </PieceCard>
                 ))}
               </div>
             </section>

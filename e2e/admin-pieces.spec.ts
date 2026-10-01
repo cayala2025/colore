@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { db, insertPiece } from "./db";
+import { db, insertPiece, pieceState } from "./db";
 
 test.beforeEach(async ({ context }) => {
   await context.addCookies([{ name: "e2e_admin", value: "1", url: "http://localhost:3100" }]);
@@ -34,4 +34,27 @@ test("search by code, phone or name", async ({ page }) => {
 
   await page.goto("/admin/piezas?q=nadie-se-llama-asi-xyz");
   await expect(page.getByText("No encontramos piezas")).toBeVisible();
+});
+
+test("piece buttons: en horno → retrasada → lista (sends email) → entregada", async ({ page }) => {
+  const piece = await insertPiece(4);
+  await page.goto(`/admin/piezas?q=${piece.code}`);
+  const card = page.getByTestId(`piece-${piece.code}`);
+
+  await card.getByRole("button", { name: "Marcar en horno" }).click();
+  await expect(card).toContainText("En horno");
+  await card.getByRole("button", { name: "Retrasada" }).click();
+  await expect(card.getByText("Retrasada", { exact: true })).toBeVisible();
+  await card.getByRole("button", { name: "Marcar lista" }).click();
+  await expect(card).toContainText("Lista");
+  await expect(card.getByText("Retrasada", { exact: true })).toHaveCount(0);
+
+  await expect
+    .poll(async () => (await pieceState(piece.id)).templates)
+    .toEqual(["piece_ready"]);
+
+  await card.getByRole("button", { name: "Entregada" }).click();
+  await expect(card).toContainText("Recogida");
+  await expect(card.getByRole("button")).toHaveCount(0);
+  expect((await pieceState(piece.id)).status).toBe("picked_up");
 });
