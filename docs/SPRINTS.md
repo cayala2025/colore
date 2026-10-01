@@ -192,7 +192,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] API route `POST /api/pieces`: verify Turnstile → upload photo → insert → return code.
 - [x] [CC] Success screen: HUGE code (e.g. C-0042), ready date, "muéstrale este código al staff".
 - [x] [CC] `src/lib/pieceTimeline.ts`: pure function (checked_in_at, today, status, delayed) → which message is due. Tests for every day in the timeline.
-- [ ] [CC] Script `npm run qr` → generates a printable PNG/PDF QR pointing to `NEXT_PUBLIC_SITE_URL/pieza`, saved in `print/`.
+- [x] [CC] Script `npm run qr` → generates a printable PNG/PDF QR pointing to `NEXT_PUBLIC_SITE_URL/pieza`, saved in `print/`.
 - [ ] [YOU] **Check in a real piece from your phone**. App: Terminal + phone.
   1. Terminal: `cd ~/Documents/colore` → `npm run dev`. Note the **Network** address.
   2. On your phone, open `<Network address>/pieza` (e.g. `http://192.168.1.23:3000/pieza`). (The printed QR will point to the real domain after launch; for now type the address.)

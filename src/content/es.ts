@@ -158,6 +158,11 @@ export const es = {
     },
   },
 
+  qrCard: {
+    title: "¿Terminaste tu pieza?",
+    body: "Escanea este código, tómale una foto y te avisamos cuando esté lista.",
+  },
+
   format: {
     dateLong: (weekday: string, day: number, month: string) => `${weekday} ${day} de ${month}`,
     timeRange: (start: string, end: string) => `${start} – ${end}`,

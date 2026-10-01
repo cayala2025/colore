@@ -70,3 +70,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S3.9 ✅ POST /api/pieces (multipart): validate → Turnstile → upload photo to private bucket (YYYY-MM/uuid.jpg) → insert with today's booking_id → {code, readyDate}. E2E: check-in + booking link. Teardown marks ZZ Test pieces picked_up.
 - S3.10 ✅ Piece success screen: huge mono code (C-0042), "Muéstrale este código al staff", ready date (+14 studio days), donation note; scrolls to top; fits 375px (e2e).
 - S3.11 ✅ src/lib/pieceTimeline.ts pieceTimeline() → one message/day + markReady/donate; tests for every timeline day, delayed, early-ready, missed days, terminal statuses, full 60-day simulations (67 unit ✅).
+- S3.12 ✅ `npm run qr` → print/pieza-qr.png + print/pieza-qr.pdf (letter table card: Colore, title, QR to NEXT_PUBLIC_SITE_URL/pieza, instructions, URL); warns if URL is localhost; print/ gitignored.
