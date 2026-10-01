@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { addDays } from "@/lib/calendar";
 import { todayInStudio } from "@/lib/time";
-import { book, cancelTestBookings, fillUntil, seatsLeft, testDate } from "./helpers";
+import { admin, book, cancelTestBookings, fillUntil, seatsLeft, testDate, testPhone } from "./helpers";
 
 afterAll(cancelTestBookings);
 
@@ -57,5 +57,28 @@ describe("create_booking RPC", () => {
       p_whatsapp_opt_in: false,
     });
     expect(error).not.toBeNull();
+  });
+});
+
+describe("one upcoming booking per phone", () => {
+  it("rejects a second upcoming booking for the same phone", async () => {
+    const phone = testPhone();
+    const first = await book({ date: await testDate(45), start: "11:00", party: 2, phone });
+    expect(first.error).toBeNull();
+    const second = await book({ date: await testDate(52), start: "16:00", party: 2, phone });
+    expect(second.error?.message).toBe("phone_has_booking");
+  });
+
+  it("allows booking again once the previous one is cancelled", async () => {
+    const phone = testPhone();
+    const first = await book({ date: await testDate(46), start: "11:00", party: 2, phone });
+    await admin.from("bookings").update({ status: "cancelled" }).eq("id", first.data[0].id);
+    const again = await book({ date: await testDate(53), start: "11:00", party: 2, phone });
+    expect(again.error).toBeNull();
+  });
+
+  it("rejects phones that are not E.164 (+52/+1)", async () => {
+    const { error } = await book({ date: await testDate(47), start: "11:00", party: 2, phone: "6861234567" });
+    expect(error?.message).toBe("invalid_phone");
   });
 });
