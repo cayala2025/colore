@@ -41,3 +41,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S2.4 ✅ Migration bookings (status enum, E.164 check, starts_at UTC, random manage_token) + index (date, start_time) + partial index on confirmed phone; RLS on.
 - S2.5 ✅ Migration admins (lowercase email PK; RLS on; authenticated users may read only their own row).
 - S2.6 ✅ RLS on for every table (verified); revoked writes from anon/authenticated; event trigger auto-enables RLS on new public tables; `npm run test:db` integration tests prove anon can't read/write (8 ✅).
+- S2.7 ✅ src/lib/time.ts: toStudio, todayInStudio, studioToUtc (DST-safe), studioDaysBetween + tests; unit tests run under TZ=Asia/Tokyo to catch server-tz reliance.
