@@ -92,3 +92,11 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S4.12 ✅ Daily job part 2: piece timeline over active pieces (auto-ready at 14, ready/21/30/40 emails, donate at 45; retryable failures retried first; guarded status updates). E2E with 7 backdated pieces, run twice.
 - S4.13 ✅ vercel.json cron /api/cron/daily at 0 17 * * * (test locks it in; winter = 09:00 local noted in QUESTIONS).
 - S4.14 ✅ DB test: both daily jobs run twice → second run sends 0, no extra status changes; found+fixed 2 bugs: auto-ready now stamps scheduled ready time (no false delay shift) and max one piece message per studio day across runs (sentToday).
+
+### Sprint 4 done
+- Works: React Email templates in Spanish (booking confirmation/reminder; piece received/ready/reminder/final notice) on a shared layout; `/r/[token]` confirm + cancel (frees seats; GET never mutates); `notify()` logs first, sends once, retries failures (max 3) via atomic claim; console transport when RESEND_API_KEY is missing (always in tests); confirmation + received emails via `after()`; `/api/cron/daily` (CRON_SECRET) runs booking reminders + piece timeline, idempotent and max one piece message per day; `vercel.json` cron 17:00 UTC. Unit 88 ✅, DB 32 ✅, Playwright 17 ✅.
+- Mocked: in tests, emails go to the console. Real Resend sending is wired but only verified by your [YOU] test (the Resend test sender can only email your Resend account address).
+- Bugs found by tests and fixed: late auto-ready was shifting the pickup clock; two job runs on one day could send two piece messages.
+- Left: studio address (placeholder), cron winter time (QUESTIONS).
+
+## Sprint 5 — Admin
