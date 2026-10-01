@@ -1,12 +1,12 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Turnstile } from "@/components/Turnstile";
 import { es } from "@/content/es";
 import type { CountryCode } from "@/lib/phone";
 import { hasErrors, validateContact, type ContactErrors } from "@/lib/validation";
 
-export type BookingFormValues = {
+export type ContactFormValues = {
   name: string;
   country: CountryCode;
   phone: string;
@@ -15,7 +15,7 @@ export type BookingFormValues = {
   privacy: boolean;
 };
 
-const initialValues: BookingFormValues = {
+const defaultValues: ContactFormValues = {
   name: "",
   country: "52",
   phone: "",
@@ -25,12 +25,22 @@ const initialValues: BookingFormValues = {
 };
 
 type Props = {
+  /** Unique prefix for input ids. */
+  idPrefix: string;
+  /** Required consent checkbox (privacy notice for bookings, pickup policy for pieces). */
+  consentLabel: ReactNode;
+  consentRequiredError: string;
+  /** Extra content under the consent checkbox (e.g. the policy text). */
+  consentDetails?: ReactNode;
+  submitLabel: string;
+  submittingLabel: string;
+  initialValues?: Partial<ContactFormValues>;
   submitting: boolean;
   /** Error shown above the submit button (e.g. from the API). */
   formError?: string | null;
   /** Bump to request a fresh Turnstile token after a failed submit. */
   turnstileResetKey?: number;
-  onSubmit: (values: BookingFormValues, turnstileToken: string) => void;
+  onSubmit: (values: ContactFormValues, turnstileToken: string) => void;
 };
 
 const fieldClass =
@@ -40,15 +50,27 @@ const labelClass = "block text-sm font-medium";
 const checkRow = "flex min-h-11 items-start gap-3 text-sm";
 const checkbox = "mt-0.5 h-5 w-5 shrink-0 accent-accent";
 
-export function BookingForm({ submitting, formError, turnstileResetKey, onSubmit }: Props) {
-  const [values, setValues] = useState<BookingFormValues>(initialValues);
+export function ContactForm({
+  idPrefix,
+  consentLabel,
+  consentRequiredError,
+  consentDetails,
+  submitLabel,
+  submittingLabel,
+  initialValues,
+  submitting,
+  formError,
+  turnstileResetKey,
+  onSubmit,
+}: Props) {
+  const [values, setValues] = useState<ContactFormValues>({ ...defaultValues, ...initialValues });
   const [errors, setErrors] = useState<ContactErrors>({});
   const [touched, setTouched] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const t = es.booking.form;
 
-  const set = <K extends keyof BookingFormValues>(key: K, value: BookingFormValues[K]) => {
+  const set = <K extends keyof ContactFormValues>(key: K, value: ContactFormValues[K]) => {
     const next = { ...values, [key]: value };
     setValues(next);
     // After the first submit attempt, re-validate live so errors disappear as they get fixed.
@@ -73,22 +95,22 @@ export function BookingForm({ submitting, formError, turnstileResetKey, onSubmit
   const errorText = (field: keyof ContactErrors) => {
     const key = errors[field];
     return key ? (
-      <p id={`bk-${field}-error`} role="alert" className="mt-1 text-sm text-danger">
-        {es.booking.errors[key]}
+      <p id={`${idPrefix}-${field}-error`} role="alert" className="mt-1 text-sm text-danger">
+        {key === "privacyRequired" ? consentRequiredError : es.booking.errors[key]}
       </p>
     ) : null;
   };
   const invalidProps = (field: keyof ContactErrors) =>
-    errors[field] ? { "aria-invalid": true, "aria-describedby": `bk-${field}-error` } : {};
+    errors[field] ? { "aria-invalid": true, "aria-describedby": `${idPrefix}-${field}-error` } : {};
 
   return (
     <form ref={formRef} noValidate onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div>
-        <label htmlFor="bk-name" className={labelClass}>
+        <label htmlFor={`${idPrefix}-name`} className={labelClass}>
           {t.name}
         </label>
         <input
-          id="bk-name"
+          id={`${idPrefix}-name`}
           name="name"
           autoComplete="name"
           placeholder={t.namePlaceholder}
@@ -101,7 +123,7 @@ export function BookingForm({ submitting, formError, turnstileResetKey, onSubmit
       </div>
 
       <div>
-        <label htmlFor="bk-phone" className={labelClass}>
+        <label htmlFor={`${idPrefix}-phone`} className={labelClass}>
           {t.phone}
         </label>
         <div className="flex gap-2">
@@ -116,7 +138,7 @@ export function BookingForm({ submitting, formError, turnstileResetKey, onSubmit
             <option value="1">{t.countryUs}</option>
           </select>
           <input
-            id="bk-phone"
+            id={`${idPrefix}-phone`}
             name="phone"
             type="tel"
             inputMode="tel"
@@ -132,11 +154,11 @@ export function BookingForm({ submitting, formError, turnstileResetKey, onSubmit
       </div>
 
       <div>
-        <label htmlFor="bk-email" className={labelClass}>
+        <label htmlFor={`${idPrefix}-email`} className={labelClass}>
           {t.email}
         </label>
         <input
-          id="bk-email"
+          id={`${idPrefix}-email`}
           name="email"
           type="email"
           inputMode="email"
@@ -163,7 +185,7 @@ export function BookingForm({ submitting, formError, turnstileResetKey, onSubmit
 
       <div className={checkRow}>
         <input
-          id="bk-privacy"
+          id={`${idPrefix}-privacy`}
           type="checkbox"
           name="privacy"
           className={checkbox}
@@ -172,10 +194,8 @@ export function BookingForm({ submitting, formError, turnstileResetKey, onSubmit
           {...invalidProps("privacy")}
         />
         <span>
-          <label htmlFor="bk-privacy">{t.privacy}</label>{" "}
-          <a href="/privacidad" target="_blank" className="text-accent underline">
-            {t.privacyLink}
-          </a>
+          <label htmlFor={`${idPrefix}-privacy`}>{consentLabel}</label>
+          {consentDetails}
           {errorText("privacy")}
         </span>
       </div>
@@ -196,7 +216,7 @@ export function BookingForm({ submitting, formError, turnstileResetKey, onSubmit
         disabled={submitting || !token}
         className="h-12 rounded-xl bg-accent font-semibold text-accent-ink hover:bg-accent-hover disabled:opacity-60"
       >
-        {submitting ? t.submitting : t.submit}
+        {submitting ? submittingLabel : submitLabel}
       </button>
     </form>
   );

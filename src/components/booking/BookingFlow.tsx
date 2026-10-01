@@ -7,7 +7,7 @@ import { bookableMonths } from "@/lib/bookingWindow";
 import { monthOf } from "@/lib/calendar";
 import { formatDateLong, formatTimeRange } from "@/lib/format";
 import type { DaySlot } from "@/lib/types";
-import { BookingForm, type BookingFormValues } from "./BookingForm";
+import { ContactForm, type ContactFormValues } from "@/components/ContactForm";
 import { CalendarStep } from "./CalendarStep";
 import { NotesBox } from "./NotesBox";
 import { PartyStep } from "./PartyStep";
@@ -109,7 +109,7 @@ export function BookingFlow({ today }: Props) {
     setSlotNotice(null);
   }
 
-  async function handleSubmit(values: BookingFormValues, turnstileToken: string) {
+  async function handleSubmit(values: ContactFormValues, turnstileToken: string) {
     if (!party || !date || !chosenSlot) return;
     setSubmitting(true);
     setFormError(null);
@@ -221,7 +221,20 @@ export function BookingFlow({ today }: Props) {
         title={es.booking.form.title}
         locked={!party || !date || !chosenSlot}
       >
-        <BookingForm
+        <ContactForm
+          idPrefix="bk"
+          consentLabel={es.booking.form.privacy}
+          consentRequiredError={es.booking.errors.privacyRequired}
+          consentDetails={
+            <>
+              {" "}
+              <a href="/privacidad" target="_blank" className="text-accent underline">
+                {es.booking.form.privacyLink}
+              </a>
+            </>
+          }
+          submitLabel={es.booking.form.submit}
+          submittingLabel={es.booking.form.submitting}
           submitting={submitting}
           formError={formError}
           turnstileResetKey={turnstileResetKey}
