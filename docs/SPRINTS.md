@@ -169,7 +169,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] `src/lib/availability.ts`: pure function (schedule, blocks, bookings, party size) → available slots. Tests for: Monday, blocked day, full slot, 8 people when 7 seats left, slot already started.
 - [x] [CC] API route `GET /api/availability?month=YYYY-MM&party=N` → days + slots.
 - [x] [CC] Hook the calendar and slot chips to the real API.
-- [ ] [CC] Postgres function `create_booking(...)` with advisory lock + capacity re-check.
+- [x] [CC] Postgres function `create_booking(...)` with advisory lock + capacity re-check.
 - [ ] [CC] Enforce one upcoming booking per phone inside that function.
 - [ ] [CC] API route `POST /api/bookings`: verify Turnstile → normalize phone → call RPC.
 - [ ] [CC] Add the Turnstile widget to the form (use Cloudflare's test keys if real ones are missing).
