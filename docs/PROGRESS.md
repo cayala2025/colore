@@ -59,3 +59,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - Left: emails (Sprint 4), admin (Sprint 5).
 
 ## Sprint 3 — Piece check-in (QR)
+- S3.1 ✅ Migration pieces (status enum, delayed flag, timestamps, optional booking_id) + piece_code_seq/next_piece_code() → C-0001… (no truncation past 9999); RLS on.

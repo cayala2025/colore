@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const anon = createClient(url, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { persistSession: false } });
 
-const TABLES = ["schedule_slots", "blocked_dates", "bookings", "admins"];
+const TABLES = ["schedule_slots", "blocked_dates", "bookings", "admins", "pieces"];
 
 describe("public API (anon key) cannot touch tables", () => {
   for (const table of TABLES) {

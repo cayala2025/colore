@@ -181,7 +181,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
   3. Supabase dashboard (`colore-dev`) → left sidebar **Table Editor** → click `bookings`. You should see 3 rows.
 
 ## Sprint 3 — Piece check-in (QR)
-- [ ] [CC] Migration: `pieces` (see CLAUDE.md) + sequence for codes.
+- [x] [CC] Migration: `pieces` (see CLAUDE.md) + sequence for codes.
 - [ ] [CC] Migration: `notifications_log` + unique index (target, template).
 - [ ] [CC] Private Storage bucket `pieces`.
 - [ ] [CC] Page `/pieza`, step 1: big "Tomar foto" button (opens the phone camera).
