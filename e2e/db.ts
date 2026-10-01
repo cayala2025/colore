@@ -56,3 +56,25 @@ export async function insertTodaysBooking(phoneE164: string, email: string) {
   if (error) throw new Error(error.message);
   return data.id as string;
 }
+
+/** Create a "ZZ Test" booking through the RPC; returns its id and manage token. */
+export async function createTestBooking(date: string, start = "11:00", party = 2) {
+  const { data, error } = await db.rpc("create_booking", {
+    p_date: date,
+    p_start_time: start,
+    p_party_size: party,
+    p_name: "ZZ Test",
+    p_phone: phone(),
+    p_email: "zz-test@example.com",
+    p_whatsapp_opt_in: false,
+  });
+  if (error) throw new Error(error.message);
+  return data[0] as { id: string; manage_token: string };
+}
+
+/** A Thursday–Sunday studio date roughly `offset` days ahead. */
+export function futureDate(offset: number): string {
+  const d = new Date(Date.now() + offset * 86_400_000);
+  while (![0, 4, 5, 6].includes(d.getUTCDay())) d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10);
+}

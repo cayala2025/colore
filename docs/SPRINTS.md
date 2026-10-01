@@ -204,7 +204,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Install Resend + React Email. Shared email layout in Spanish.
 - [x] [CC] Template: booking confirmation (date, time, people, address, manage link).
 - [x] [CC] Template: booking reminder (day before, "Confirmar" / "Cancelar").
-- [ ] [CC] Page `/r/[token]`: shows the booking, confirm and cancel buttons.
+- [x] [CC] Page `/r/[token]`: shows the booking, confirm and cancel buttons.
 - [ ] [CC] Cancel frees the seats (status → cancelled).
 - [ ] [CC] Templates: piece received, piece ready, pickup reminder, final notice.
 - [ ] [CC] `src/lib/notify.ts`: write to `notifications_log` first, then send; skip if already sent.

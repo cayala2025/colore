@@ -158,6 +158,32 @@ export const es = {
     },
   },
 
+  manage: {
+    pageTitle: "Tu reservación",
+    notFoundTitle: "No encontramos esta reservación",
+    notFoundText: "Revisa que el enlace esté completo o escríbenos por WhatsApp.",
+    hello: (name: string) => `Hola, ${name}`,
+    status: {
+      confirmed: "Reservada",
+      customerConfirmed: "Confirmaste que vienes",
+      cancelled: "Cancelada",
+      attended: "¡Gracias por venir!",
+      no_show: "No asististe",
+      past: "Esta reservación ya pasó",
+    },
+    confirm: "Confirmar que voy",
+    confirming: "Confirmando…",
+    confirmed: "¡Gracias! Te esperamos.",
+    cancel: "Cancelar reservación",
+    cancelAsk: "¿Seguro que quieres cancelar? Tu lugar quedará libre para alguien más.",
+    cancelYes: "Sí, cancelar",
+    cancelNo: "No, mantenerla",
+    cancelling: "Cancelando…",
+    cancelledText: "Tu reservación está cancelada. ¡Esperamos verte pronto!",
+    bookAgain: "Hacer una nueva reservación",
+    error: "No pudimos actualizar tu reservación. Intenta de nuevo.",
+  },
+
   studio: {
     // Placeholder until the owner confirms (see docs/QUESTIONS.md).
     address: "Dirección por confirmar, Mexicali, B.C.",
