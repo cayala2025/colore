@@ -29,6 +29,8 @@ export function BookingFlow({ today }: Props) {
   const [month, setMonth] = useState(monthOf(today));
   const [submitting, setSubmitting] = useState(false);
   const [confirmed, setConfirmed] = useState<Confirmed | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
 
   const months = bookableMonths(today);
   // Load the month on screen and the month of the chosen date.
@@ -70,12 +72,33 @@ export function BookingFlow({ today }: Props) {
     setConfirmed(null);
   }
 
-  async function handleSubmit(values: BookingFormValues) {
+  async function handleSubmit(values: BookingFormValues, turnstileToken: string) {
     if (!party || !date || !chosenSlot) return;
-    void values; // Sent to the API in Sprint 2.
     setSubmitting(true);
-    setConfirmed({ date, slot: chosenSlot, party });
-    setSubmitting(false);
+    setFormError(null);
+    try {
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...values, date, start: chosenSlot.start, party, turnstileToken }),
+      });
+      const body = (await res.json().catch(() => ({}))) as {
+        booking?: { date: string; start: string; end: string; party: number };
+        error?: string;
+      };
+      if (res.ok && body.booking) {
+        const b = body.booking;
+        setConfirmed({ date: b.date, slot: { ...chosenSlot, start: b.start, end: b.end }, party: b.party });
+        return;
+      }
+      setFormError(es.booking.errors.generic);
+    } catch {
+      setFormError(es.booking.errors.generic);
+    } finally {
+      setSubmitting(false);
+    }
+    // Turnstile tokens are single-use: get a fresh one for the next attempt.
+    setTurnstileResetKey((k) => k + 1);
   }
 
   if (confirmed) {
@@ -153,7 +176,12 @@ export function BookingFlow({ today }: Props) {
         title={es.booking.form.title}
         locked={!party || !date || !chosenSlot}
       >
-        <BookingForm submitting={submitting} onSubmit={handleSubmit} />
+        <BookingForm
+          submitting={submitting}
+          formError={formError}
+          turnstileResetKey={turnstileResetKey}
+          onSubmit={handleSubmit}
+        />
       </StepCard>
 
       <NotesBox />

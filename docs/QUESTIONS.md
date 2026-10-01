@@ -6,3 +6,5 @@
 - [UX] Slot chips show "N lugares" (seats left). Do you want customers to see the exact number of free seats, or only "Disponible" / "Lleno"?
 - [DB URL — FYI, fixed] `SUPABASE_DB_URL` in `.env.local` had the password still wrapped in `[ ]` and a trailing `:`, and pointed to the direct host `db.<ref>.supabase.co`, which is IPv6-only (unreachable from this network). I replaced it with the IPv4 **session pooler** URL (`aws-0-us-west-1.pooler.supabase.com:5432`, user `postgres.<ref>`); the original is kept as a comment line. Use the pooler URL for prod too (Sprint 6).
 - [Admin] When you add admin rows in Table Editor → `admins`, type the email in **lowercase** (the table enforces it).
+- [Testing] Automated tests write real rows to the **dev** DB with name "ZZ Test" and phones starting with 555. They are cancelled (never deleted) after each run. You can filter them out in Table Editor, or delete them yourself if you want a clean table.
+- [Turnstile] Playwright runs with Cloudflare's always-pass test keys. Your real keys (hostname `localhost`) are used by `npm run dev`. Remember to add the production domain to the widget (Sprint 6).

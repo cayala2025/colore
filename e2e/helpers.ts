@@ -22,9 +22,17 @@ export async function pickFirstAvailableDateAndSlot(page: Page): Promise<{ date:
   throw new Error("No available date/slot found");
 }
 
+/** Name used for every test booking (cancelled in global teardown). */
+export const TEST_NAME = "ZZ Test";
+
+/** Random 10-digit test phone (555 prefix) so runs never collide on "one booking per phone". */
+export function randomTestPhone(): string {
+  return `555${String(Math.floor(Math.random() * 1e7)).padStart(7, "0")}`;
+}
+
 export async function fillBookingForm(
   page: Page,
-  { name = "Ana Prueba", phone = "686 123 4567", email = "ana@example.com" } = {},
+  { name = TEST_NAME, phone = randomTestPhone(), email = "zz-test@example.com" } = {},
 ) {
   await page.getByLabel("Nombre completo").fill(name);
   await page.getByLabel("Teléfono (WhatsApp)").fill(phone);

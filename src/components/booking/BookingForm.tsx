@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
+import { Turnstile } from "@/components/Turnstile";
 import { es } from "@/content/es";
 import type { CountryCode } from "@/lib/phone";
 import { hasErrors, validateContact, type ContactErrors } from "@/lib/validation";
@@ -25,7 +26,11 @@ const initialValues: BookingFormValues = {
 
 type Props = {
   submitting: boolean;
-  onSubmit: (values: BookingFormValues) => void;
+  /** Error shown above the submit button (e.g. from the API). */
+  formError?: string | null;
+  /** Bump to request a fresh Turnstile token after a failed submit. */
+  turnstileResetKey?: number;
+  onSubmit: (values: BookingFormValues, turnstileToken: string) => void;
 };
 
 const fieldClass =
@@ -35,10 +40,11 @@ const labelClass = "block text-sm font-medium";
 const checkRow = "flex min-h-11 items-start gap-3 text-sm";
 const checkbox = "mt-0.5 h-5 w-5 shrink-0 accent-accent";
 
-export function BookingForm({ submitting, onSubmit }: Props) {
+export function BookingForm({ submitting, formError, turnstileResetKey, onSubmit }: Props) {
   const [values, setValues] = useState<BookingFormValues>(initialValues);
   const [errors, setErrors] = useState<ContactErrors>({});
   const [touched, setTouched] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const t = es.booking.form;
 
@@ -61,7 +67,7 @@ export function BookingForm({ submitting, onSubmit }: Props) {
       );
       return;
     }
-    onSubmit(values);
+    if (token) onSubmit(values, token);
   }
 
   const errorText = (field: keyof ContactErrors) => {
@@ -174,9 +180,20 @@ export function BookingForm({ submitting, onSubmit }: Props) {
         </span>
       </div>
 
+      <Turnstile onToken={setToken} resetKey={turnstileResetKey} />
+      {formError && (
+        <p role="alert" data-testid="form-error" className="rounded-xl bg-danger/10 p-3 text-sm text-danger">
+          {formError}
+        </p>
+      )}
+      {!token && (
+        <p role="status" className="text-center text-xs text-muted">
+          {t.turnstileLoading}
+        </p>
+      )}
       <button
         type="submit"
-        disabled={submitting}
+        disabled={submitting || !token}
         className="h-12 rounded-xl bg-accent font-semibold text-accent-ink hover:bg-accent-hover disabled:opacity-60"
       >
         {submitting ? t.submitting : t.submit}
