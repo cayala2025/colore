@@ -290,6 +290,14 @@ export const es = {
         pickedUp: "Entregada",
         error: "No se pudo actualizar.",
       },
+      bulk: {
+        select: (code: string) => `Seleccionar ${code}`,
+        selected: (n: number) => `${n} ${n === 1 ? "pieza seleccionada" : "piezas seleccionadas"}`,
+        markReady: "Marcar lista",
+        clear: "Quitar selección",
+        selectColumn: "Seleccionar todas",
+        done: (n: number) => `${n} ${n === 1 ? "pieza marcada" : "piezas marcadas"} como lista`,
+      },
       statusLabel: {
         received: "Recibida",
         firing: "En horno",

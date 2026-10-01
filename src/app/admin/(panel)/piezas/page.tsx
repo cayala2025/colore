@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { connection } from "next/server";
+import { BulkCheckbox, BulkProvider, SelectAll } from "@/components/admin/BulkSelect";
 import { PieceActions } from "@/components/admin/PieceActions";
 import { PieceCard } from "@/components/admin/PieceCard";
 import { es } from "@/content/es";
-import { BOARD_COLUMNS, groupPiecesByColumn, PICKED_UP_VISIBLE_DAYS, type BoardPiece } from "@/lib/admin/pieceBoard";
+import { BOARD_COLUMNS, groupPiecesByColumn, PICKED_UP_VISIBLE_DAYS, type BoardColumn, type BoardPiece } from "@/lib/admin/pieceBoard";
 import { getBoardPieces, searchPieces, signedPhotoUrls } from "@/lib/admin/queries";
 import { requireAdmin } from "@/lib/adminAuth";
 import { studioDaysBetween } from "@/lib/time";
+
+/** Columns whose pieces can be selected for "Marcar lista" in bulk (a kiln load). */
+const BULK_COLUMNS: BoardColumn[] = ["received", "firing"];
 
 export default async function AdminPiecesPage({ searchParams }: PageProps<"/admin/piezas">) {
   await requireAdmin();
@@ -67,27 +71,35 @@ export default async function AdminPiecesPage({ searchParams }: PageProps<"/admi
           </div>
         </section>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {BOARD_COLUMNS.map((col) => (
-            <section key={col} data-testid={`column-${col}`} className="rounded-card bg-line/40 p-3">
-              <h2 className="mb-2 flex items-baseline justify-between font-semibold">
-                {t.columns[col]}
-                <span className="text-sm font-medium text-muted">
-                  {board![col].length}
-                  {col === "picked_up" && ` · ${t.recentPickedUp(PICKED_UP_VISIBLE_DAYS)}`}
-                </span>
-              </h2>
-              <div className="flex flex-col gap-2">
-                {board![col].length === 0 && <p className="text-sm text-muted">{t.empty}</p>}
-                {board![col].map((p) => (
-                  <PieceCard key={p.id} piece={p} photoUrl={photoFor(p)}>
-                    <PieceActions id={p.id} status={p.status} delayed={p.delayed} />
-                  </PieceCard>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
+        <BulkProvider>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {BOARD_COLUMNS.map((col) => (
+              <section key={col} data-testid={`column-${col}`} className="rounded-card bg-line/40 p-3">
+                <h2 className="mb-2 flex items-baseline justify-between font-semibold">
+                  {t.columns[col]}
+                  <span className="text-sm font-medium text-muted">
+                    {board![col].length}
+                    {col === "picked_up" && ` · ${t.recentPickedUp(PICKED_UP_VISIBLE_DAYS)}`}
+                  </span>
+                </h2>
+                {BULK_COLUMNS.includes(col) && <SelectAll ids={board![col].map((p) => p.id)} />}
+                <div className="flex flex-col gap-2">
+                  {board![col].length === 0 && <p className="text-sm text-muted">{t.empty}</p>}
+                  {board![col].map((p) => (
+                    <PieceCard
+                      key={p.id}
+                      piece={p}
+                      photoUrl={photoFor(p)}
+                      select={BULK_COLUMNS.includes(col) ? <BulkCheckbox id={p.id} code={p.code} /> : undefined}
+                    >
+                      <PieceActions id={p.id} status={p.status} delayed={p.delayed} />
+                    </PieceCard>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </BulkProvider>
       )}
     </div>
   );

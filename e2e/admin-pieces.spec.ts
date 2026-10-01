@@ -58,3 +58,21 @@ test("piece buttons: en horno → retrasada → lista (sends email) → entregad
   await expect(card.getByRole("button")).toHaveCount(0);
   expect((await pieceState(piece.id)).status).toBe("picked_up");
 });
+
+test("bulk select a kiln load → marcar lista", async ({ page }) => {
+  const a = await insertPiece(6, { status: "firing" });
+  const b = await insertPiece(6, { status: "firing" });
+  const c = await insertPiece(6, { status: "firing" });
+  await page.goto("/admin/piezas");
+  const column = page.getByTestId("column-firing");
+  await column.getByLabel(`Seleccionar ${a.code}`).check();
+  await column.getByLabel(`Seleccionar ${b.code}`).check();
+  await expect(page.getByTestId("bulk-bar")).toContainText("2 piezas seleccionadas");
+  await page.getByTestId("bulk-bar").getByRole("button", { name: "Marcar lista" }).click();
+  await expect(page.getByTestId("bulk-done")).toContainText("2 piezas marcadas");
+
+  await expect(page.getByTestId("column-ready").getByTestId(`piece-${a.code}`)).toBeVisible();
+  await expect(page.getByTestId("column-ready").getByTestId(`piece-${b.code}`)).toBeVisible();
+  await expect(page.getByTestId("column-firing").getByTestId(`piece-${c.code}`)).toBeVisible();
+  await expect.poll(async () => (await pieceState(a.id)).templates).toEqual(["piece_ready"]);
+});
