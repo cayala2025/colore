@@ -115,3 +115,25 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S5.13 ✅ /admin/piezas/donar: 'Para donar' (moved to donated by the job, last 30 days) + 'Se donan pronto' (ready, last day ≤5 days away); late pickup of a donated piece allowed; donationLists() tested; e2e.
 - S5.14 ✅ "Enviar WhatsApp" on ready pieces (board, search, Por donar): 'lista' text before pickup day 21, reminder text after, with last pickup date; tested.
 - S5.15 ✅ No-show badge ("Faltó N veces") next to phones with other no-show bookings on the Hoy page; noShowCount() tested; e2e.
+
+### Sprint 5 done
+- Works: `/admin/login` (Supabase Auth); `src/proxy.ts` gate (Next 16's "middleware") + `requireAdmin()` on every page/action; **Hoy** (day nav, seats used/free per slot, bookings, Llegó/No vino/Cancelar/Deshacer, Enviar WhatsApp, no-show badge, cancelled folded away); **Calendario** (week view); **Horario** (edit time/capacity/on-off, add slot; time changes blocked while upcoming bookings exist); **Bloqueos** (add/remove, warns about existing bookings); **Piezas** (board Recibida/En horno/Lista/Recogida, search by code/name/phone, per-piece buttons, bulk "Marcar lista" that sends ready emails, Por donar list, Enviar WhatsApp). Admin pages fit 375px. Unit 113 ✅, DB 32 ✅, Playwright 36 ✅, lint/typecheck/build ✅.
+- Mocked: admin e2e uses a guarded test bypass instead of a real login (no auth users created by me).
+
+## Final summary (session 1)
+All [CC] steps in Sprints 1–5 are ticked (75), each committed after lint + typecheck + unit tests + build (from Sprint 4 on, also DB + Playwright suites).
+- Customer side: booking page (party → calendar → slot → form, Turnstile, no overselling via locked RPC, one upcoming booking per phone), manage link `/r/[token]` (confirm/cancel), piece check-in `/pieza` (camera, compression, private storage, C-0001 codes), Spanish emails for every step.
+- Ops: daily cron (reminders + piece timeline, idempotent, ≤1 piece message/day), full admin.
+- How to run tests: `npm test` (unit), `npm run test:db` (dev Supabase integration), `npm run test:e2e` (Playwright, mobile Chromium, emails to console).
+- Not pushed, not deployed. No Supabase data deleted (test rows are cancelled/donated, named "ZZ Test").
+
+### Open items (from QUESTIONS.md)
+1. Brand assets (logo, fonts, colors) and the real tagline.
+2. WhatsApp number (`NEXT_PUBLIC_WHATSAPP_NUMBER`) — links go to `#` until set.
+3. Studio address + Maps link (emails show a placeholder).
+4. Show exact free seats ("N lugares") or just Disponible/Lleno?
+5. Privacy decision: keep name/email prefill on `/pieza`, or the safer silent linking only?
+6. Confirm piece-timeline decisions (no reminder bursts, delayed pieces get 31 days after "lista", never donate before the final notice, auto-ready at day 14).
+7. Cron is 09:00 local in winter — OK, or must be 10:00 year-round?
+8. FYI: `SUPABASE_DB_URL` was fixed to the IPv4 session pooler (original kept as a comment); use the pooler for prod.
+9. FYI: test data in dev ("ZZ Test", 555 phones, `pieces/test/` images); admin emails must be lowercase; add prod domain to Turnstile; run e2e before (not between) your email test.
