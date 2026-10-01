@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { es } from "@/content/es";
+import type { BookingApiError } from "@/lib/bookingErrors";
 import { bookableMonths } from "@/lib/bookingWindow";
 import { monthOf } from "@/lib/calendar";
 import { formatDateLong, formatTimeRange } from "@/lib/format";
@@ -30,6 +31,8 @@ export function BookingFlow({ today }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [confirmed, setConfirmed] = useState<Confirmed | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  /** Shown on the date/time step when the chosen slot or day stopped being available. */
+  const [slotNotice, setSlotNotice] = useState<string | null>(null);
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
 
   const months = bookableMonths(today);
@@ -54,14 +57,46 @@ export function BookingFlow({ today }: Props) {
   }
 
   function chooseDate(d: string) {
+    setSlotNotice(null);
     setDate(d);
     setSlot(null);
     reveal("step-time");
   }
 
   function chooseSlot(start: string) {
+    setSlotNotice(null);
+    setFormError(null);
     setSlot(start);
     reveal("step-form");
+  }
+
+  function handleApiError(error: BookingApiError | undefined) {
+    const e = es.booking.errors;
+    switch (error) {
+      case "slotFull":
+      case "slotStarted":
+        // Someone took the last seats (or time ran out): pick another slot with fresh data.
+        setSlot(null);
+        setSlotNotice(error === "slotFull" ? e.slotFull : e.slotStarted);
+        availability.reload();
+        reveal("step-time");
+        return;
+      case "dateBlocked":
+        setDate(null);
+        setSlot(null);
+        setSlotNotice(e.dateBlocked);
+        availability.reload();
+        reveal("step-date");
+        return;
+      case "phoneHasBooking":
+        setFormError(e.phoneHasBooking);
+        return;
+      case "turnstile":
+        setFormError(e.turnstile);
+        return;
+      default:
+        setFormError(e.generic);
+    }
   }
 
   function reset() {
@@ -70,6 +105,8 @@ export function BookingFlow({ today }: Props) {
     setSlot(null);
     setMonth(monthOf(today));
     setConfirmed(null);
+    setFormError(null);
+    setSlotNotice(null);
   }
 
   async function handleSubmit(values: BookingFormValues, turnstileToken: string) {
@@ -91,7 +128,7 @@ export function BookingFlow({ today }: Props) {
         setConfirmed({ date: b.date, slot: { ...chosenSlot, start: b.start, end: b.end }, party: b.party });
         return;
       }
-      setFormError(es.booking.errors.generic);
+      handleApiError(body.error as BookingApiError | undefined);
     } catch {
       setFormError(es.booking.errors.generic);
     } finally {
@@ -132,6 +169,9 @@ export function BookingFlow({ today }: Props) {
         locked={!party}
         summary={date ? formatDateLong(date) : undefined}
       >
+        {!date && slotNotice && (
+          <p role="alert" className="mb-3 rounded-xl bg-danger/10 p-3 text-sm text-danger">{slotNotice}</p>
+        )}
         <CalendarStep
           month={month}
           minMonth={months.min}
@@ -167,6 +207,11 @@ export function BookingFlow({ today }: Props) {
         locked={!party || !date}
         summary={chosenSlot ? formatTimeRange(chosenSlot.start, chosenSlot.end) : undefined}
       >
+        {slotNotice && (
+          <p role="alert" data-testid="slot-notice" className="mb-3 rounded-xl bg-danger/10 p-3 text-sm text-danger">
+            {slotNotice}
+          </p>
+        )}
         <TimeStep slots={slots} party={party ?? 1} selected={slot} onSelect={chooseSlot} />
       </StepCard>
 
