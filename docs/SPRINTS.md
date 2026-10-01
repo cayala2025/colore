@@ -243,7 +243,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Buttons per piece: marcar en horno, marcar lista, retrasada, entregada.
 - [x] [CC] Bulk select → "marcar lista" (for a whole kiln load).
 - [x] [CC] "Por donar" list: pieces at day 45.
-- [ ] [CC] "Enviar WhatsApp" button per piece (ready / reminder text).
+- [x] [CC] "Enviar WhatsApp" button per piece (ready / reminder text).
 - [ ] [CC] Show a no-show badge next to phones with past no-shows.
 - [ ] [YOU] **Usability test with her**. App: browser on the Mac or a tablet.
   1. Start the site (`npm run dev`), open `http://localhost:3000/admin` (on a tablet: the Network address + `/admin`).

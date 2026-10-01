@@ -1,7 +1,9 @@
 import { es } from "@/content/es";
 import { formatDateLong } from "../format";
 import { e164Digits } from "../phone";
+import { lastPickupDate, pickupShift, REMINDER_DAYS } from "../pieceTimeline";
 import { manageUrl } from "../site";
+import { studioDaysBetween } from "../time";
 import { waLink } from "../waLink";
 
 const firstName = (name: string) => name.trim().split(/\s+/)[0];
@@ -25,4 +27,15 @@ export function pieceWhatsappLink(
 ) {
   const make = kind === "ready" ? es.admin.whatsapp.pieceReady : es.admin.whatsapp.pieceReminder;
   return waLink(e164Digits(p.phone), make(firstName(p.name), p.code, formatDateLong(lastPickupDate)));
+}
+
+/** WhatsApp link for a ready piece: "lista" text until the first pickup reminder is due, then the reminder text. */
+export function readyPieceWhatsappLink(
+  p: { name: string; phone: string; code: string; checked_in_at: string; ready_at: string | null },
+  now: Date,
+) {
+  const checkedIn = new Date(p.checked_in_at);
+  const readyAt = p.ready_at ? new Date(p.ready_at) : null;
+  const pickupDay = studioDaysBetween(checkedIn, now) - pickupShift(checkedIn, readyAt);
+  return pieceWhatsappLink(p, pickupDay >= REMINDER_DAYS[0] ? "reminder" : "ready", lastPickupDate(checkedIn, readyAt));
 }

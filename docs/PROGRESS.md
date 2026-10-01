@@ -113,3 +113,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S5.11 ✅ Piece buttons: Marcar en horno / Marcar lista (clears delay, stamps ready_at, sends ready email now via notify) / Retrasada ↔ Ya no / Entregada; status-guarded updates; transitions tested; e2e full path.
 - S5.12 ✅ Bulk select on Recibida/En horno (per-card checkbox + 'Seleccionar todas') → sticky bar 'Marcar lista' (one server call; ready emails for each). E2E.
 - S5.13 ✅ /admin/piezas/donar: 'Para donar' (moved to donated by the job, last 30 days) + 'Se donan pronto' (ready, last day ≤5 days away); late pickup of a donated piece allowed; donationLists() tested; e2e.
+- S5.14 ✅ "Enviar WhatsApp" on ready pieces (board, search, Por donar): 'lista' text before pickup day 21, reminder text after, with last pickup date; tested.

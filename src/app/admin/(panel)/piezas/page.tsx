@@ -3,9 +3,11 @@ import { connection } from "next/server";
 import { BulkCheckbox, BulkProvider, SelectAll } from "@/components/admin/BulkSelect";
 import { PieceActions } from "@/components/admin/PieceActions";
 import { PieceCard } from "@/components/admin/PieceCard";
+import { WhatsAppButton } from "@/components/admin/WhatsAppButton";
 import { es } from "@/content/es";
 import { BOARD_COLUMNS, groupPiecesByColumn, PICKED_UP_VISIBLE_DAYS, type BoardColumn, type BoardPiece } from "@/lib/admin/pieceBoard";
 import { getBoardPieces, searchPieces, signedPhotoUrls } from "@/lib/admin/queries";
+import { readyPieceWhatsappLink } from "@/lib/admin/whatsappMessages";
 import { requireAdmin } from "@/lib/adminAuth";
 import { studioDaysBetween } from "@/lib/time";
 
@@ -70,6 +72,7 @@ export default async function AdminPiecesPage({ searchParams }: PageProps<"/admi
               <PieceCard key={p.id} piece={p} photoUrl={photoFor(p)}>
                 <span className="rounded-full bg-accent-soft px-2 py-0.5 text-xs font-medium">{t.statusLabel[p.status]}</span>
                 <span className="text-xs text-muted">{p.phone}</span>
+                {p.status === "ready" && <WhatsAppButton href={readyPieceWhatsappLink(p, now)} />}
                 <PieceActions id={p.id} status={p.status} delayed={p.delayed} />
               </PieceCard>
             ))}
@@ -97,6 +100,7 @@ export default async function AdminPiecesPage({ searchParams }: PageProps<"/admi
                       photoUrl={photoFor(p)}
                       select={BULK_COLUMNS.includes(col) ? <BulkCheckbox id={p.id} code={p.code} /> : undefined}
                     >
+                      {p.status === "ready" && <WhatsAppButton href={readyPieceWhatsappLink(p, now)} />}
                       <PieceActions id={p.id} status={p.status} delayed={p.delayed} />
                     </PieceCard>
                   ))}

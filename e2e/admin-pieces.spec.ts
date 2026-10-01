@@ -91,3 +91,10 @@ test("Por donar lists donated pieces and ones about to be donated", async ({ pag
   await page.getByTestId(`piece-${donated.code}`).getByRole("button", { name: "Entregada" }).click();
   await expect(page.getByTestId("donate-due").getByTestId(`piece-${donated.code}`)).toHaveCount(0);
 });
+
+test("Enviar WhatsApp on ready pieces", async ({ page }) => {
+  const piece = await insertPiece(16, { status: "ready", readyDaysAgo: 2 });
+  await page.goto("/admin/piezas");
+  const link = page.getByTestId("column-ready").getByTestId(`piece-${piece.code}`).getByRole("link", { name: "Enviar WhatsApp" });
+  await expect(link).toHaveAttribute("href", new RegExp(`^https://wa\\.me/52555\\d{7}\\?text=.*${piece.code}.*lista`));
+});

@@ -2,9 +2,11 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { PieceActions } from "@/components/admin/PieceActions";
 import { PieceCard } from "@/components/admin/PieceCard";
+import { WhatsAppButton } from "@/components/admin/WhatsAppButton";
 import { es } from "@/content/es";
 import { donationLists } from "@/lib/admin/donations";
 import { getDonationPieces, signedPhotoUrls } from "@/lib/admin/queries";
+import { readyPieceWhatsappLink } from "@/lib/admin/whatsappMessages";
 import { requireAdmin } from "@/lib/adminAuth";
 import { formatDateLong } from "@/lib/format";
 import { studioDaysBetween } from "@/lib/time";
@@ -37,6 +39,7 @@ export default async function AdminDonatePage() {
           {due.map((p) => (
             <PieceCard key={p.id} piece={{ ...p, day: day(p.checked_in_at) }} photoUrl={p.photo_path ? photos[p.photo_path] : undefined}>
               <span className="text-xs text-muted">{t.donatedOn(formatDateLong(p.donatedOn))}</span>
+              {p.status === "ready" && <WhatsAppButton href={readyPieceWhatsappLink(p, now)} />}
               <PieceActions id={p.id} status={p.status} delayed={p.delayed} />
             </PieceCard>
           ))}
@@ -50,6 +53,7 @@ export default async function AdminDonatePage() {
           {soon.map((p) => (
             <PieceCard key={p.id} piece={{ ...p, day: day(p.checked_in_at) }} photoUrl={p.photo_path ? photos[p.photo_path] : undefined}>
               <span className="text-xs font-medium text-danger">{t.lastDay(formatDateLong(p.lastDay))}</span>
+              {p.status === "ready" && <WhatsAppButton href={readyPieceWhatsappLink(p, now)} />}
               <PieceActions id={p.id} status={p.status} delayed={p.delayed} />
             </PieceCard>
           ))}
