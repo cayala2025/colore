@@ -3,7 +3,7 @@
 import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Turnstile } from "@/components/Turnstile";
 import { es } from "@/content/es";
-import type { CountryCode } from "@/lib/phone";
+import { toE164, type CountryCode } from "@/lib/phone";
 import { hasErrors, validateContact, type ContactErrors } from "@/lib/validation";
 
 export type ContactFormValues = {
@@ -35,6 +35,10 @@ type Props = {
   submitLabel: string;
   submittingLabel: string;
   initialValues?: Partial<ContactFormValues>;
+  /** Called once per valid phone; returned name/email fill the fields if they are still empty. */
+  lookupPhone?: (country: CountryCode, phone: string) => Promise<{ name: string; email: string } | null>;
+  /** Shown after a successful lookup prefilled the form. */
+  prefilledNote?: string;
   submitting: boolean;
   /** Error shown above the submit button (e.g. from the API). */
   formError?: string | null;
@@ -58,6 +62,8 @@ export function ContactForm({
   submitLabel,
   submittingLabel,
   initialValues,
+  lookupPhone,
+  prefilledNote,
   submitting,
   formError,
   turnstileResetKey,
@@ -67,6 +73,8 @@ export function ContactForm({
   const [errors, setErrors] = useState<ContactErrors>({});
   const [touched, setTouched] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const [prefilled, setPrefilled] = useState(false);
+  const lastLookup = useRef<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const t = es.booking.form;
 
@@ -75,7 +83,25 @@ export function ContactForm({
     setValues(next);
     // After the first submit attempt, re-validate live so errors disappear as they get fixed.
     if (touched) setErrors(validateContact(next));
+    if (key === "phone" || key === "country") maybeLookup(next);
   };
+
+  function maybeLookup(next: ContactFormValues) {
+    const e164 = toE164(next.country, next.phone);
+    if (!lookupPhone || !e164 || lastLookup.current === e164) return;
+    lastLookup.current = e164;
+    lookupPhone(next.country, next.phone)
+      .then((found) => {
+        if (!found) return;
+        setValues((v) => ({
+          ...v,
+          name: v.name.trim() ? v.name : found.name,
+          email: v.email.trim() ? v.email : found.email,
+        }));
+        setPrefilled(true);
+      })
+      .catch(() => {});
+  }
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -105,6 +131,11 @@ export function ContactForm({
 
   return (
     <form ref={formRef} noValidate onSubmit={handleSubmit} className="flex flex-col gap-4">
+      {prefilled && prefilledNote && (
+        <p role="status" data-testid="prefilled-note" className="rounded-xl bg-accent-soft p-3 text-sm">
+          {prefilledNote}
+        </p>
+      )}
       <div>
         <label htmlFor={`${idPrefix}-name`} className={labelClass}>
           {t.name}

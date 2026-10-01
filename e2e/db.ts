@@ -34,3 +34,25 @@ export async function fillSlot(date: string, start: string, left: number) {
     if (error) throw new Error(error.message);
   }
 }
+
+/** Insert a "ZZ Test" booking for today (studio date) directly, for prefill tests. */
+export async function insertTodaysBooking(phoneE164: string, email: string) {
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Tijuana" }).format(new Date());
+  const { data, error } = await db
+    .from("bookings")
+    .insert({
+      date: today,
+      start_time: "11:00",
+      end_time: "13:00",
+      starts_at: new Date(Date.now() - 3600_000).toISOString(),
+      party_size: 2,
+      name: "ZZ Test",
+      phone: phoneE164,
+      email,
+      privacy_accepted_at: new Date().toISOString(),
+    })
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+  return data.id as string;
+}

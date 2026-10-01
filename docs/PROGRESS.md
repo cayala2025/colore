@@ -66,3 +66,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S3.5 ✅ Browser compression: createImageBitmap (EXIF-aware) → canvas ≤1600px long edge → JPEG 0.8, <img> fallback; fitWithin() tested.
 - S3.6 ✅ Photo preview with "Otra foto" (reopens camera) / "Usar esta"; e2e verifies compression to 1600×1067 and the buttons.
 - S3.7 ✅ /pieza step 2 form (name, phone +52/+1, email, WhatsApp opt-in, pickup-policy checkbox explaining 14 days + donation at 45); booking form refactored into shared ContactForm.
+- S3.8 ✅ /pieza prefills name/email when the phone has a booking today (POST /api/pieces/lookup: today only, rate limited 10/min/IP); booking_id is linked server-side on submit. Privacy trade-off logged in QUESTIONS.

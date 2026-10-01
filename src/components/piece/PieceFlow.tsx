@@ -5,8 +5,20 @@ import { StepCard } from "@/components/booking/StepCard";
 import { ContactForm, type ContactFormValues } from "@/components/ContactForm";
 import { es } from "@/content/es";
 import { compressImage } from "@/lib/compressImage";
+import type { CountryCode } from "@/lib/phone";
 import { DONATE_DAY, READY_DAYS } from "@/lib/pieceTimeline";
 import { PhotoStep } from "./PhotoStep";
+
+async function lookupTodaysBooking(country: CountryCode, phone: string) {
+  const res = await fetch("/api/pieces/lookup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ country, phone }),
+  });
+  if (!res.ok) return null;
+  const body = (await res.json()) as { booking: { name: string; email: string } | null };
+  return body.booking;
+}
 
 export function PieceFlow() {
   const [photo, setPhoto] = useState<Blob | null>(null);
@@ -62,6 +74,8 @@ export function PieceFlow() {
           consentLabel={t.form.policy}
           consentRequiredError={t.form.policyRequired}
           consentDetails={<span className="mt-1 block text-xs text-muted">{t.form.policyText(READY_DAYS, DONATE_DAY)}</span>}
+          lookupPhone={lookupTodaysBooking}
+          prefilledNote={t.form.prefilled}
           submitLabel={t.form.submit}
           submittingLabel={t.form.submitting}
           submitting={submitting}
