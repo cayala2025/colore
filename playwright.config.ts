@@ -24,6 +24,8 @@ export default defineConfig({
     env: {
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: "1x00000000000000000000AA",
       TURNSTILE_SECRET_KEY: "1x0000000000000000000000000000000AA",
+      // Never send real emails from tests: empty key → emails are logged to the console.
+      RESEND_API_KEY: "",
     },
     timeout: 120_000,
   },

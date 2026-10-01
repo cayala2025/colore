@@ -24,6 +24,16 @@ export const resendSender: EmailSender = async ({ to, subject, react }) => {
   return { id: data?.id ?? null };
 };
 
+/** Dev fallback: print the email instead of sending it. */
+export const consoleSender: EmailSender = async ({ to, subject, react }) => {
+  const text = await render(react, { plainText: true });
+  console.info(`\n[email:console] To: ${to}\nSubject: ${subject}\n${"-".repeat(60)}\n${text}\n${"-".repeat(60)}`);
+  return { id: `console-${Date.now()}` };
+};
+
+/** Resend when RESEND_API_KEY is set; otherwise log emails to the console. */
 export function emailSender(): EmailSender {
-  return resendSender;
+  if (process.env.RESEND_API_KEY) return resendSender;
+  console.warn("[email] RESEND_API_KEY missing: emails are logged to the console, not sent");
+  return consoleSender;
 }
