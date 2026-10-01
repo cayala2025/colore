@@ -174,7 +174,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] API route `POST /api/bookings`: verify Turnstile → normalize phone → call RPC.
 - [x] [CC] Add the Turnstile widget to the form (use Cloudflare's test keys if real ones are missing).
 - [x] [CC] Friendly errors: slot just filled, phone already has a booking.
-- [ ] [CC] Test: 2 parallel bookings for the last seats → exactly one succeeds.
+- [x] [CC] Test: 2 parallel bookings for the last seats → exactly one succeeds.
 - [ ] [YOU] **Make 3 test bookings and see them in the database**. App: browser.
   1. Start the site (Terminal: `cd ~/Documents/colore` → `npm run dev`), open `http://localhost:3000`.
   2. Make 3 bookings with different phone numbers.

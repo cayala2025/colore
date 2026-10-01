@@ -50,3 +50,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S2.13 ✅ POST /api/bookings: parse/validate body (shared validation) → verify Turnstile (fails closed; dev-only test secret if key missing) → E.164 → create_booking RPC; errors mapped to codes (tests). Verified live: 201, phoneHasBooking, invalid, turnstile.
 - S2.14 ✅ Turnstile widget (explicit render, invisible unless needed; test site key fallback) on the form; submit posts to /api/bookings; token reset after failures. E2E uses CF test keys, random 555 phones, teardown cancels ZZ Test rows.
 - S2.15 ✅ Friendly errors: slot full/started → clears slot, reloads availability, notice on step 3; blocked date → back to step 2; phone already booked / Turnstile / generic → form message. E2E for phone-twice and slot-filled-meanwhile (6 ✅).
+- S2.16 ✅ DB test: 2 parallel bookings for the last seats → exactly one succeeds; burst of 12 never exceeds capacity (DB tests 19 ✅).
