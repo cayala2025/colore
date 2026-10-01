@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pieceTimeline, readyDate, type PieceStatus, type PieceTemplate } from "./pieceTimeline";
+import { lastPickupDate, pieceTimeline, readyDate, type PieceStatus, type PieceTemplate } from "./pieceTimeline";
 import { studioToUtc } from "./time";
 
 // Checked in on 2026-10-01 at 19:30 studio time.
@@ -136,5 +136,15 @@ describe("pieceTimeline: full simulation", () => {
       "46:piece_final_notice",
       "51:donated",
     ]);
+  });
+});
+
+describe("lastPickupDate", () => {
+  it("is the day before donation (day 44)", () => {
+    expect(lastPickupDate(checkedInAt)).toBe("2026-11-14");
+  });
+  it("shifts for pieces that became ready late", () => {
+    expect(lastPickupDate(checkedInAt, onDay(20))).toBe("2026-11-20");
+    expect(lastPickupDate(checkedInAt, onDay(10))).toBe("2026-11-14");
   });
 });

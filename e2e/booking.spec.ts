@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
-import { fillBookingForm, pickFirstAvailableDateAndSlot } from "./helpers";
+import { db } from "./db";
+import { fillBookingForm, pickFirstAvailableDateAndSlot, randomTestPhone } from "./helpers";
 
 test("book 2 people: party → date → slot → form → success", async ({ page }) => {
   await page.goto("/");
@@ -18,7 +19,8 @@ test("book 2 people: party → date → slot → form → success", async ({ pag
   await page.getByRole("button", { name: "Reservar" }).click();
   await expect(page.getByText("Escribe tu nombre.")).toBeVisible();
 
-  await fillBookingForm(page);
+  const phone = randomTestPhone();
+  await fillBookingForm(page, { phone });
   await page.getByRole("button", { name: "Reservar" }).click();
 
   const success = page.getByTestId("booking-success");
@@ -26,6 +28,15 @@ test("book 2 people: party → date → slot → form → success", async ({ pag
   await expect(success.getByRole("heading", { name: "¡Listo!" })).toBeVisible();
   await expect(success).toContainText("Personas");
   await expect(success).toContainText("2");
+
+  // Confirmation email is logged (and "sent" via the console transport in tests).
+  const { data: booking } = await db.from("bookings").select("id").eq("phone", `+52${phone}`).single();
+  await expect
+    .poll(async () => {
+      const { data } = await db.from("notifications_log").select("template, status").eq("booking_id", booking!.id);
+      return data;
+    })
+    .toEqual([{ template: "booking_confirmation", status: "sent" }]);
 });
 
 test("9 o más renders a WhatsApp link", async ({ page }) => {

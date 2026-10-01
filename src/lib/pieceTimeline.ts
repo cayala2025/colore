@@ -23,6 +23,16 @@ export function readyDate(checkedInAt: Date): string {
   return addDays(toStudio(checkedInAt).date, READY_DAYS);
 }
 
+/** Days the pickup clock is shifted when a piece became ready after day 14 (delayed firing). */
+export function pickupShift(checkedInAt: Date, readyAt: Date | null): number {
+  return readyAt ? Math.max(0, studioDaysBetween(checkedInAt, readyAt) - READY_DAYS) : 0;
+}
+
+/** Last studio date the customer can pick up the piece (the day before donation). */
+export function lastPickupDate(checkedInAt: Date, readyAt: Date | null = null): string {
+  return addDays(toStudio(checkedInAt).date, DONATE_DAY - 1 + pickupShift(checkedInAt, readyAt));
+}
+
 export type PieceTimelineInput = {
   checkedInAt: Date;
   now: Date;
@@ -71,8 +81,7 @@ export function pieceTimeline(input: PieceTimelineInput): PieceTimelineAction {
   if (!sent.has("piece_ready")) return { ...none, send: "piece_ready", markReady };
 
   // Shift the pickup clock when the piece became ready after day 14.
-  const readyDay = status === "ready" && readyAt ? studioDaysBetween(checkedInAt, readyAt) : READY_DAYS;
-  const pickupDay = day - Math.max(0, readyDay - READY_DAYS);
+  const pickupDay = day - (status === "ready" ? pickupShift(checkedInAt, readyAt) : 0);
 
   if (pickupDay >= FINAL_NOTICE_DAY) {
     if (!sent.has("piece_final_notice")) return { ...none, send: "piece_final_notice", markReady };

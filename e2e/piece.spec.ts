@@ -56,4 +56,13 @@ test("check in a piece → code is shown", async ({ page }) => {
   const box = await page.getByTestId("piece-code").boundingBox();
   expect(box!.x + box!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
   await page.screenshot({ path: "test-results/piece-success.png" });
+
+  const code = await page.getByTestId("piece-code").textContent();
+  const { data: piece } = await db.from("pieces").select("id").eq("code", code!).single();
+  await expect
+    .poll(async () => {
+      const { data } = await db.from("notifications_log").select("template, status").eq("piece_id", piece!.id);
+      return data;
+    })
+    .toEqual([{ template: "piece_received", status: "sent" }]);
 });

@@ -1,4 +1,5 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { after, NextResponse, type NextRequest } from "next/server";
+import { sendPieceMessage } from "@/lib/messages";
 import { isAcceptablePhoto, parsePieceFields } from "@/lib/pieceRequest";
 import { readyDate } from "@/lib/pieceTimeline";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -44,12 +45,17 @@ export async function POST(request: NextRequest) {
       booking_id: booking?.id ?? null,
       checked_in_at: now.toISOString(),
     })
-    .select("id, code, checked_in_at")
+    .select("id, code, name, email, photo_path, checked_in_at, ready_at")
     .single();
   if (error || !data) {
     console.error("[pieces] insert failed (photo left at %s)", photoPath, error);
     return fail("generic", 500);
   }
+
+  // "Recibimos tu pieza" email after the response is sent.
+  after(() =>
+    sendPieceMessage(data, "piece_received").catch((err) => console.error("[pieces] received email failed", err)),
+  );
 
   return NextResponse.json(
     { piece: { code: data.code, readyDate: readyDate(new Date(data.checked_in_at)) } },

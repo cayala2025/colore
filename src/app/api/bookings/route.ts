@@ -1,6 +1,7 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { after, NextResponse, type NextRequest } from "next/server";
 import { mapRpcError, statusFor, type BookingApiError } from "@/lib/bookingErrors";
 import { parseBookingRequest } from "@/lib/bookingRequest";
+import { sendBookingConfirmation } from "@/lib/messages";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { verifyTurnstile } from "@/lib/turnstile";
 
@@ -29,7 +30,16 @@ export async function POST(request: NextRequest) {
     return fail(code);
   }
 
-  const row = (data as { id: string; date: string; start_time: string; end_time: string; party_size: number }[])[0];
+  const row = (
+    data as { id: string; manage_token: string; date: string; start_time: string; end_time: string; party_size: number }[]
+  )[0];
+
+  // Confirmation email after the response is sent (logged first; never sent twice).
+  after(() =>
+    sendBookingConfirmation({ ...row, name: parsed.name, email: parsed.email }).catch((err) =>
+      console.error("[bookings] confirmation email failed", err),
+    ),
+  );
   return NextResponse.json(
     {
       booking: {
