@@ -78,3 +78,24 @@ export function futureDate(offset: number): string {
   while (![0, 4, 5, 6].includes(d.getUTCDay())) d.setUTCDate(d.getUTCDate() + 1);
   return d.toISOString().slice(0, 10);
 }
+
+/** Insert a confirmed "ZZ Test" booking on any date (bypasses the RPC window checks). */
+export async function insertBooking(date: string, start = "18:00") {
+  const { data, error } = await db
+    .from("bookings")
+    .insert({
+      date,
+      start_time: start,
+      end_time: `${String(Number(start.slice(0, 2)) + 2).padStart(2, "0")}:00`,
+      starts_at: new Date(`${date}T${start}:00-07:00`).toISOString(),
+      party_size: 1,
+      name: "ZZ Test",
+      phone: phone(),
+      email: "zz-test@example.com",
+      privacy_accepted_at: new Date().toISOString(),
+    })
+    .select("id, manage_token")
+    .single();
+  if (error) throw new Error(error.message);
+  return data as { id: string; manage_token: string };
+}
