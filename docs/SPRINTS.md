@@ -162,7 +162,7 @@ Rule for Claude Code: finish a step â†’ lint + typecheck + test + build green â†
 - [x] [CC] Migration: `schedule_slots` (weekday, start_time, end_time, capacity, active).
 - [x] [CC] Seed the schedule from CLAUDE.md.
 - [x] [CC] Migration: `blocked_dates` (date, reason).
-- [ ] [CC] Migration: `bookings` (see CLAUDE.md) + index on (date, start_time).
+- [x] [CC] Migration: `bookings` (see CLAUDE.md) + index on (date, start_time).
 - [ ] [CC] Migration: `admins` (email).
 - [ ] [CC] Turn on RLS for every table. No public insert/update policies.
 - [ ] [CC] `src/lib/time.ts`: timezone helpers for America/Tijuana + tests.
