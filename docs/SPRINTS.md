@@ -168,7 +168,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] `src/lib/time.ts`: timezone helpers for America/Tijuana + tests.
 - [x] [CC] `src/lib/availability.ts`: pure function (schedule, blocks, bookings, party size) → available slots. Tests for: Monday, blocked day, full slot, 8 people when 7 seats left, slot already started.
 - [x] [CC] API route `GET /api/availability?month=YYYY-MM&party=N` → days + slots.
-- [ ] [CC] Hook the calendar and slot chips to the real API.
+- [x] [CC] Hook the calendar and slot chips to the real API.
 - [ ] [CC] Postgres function `create_booking(...)` with advisory lock + capacity re-check.
 - [ ] [CC] Enforce one upcoming booking per phone inside that function.
 - [ ] [CC] API route `POST /api/bookings`: verify Turnstile → normalize phone → call RPC.

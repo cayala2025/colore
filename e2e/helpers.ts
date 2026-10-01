@@ -3,6 +3,7 @@ import { expect, type Page } from "@playwright/test";
 /** Pick the first enabled date that has a slot fitting the party; returns the date and slot start. */
 export async function pickFirstAvailableDateAndSlot(page: Page): Promise<{ date: string; start: string }> {
   for (let monthTries = 0; monthTries < 3; monthTries++) {
+    await expect(page.getByText("Cargando disponibilidad…")).toHaveCount(0);
     const dates = page.locator("[data-date]:not([disabled])");
     const count = await dates.count();
     for (let i = 0; i < count; i++) {

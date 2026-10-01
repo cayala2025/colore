@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { es } from "@/content/es";
-import { bookableMonths, isMonday, isWithinBookingWindow } from "@/lib/bookingWindow";
+import { bookableMonths } from "@/lib/bookingWindow";
 import { monthOf } from "@/lib/calendar";
-import { fakeSlotsFor } from "@/lib/fakeAvailability";
 import { formatDateLong, formatTimeRange } from "@/lib/format";
 import type { DaySlot } from "@/lib/types";
 import { BookingForm, type BookingFormValues } from "./BookingForm";
@@ -14,6 +13,7 @@ import { PartyStep } from "./PartyStep";
 import { StepCard } from "./StepCard";
 import { SuccessScreen } from "./SuccessScreen";
 import { TimeStep } from "./TimeStep";
+import { useAvailability } from "./useAvailability";
 
 type Props = {
   /** Today's date in the studio timezone ("YYYY-MM-DD"), computed on the server. */
@@ -31,8 +31,10 @@ export function BookingFlow({ today }: Props) {
   const [confirmed, setConfirmed] = useState<Confirmed | null>(null);
 
   const months = bookableMonths(today);
-  const isDisabled = (d: string) => isMonday(d) || !isWithinBookingWindow(d, today);
-  const slots = date ? fakeSlotsFor(date) : [];
+  // Load the month on screen and the month of the chosen date.
+  const availability = useAvailability(party, date ? [month, monthOf(date)] : [month]);
+  const isDisabled = (d: string) => !availability.day(d)?.bookable;
+  const slots = (date && availability.day(date)?.slots) || [];
   const chosenSlot = slots.find((s) => s.start === slot) ?? null;
 
   /** Bring the next step into view once it unlocks (it renders on the next frame). */
@@ -116,6 +118,23 @@ export function BookingFlow({ today }: Props) {
           onSelect={chooseDate}
           onMonthChange={setMonth}
         />
+        {availability.loading && (
+          <p role="status" className="mt-3 text-center text-sm text-muted">
+            {es.booking.date.loading}
+          </p>
+        )}
+        {availability.error && (
+          <div role="alert" className="mt-3 flex items-center justify-between gap-2 text-sm text-danger">
+            <span>{es.booking.date.loadError}</span>
+            <button
+              type="button"
+              onClick={availability.reload}
+              className="min-h-11 rounded-lg border border-line px-3 font-medium text-ink"
+            >
+              {es.booking.date.retry}
+            </button>
+          </div>
+        )}
       </StepCard>
 
       <StepCard
