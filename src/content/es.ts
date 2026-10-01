@@ -138,8 +138,8 @@ export const es = {
       title: "Tus datos",
       optIn: "Quiero recibir avisos por WhatsApp",
       policy: "Acepto la política de recolección",
-      policyText: (readyDays: number, donateDays: number) =>
-        `Tu pieza estará lista en unos ${readyDays} días; te avisaremos. Si no la recoges en ${donateDays} días después de dejarla, la donaremos.`,
+      policyText: (readyDays: number, pickupDays: number) =>
+        `Tu pieza estará lista en unos ${readyDays} días; te avisaremos. Desde ese aviso tienes ${pickupDays} días para recogerla; después la donaremos.`,
       policyRequired: "Necesitas aceptar la política de recolección.",
       submit: "Registrar mi pieza",
       submitting: "Registrando…",
@@ -154,7 +154,7 @@ export const es = {
       showStaff: "Muéstrale este código al staff",
       readyBy: (date: string) => `Lista aproximadamente el ${date}`,
       emailNote: "Te enviamos un correo con la foto y tu código. Te avisaremos cuando esté lista.",
-      policy: (donateDays: number) => `Si no la recoges en ${donateDays} días, la donaremos.`,
+      policy: (pickupDays: number) => `Cuando te avisemos que está lista, tendrás ${pickupDays} días para recogerla.`,
       another: "Registrar otra pieza",
     },
   },
@@ -302,6 +302,12 @@ export const es = {
         selectColumn: "Seleccionar todas",
         done: (n: number) => `${n} ${n === 1 ? "pieza marcada" : "piezas marcadas"} como lista`,
       },
+      review: {
+        title: "Revisar: pasaron 14 días",
+        intro: "Siguen sin marcarse como listas. Revisa el horno y márcalas cuando estén listas (el cliente recibe el aviso en ese momento).",
+        homeBanner: (n: number) => `${n} ${n === 1 ? "pieza lleva" : "piezas llevan"} 14 días o más sin marcarse como lista`,
+        homeLink: "Revisar",
+      },
       donate: {
         link: "Por donar",
         title: "Por donar",
@@ -392,8 +398,8 @@ export const es = {
       photoAlt: "Foto de tu pieza",
       next: (readyDays: number) =>
         `Ahora la vamos a hornear. Tarda unos ${readyDays} días; te escribiremos cuando puedas pasar por ella.`,
-      policy: (donateDays: number) =>
-        `Importante: si no la recoges en ${donateDays} días desde hoy, la donaremos.`,
+      policy: (pickupDays: number) =>
+        `Importante: cuando te avisemos que está lista, tendrás ${pickupDays} días para recogerla. Después la donaremos.`,
     },
     pieceReady: {
       subject: (code: string) => `Tu pieza ${code} está lista`,

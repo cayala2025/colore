@@ -4,7 +4,7 @@ import { BookingActions } from "@/components/admin/BookingActions";
 import { DaySlotCard } from "@/components/admin/DaySlotCard";
 import { WhatsAppButton } from "@/components/admin/WhatsAppButton";
 import { es } from "@/content/es";
-import { getAdminDay } from "@/lib/admin/queries";
+import { getAdminDay, getReviewPieces } from "@/lib/admin/queries";
 import { bookingWhatsappLink } from "@/lib/admin/whatsappMessages";
 import { requireAdmin } from "@/lib/adminAuth";
 import { SEAT_HOLDING_STATUSES } from "@/lib/availability";
@@ -20,7 +20,7 @@ export default async function AdminTodayPage({ searchParams }: PageProps<"/admin
   const { fecha } = await searchParams;
   const today = todayInStudio();
   const date = typeof fecha === "string" && /^\d{4}-\d{2}-\d{2}$/.test(fecha) ? fecha : today;
-  const day = await getAdminDay(date);
+  const [day, review] = await Promise.all([getAdminDay(date), getReviewPieces()]);
   const t = es.admin.today;
 
   const active = day.slots.flatMap((s) => s.bookings).filter((b) => SEAT_HOLDING_STATUSES.includes(b.status));
@@ -47,6 +47,17 @@ export default async function AdminTodayPage({ searchParams }: PageProps<"/admin
           </Link>
         </div>
       </div>
+
+      {review.length > 0 && (
+        <Link
+          href="/admin/piezas#revisar"
+          data-testid="review-banner"
+          className="flex min-h-11 flex-wrap items-center justify-between gap-2 rounded-xl border border-danger/40 bg-danger/5 p-3 text-sm"
+        >
+          <span>{es.admin.pieces.review.homeBanner(review.length)}</span>
+          <span className="font-semibold text-accent underline">{es.admin.pieces.review.homeLink}</span>
+        </Link>
+      )}
 
       {day.blocked && <p className="rounded-xl bg-danger/10 p-3 text-sm text-danger">{t.blocked(day.blocked.reason)}</p>}
       {day.slots.length === 0 && <p className="text-muted">{t.closed}</p>}

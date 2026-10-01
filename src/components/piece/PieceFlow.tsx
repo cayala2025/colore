@@ -5,7 +5,7 @@ import { StepCard } from "@/components/booking/StepCard";
 import { ContactForm, type ContactFormValues } from "@/components/ContactForm";
 import { es } from "@/content/es";
 import { compressImage } from "@/lib/compressImage";
-import { DONATE_DAY, READY_DAYS } from "@/lib/pieceTimeline";
+import { PICKUP_DAYS, READY_DAYS } from "@/lib/pieceTimeline";
 import { PhotoStep } from "./PhotoStep";
 import { PieceSuccess } from "./PieceSuccess";
 
@@ -105,7 +105,7 @@ export function PieceFlow() {
           idPrefix="pz"
           consentLabel={t.form.policy}
           consentRequiredError={t.form.policyRequired}
-          consentDetails={<span className="mt-1 block text-xs text-muted">{t.form.policyText(READY_DAYS, DONATE_DAY)}</span>}
+          consentDetails={<span className="mt-1 block text-xs text-muted">{t.form.policyText(READY_DAYS, PICKUP_DAYS)}</span>}
           submitLabel={t.form.submit}
           submittingLabel={t.form.submitting}
           submitting={submitting}

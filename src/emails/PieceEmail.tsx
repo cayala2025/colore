@@ -1,7 +1,7 @@
 import { Img, Text } from "@react-email/components";
 import { es } from "@/content/es";
 import { formatDateLong } from "@/lib/format";
-import { DONATE_DAY, READY_DAYS } from "@/lib/pieceTimeline";
+import { PICKUP_DAYS, READY_DAYS } from "@/lib/pieceTimeline";
 import { Layout, styles } from "./Layout";
 import { theme } from "./theme";
 
@@ -75,7 +75,7 @@ export function PieceEmail({ kind, data }: { kind: PieceEmailKind; data: PieceEm
           <Text style={styles.label}>{es.email.labels.readyBy}</Text>
           <Text style={styles.value}>{formatDateLong(data.readyDate)}</Text>
           <Text style={styles.p}>{es.email.pieceReceived.next(READY_DAYS)}</Text>
-          <Text style={{ ...styles.p, fontWeight: 600 }}>{es.email.pieceReceived.policy(DONATE_DAY)}</Text>
+          <Text style={{ ...styles.p, fontWeight: 600 }}>{es.email.pieceReceived.policy(PICKUP_DAYS)}</Text>
         </>
       ) : (
         <>

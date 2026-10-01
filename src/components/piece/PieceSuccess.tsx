@@ -1,6 +1,6 @@
 import { es } from "@/content/es";
 import { formatDateLong } from "@/lib/format";
-import { DONATE_DAY } from "@/lib/pieceTimeline";
+import { PICKUP_DAYS } from "@/lib/pieceTimeline";
 
 type Props = {
   code: string;
@@ -27,7 +27,7 @@ export function PieceSuccess({ code, readyDate, onReset }: Props) {
       <p className="mt-4 rounded-xl bg-accent-soft p-3 text-lg font-semibold">{t.showStaff}</p>
       <p className="mt-6 font-medium first-letter:uppercase">{t.readyBy(formatDateLong(readyDate))}</p>
       <p className="mt-2 text-sm text-muted">{t.emailNote}</p>
-      <p className="mt-2 text-sm text-muted">{t.policy(DONATE_DAY)}</p>
+      <p className="mt-2 text-sm text-muted">{t.policy(PICKUP_DAYS)}</p>
       <button
         type="button"
         onClick={onReset}

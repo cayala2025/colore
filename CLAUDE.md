@@ -37,6 +37,7 @@ Open questions for the owner (never block on them): `docs/QUESTIONS.md`
 - Customers can book up to 60 days ahead. Slots that already started cannot be booked.
 
 ### Bookings
+- Customers see only "Disponible" / "No disponible" per slot, never seat counts (the public API does not send them).
 - Party size 1–8 online. "9 o más" opens WhatsApp (`NEXT_PUBLIC_WHATSAPP_NUMBER`; it may be EMPTY during development: then the button still renders, links to `#`, and shows a dev-only warning. Never hardcode a number) with the prefilled text: "Hola, quiero reservar en Colore para un grupo de ___ personas".
 - Fields: name, phone (WhatsApp), email, WhatsApp opt-in checkbox, privacy checkbox.
 - A slot is available for a party if `capacity - sum(party_size of confirmed bookings) >= party_size`.
@@ -48,13 +49,14 @@ Open questions for the owner (never block on them): `docs/QUESTIONS.md`
 ### Pieces
 - QR on tables points to `/pieza`. Customer uploads a photo, then name/phone/email, opt-in, and accepts the pickup policy.
 - The system assigns a short sequential code: `C-0001`, `C-0002`, ... Show it BIG on the success screen.
-- If the phone matches a booking today, link `booking_id` and prefill fields.
-- Timeline (days from check-in, studio timezone):
-  - Day 0: "Recibimos tu pieza" (photo, code, ready date, 45-day donation policy)
-  - Day 14: "Tu pieza está lista" (skip while `delayed = true`; send when staff marks ready)
-  - Day 21 and Day 30: pickup reminders
-  - Day 40: final notice "se donará en 5 días"
-  - Day 45: status becomes `donated`, no message
+- If the phone matches a booking today, link `booking_id` silently on the server. Do NOT prefill fields (privacy: a phone must never reveal a name or email).
+- Timeline (studio timezone; owner decision 2026-09-30):
+  - Day 0: "Recibimos tu pieza" (photo, code, ready date ~14 days, pickup policy)
+  - Pieces are NEVER moved to `ready` automatically. "Tu pieza está lista" is sent only when staff marks it ready.
+    Pieces not ready at day 14+ appear in the admin list "Revisar: pasaron 14 días" (count on /admin home). No customer message.
+  - From the ready date: reminders at +7 and +16, final notice "se donará en 5 días" at +26, status `donated` at +31 (no message).
+    Every piece gets 31 days from "lista" to donation. Never donate before the final notice was sent.
+  - Max one message per piece per day; if days are missed, send only the latest milestone (no bursts).
 - Statuses: `received`, `firing`, `ready`, `picked_up`, `donated`. `picked_up` and `donated` stop all messages.
 - Compress photos in the browser before upload (max ~1600px long edge, JPEG ~0.8). Store in a PRIVATE bucket. Admin sees them via signed URLs.
 

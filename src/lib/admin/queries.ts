@@ -4,6 +4,7 @@ import { addDays, isoWeekday } from "../calendar";
 import { supabaseAdmin } from "../supabase/admin";
 import { groupBookingsBySlot, type AdminBooking, type AdminSlot } from "./daySlots";
 import { PICKED_UP_VISIBLE_DAYS, type AdminPiece } from "./pieceBoard";
+import { needsReview } from "../pieceTimeline";
 import { noShowCount } from "./noShows";
 import { parsePieceQuery, pieceQueryFilter } from "./pieceSearch";
 import { buildWeek, type AdminWeekDay } from "./week";
@@ -121,4 +122,15 @@ export async function getDonationPieces() {
   const error = donated.error ?? ready.error;
   if (error) throw new Error(`donation query failed: ${error.message}`);
   return [...(donated.data ?? []), ...(ready.data ?? [])] as (AdminPiece & { donated_at: string | null })[];
+}
+
+/** Pieces not marked ready although 14 days have passed (admin "Revisar" list). */
+export async function getReviewPieces(now = new Date()): Promise<AdminPiece[]> {
+  const { data, error } = await supabaseAdmin()
+    .from("pieces")
+    .select(ADMIN_PIECE_COLUMNS)
+    .in("status", ["received", "firing"])
+    .order("checked_in_at");
+  if (error) throw new Error(`review query failed: ${error.message}`);
+  return ((data ?? []) as AdminPiece[]).filter((p) => needsReview({ status: p.status, checkedInAt: new Date(p.checked_in_at) }, now));
 }

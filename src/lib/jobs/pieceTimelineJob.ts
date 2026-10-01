@@ -1,15 +1,15 @@
 import "server-only";
 import { sendPieceMessage, type PieceForEmail } from "../messages";
 import { MAX_ATTEMPTS } from "../notify";
-import { PIECE_TEMPLATES, pieceTimeline, READY_DAYS, type PieceStatus, type PieceTemplate } from "../pieceTimeline";
+import { PIECE_TEMPLATES, pieceTimeline, type PieceStatus, type PieceTemplate } from "../pieceTimeline";
 import { supabaseAdmin } from "../supabase/admin";
 import { toStudio } from "../time";
 import { emptyCounts, type JobCounts } from "./bookingReminders";
 
-type PieceRow = PieceForEmail & { status: PieceStatus; delayed: boolean };
+type PieceRow = PieceForEmail & { status: PieceStatus };
 type LogRow = { piece_id: string; template: string; status: string; attempts: number; created_at: string };
 
-export type PieceJobResult = JobCounts & { markedReady: number; donated: number };
+export type PieceJobResult = JobCounts & { donated: number };
 
 /**
  * Templates that count as "done" for the timeline: sent or in flight, or failed too many times.
@@ -29,11 +29,11 @@ export async function runPieceTimeline(now = new Date()): Promise<PieceJobResult
   const db = supabaseAdmin();
   const { data: pieces, error } = await db
     .from("pieces")
-    .select("id, code, name, email, photo_path, checked_in_at, ready_at, status, delayed")
+    .select("id, code, name, email, photo_path, checked_in_at, ready_at, status")
     .in("status", ["received", "firing", "ready"]);
   if (error) throw new Error(`pieces query failed: ${error.message}`);
 
-  const result: PieceJobResult = { ...emptyCounts(), markedReady: 0, donated: 0 };
+  const result: PieceJobResult = { ...emptyCounts(), donated: 0 };
   const rows = (pieces ?? []) as PieceRow[];
 
   for (let i = 0; i < rows.length; i += 200) {
@@ -54,28 +54,10 @@ export async function runPieceTimeline(now = new Date()): Promise<PieceJobResult
         checkedInAt: new Date(piece.checked_in_at),
         now,
         status: piece.status,
-        delayed: piece.delayed,
         readyAt: piece.ready_at ? new Date(piece.ready_at) : null,
         sent: doneTemplates(pieceLogs),
         sentToday: pieceLogs.some((l) => l.status !== "failed" && toStudio(new Date(l.created_at)).date === today),
       });
-
-      if (action.markReady) {
-        // Auto-ready counts from the scheduled ready time (check-in + 14 days), not from when the
-        // job happened to run, so a late run never shifts the pickup clock.
-        const scheduled = new Date(new Date(piece.checked_in_at).getTime() + READY_DAYS * 86_400_000);
-        const readyAt = new Date(Math.min(scheduled.getTime(), now.getTime())).toISOString();
-        const { data } = await db
-          .from("pieces")
-          .update({ status: "ready", ready_at: readyAt, updated_at: readyAt })
-          .eq("id", piece.id)
-          .in("status", ["received", "firing"])
-          .select("id");
-        if (data?.length) {
-          result.markedReady += 1;
-          piece.ready_at = readyAt;
-        }
-      }
 
       if (action.send) result[await sendPieceMessage(piece, action.send)] += 1;
 

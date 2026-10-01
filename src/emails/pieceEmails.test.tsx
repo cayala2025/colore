@@ -17,7 +17,7 @@ describe("piece emails", () => {
     expect(html).toContain("C-0042");
     expect(html).toContain('src="https://example.supabase.co/storage/v1/object/sign/pieces/x.jpg?token=abc"');
     expect(html).toContain("jueves 15 de octubre");
-    expect(html).toContain("45 días");
+    expect(html).toContain("31 días");
   });
 
   it("ready, reminder and final notice include the last pickup date", async () => {

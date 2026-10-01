@@ -6,7 +6,7 @@ import { PieceCard } from "@/components/admin/PieceCard";
 import { WhatsAppButton } from "@/components/admin/WhatsAppButton";
 import { es } from "@/content/es";
 import { BOARD_COLUMNS, groupPiecesByColumn, PICKED_UP_VISIBLE_DAYS, type BoardColumn, type BoardPiece } from "@/lib/admin/pieceBoard";
-import { getBoardPieces, searchPieces, signedPhotoUrls } from "@/lib/admin/queries";
+import { getBoardPieces, getReviewPieces, searchPieces, signedPhotoUrls } from "@/lib/admin/queries";
 import { readyPieceWhatsappLink } from "@/lib/admin/whatsappMessages";
 import { requireAdmin } from "@/lib/adminAuth";
 import { studioDaysBetween } from "@/lib/time";
@@ -26,6 +26,9 @@ export default async function AdminPiecesPage({ searchParams }: PageProps<"/admi
     ? (await searchPieces(query)).map((p) => ({ ...p, day: studioDaysBetween(new Date(p.checked_in_at), now) }))
     : null;
   const board = results ? null : groupPiecesByColumn(await getBoardPieces(), now);
+  const review: BoardPiece[] = results
+    ? []
+    : (await getReviewPieces(now)).map((p) => ({ ...p, day: studioDaysBetween(new Date(p.checked_in_at), now) }));
   const shown = results ?? Object.values(board!).flat();
   const photos = await signedPhotoUrls(shown.map((p) => p.photo_path));
   const photoFor = (p: BoardPiece) => (p.photo_path ? photos[p.photo_path] : undefined);
@@ -80,6 +83,21 @@ export default async function AdminPiecesPage({ searchParams }: PageProps<"/admi
         </section>
       ) : (
         <BulkProvider>
+          {review.length > 0 && (
+            <section id="revisar" data-testid="review-list" className="rounded-card border border-danger/40 bg-danger/5 p-3">
+              <h2 className="font-semibold text-danger">
+                {t.review.title} <span className="text-sm font-medium">· {review.length}</span>
+              </h2>
+              <p className="mb-2 text-sm text-muted">{t.review.intro}</p>
+              <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                {review.map((p) => (
+                  <PieceCard key={p.id} piece={p} photoUrl={photoFor(p)}>
+                    <PieceActions id={p.id} status={p.status} delayed={p.delayed} />
+                  </PieceCard>
+                ))}
+              </div>
+            </section>
+          )}
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {BOARD_COLUMNS.map((col) => (
               <section key={col} data-testid={`column-${col}`} className="rounded-card bg-line/40 p-3">

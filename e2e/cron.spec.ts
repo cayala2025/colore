@@ -29,25 +29,29 @@ test("reminds tomorrow's bookings once, even if the job runs twice", async ({ re
   expect(data).toEqual([{ template: "booking_reminder", status: "sent" }]);
 });
 
-test("piece timeline: ready / 21 / 30 / 40 / donate at 45, idempotent", async ({ request }) => {
+test("piece timeline: never auto-ready; reminders / final notice / donation count from 'lista'; idempotent", async ({ request }) => {
   const all = ["piece_received", "piece_ready", "piece_reminder_21", "piece_reminder_30", "piece_final_notice"];
   const day14 = await insertPiece(14, { logged: ["piece_received"] });
-  const day14Delayed = await insertPiece(14, { delayed: true, logged: ["piece_received"] });
-  const day21 = await insertPiece(21, { status: "ready", readyDaysAgo: 7, logged: all.slice(0, 2) });
-  const day30 = await insertPiece(30, { status: "ready", readyDaysAgo: 16, logged: all.slice(0, 3) });
-  const day40 = await insertPiece(40, { status: "ready", readyDaysAgo: 26, logged: all.slice(0, 4) });
-  const day45 = await insertPiece(45, { status: "ready", readyDaysAgo: 31, logged: all });
+  const day30Firing = await insertPiece(30, { status: "firing", logged: ["piece_received"] });
+  const ready7 = await insertPiece(21, { status: "ready", readyDaysAgo: 7, logged: all.slice(0, 2) });
+  const ready16 = await insertPiece(30, { status: "ready", readyDaysAgo: 16, logged: all.slice(0, 3) });
+  const ready26 = await insertPiece(40, { status: "ready", readyDaysAgo: 26, logged: all.slice(0, 4) });
+  const ready31 = await insertPiece(45, { status: "ready", readyDaysAgo: 31, logged: all });
+  const lateReady = await insertPiece(45, { status: "ready", readyDaysAgo: 10, logged: all.slice(0, 3) });
   const pickedUp = await insertPiece(45, { status: "picked_up", logged: ["piece_received"] });
 
   const run = () => request.get("/api/cron/daily", { headers: { Authorization: `Bearer ${SECRET}` } });
   expect((await run()).status()).toBe(200);
   expect((await run()).status()).toBe(200); // second run must change nothing
 
-  expect(await pieceState(day14.id)).toEqual({ status: "ready", templates: ["piece_received", "piece_ready"] });
-  expect(await pieceState(day14Delayed.id)).toEqual({ status: "received", templates: ["piece_received"] });
-  expect((await pieceState(day21.id)).templates).toEqual(all.slice(0, 2).concat("piece_reminder_21"));
-  expect((await pieceState(day30.id)).templates).toEqual(all.slice(0, 3).concat("piece_reminder_30"));
-  expect((await pieceState(day40.id)).templates).toEqual(all);
-  expect(await pieceState(day45.id)).toEqual({ status: "donated", templates: all });
+  // Not marked ready by staff → stays as is, no "lista" message.
+  expect(await pieceState(day14.id)).toEqual({ status: "received", templates: ["piece_received"] });
+  expect(await pieceState(day30Firing.id)).toEqual({ status: "firing", templates: ["piece_received"] });
+  expect((await pieceState(ready7.id)).templates).toEqual(all.slice(0, 2).concat("piece_reminder_21"));
+  expect((await pieceState(ready16.id)).templates).toEqual(all.slice(0, 3).concat("piece_reminder_30"));
+  expect((await pieceState(ready26.id)).templates).toEqual(all);
+  expect(await pieceState(ready31.id)).toEqual({ status: "donated", templates: all });
+  // Ready only 10 days ago (day 45 since check-in): still in its 31 days, nothing new.
+  expect(await pieceState(lateReady.id)).toEqual({ status: "ready", templates: all.slice(0, 3) });
   expect(await pieceState(pickedUp.id)).toEqual({ status: "picked_up", templates: ["piece_received"] });
 });

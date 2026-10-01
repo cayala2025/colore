@@ -140,3 +140,4 @@ All [CC] steps in Sprints 1–5 are ticked (75), each committed after lint + typ
 - Fix: buttons dead on Network address (allowedDevOrigins); calendar skips a month with no free days; e2e runs alongside npm run dev.
 - Owner answer: slots show only Disponible / No disponible; /api/availability no longer sends seat counts (toPublicDays, tested).
 - Owner answer (privacy): removed /pieza prefill, POST /api/pieces/lookup and the rate limiter; today's booking is still linked silently on the server (e2e checks form stays empty, lookup 404s, booking_id set).
+- Owner answer (pieces): no auto-ready; 'lista' only when staff marks ready; reminders/final/donation count from the ready date (31 days for every piece); new 'Revisar: pasaron 14 días' list + count on Hoy; copy updated; CLAUDE.md rules updated.

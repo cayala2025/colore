@@ -98,3 +98,21 @@ test("Enviar WhatsApp on ready pieces", async ({ page }) => {
   const link = page.getByTestId("column-ready").getByTestId(`piece-${piece.code}`).getByRole("link", { name: "Enviar WhatsApp" });
   await expect(link).toHaveAttribute("href", new RegExp(`^https://wa\\.me/52555\\d{7}\\?text=.*${piece.code}.*lista`));
 });
+
+test("Revisar: pieces not ready after 14 days are listed, with a count on Hoy", async ({ page }) => {
+  const late = await insertPiece(15, { status: "firing" });
+  const fresh = await insertPiece(5);
+
+  await page.goto("/admin");
+  await expect(page.getByTestId("review-banner")).toContainText("14 días o más");
+  await page.getByTestId("review-banner").click();
+  await expect(page).toHaveURL(/\/admin\/piezas#revisar$/);
+  const list = page.getByTestId("review-list");
+  await expect(list.getByTestId(`piece-${late.code}`)).toBeVisible();
+  await expect(list.getByTestId(`piece-${fresh.code}`)).toHaveCount(0);
+
+  // Marking it ready removes it from the list and sends "lista" now.
+  await list.getByTestId(`piece-${late.code}`).getByRole("button", { name: "Marcar lista" }).click();
+  await expect(list.getByTestId(`piece-${late.code}`)).toHaveCount(0);
+  await expect.poll(async () => (await pieceState(late.id)).templates).toEqual(["piece_ready"]);
+});

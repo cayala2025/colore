@@ -34,7 +34,10 @@ beforeAll(async () => {
     .single();
   bookingId = b.data!.id;
 
-  for (const daysAgo of [14, 21]) {
+  for (const [daysAgo, readyDaysAgo] of [
+    [14, null],
+    [21, 7],
+  ] as const) {
     const p = await admin
       .from("pieces")
       .insert({
@@ -43,6 +46,9 @@ beforeAll(async () => {
         email: "zz-test@example.com",
         policy_accepted_at: new Date().toISOString(),
         checked_in_at: new Date(Date.now() - daysAgo * 86_400_000).toISOString(),
+        ...(readyDaysAgo === null
+          ? {}
+          : { status: "ready", ready_at: new Date(Date.now() - readyDaysAgo * 86_400_000).toISOString() }),
       })
       .select("id")
       .single();
@@ -63,17 +69,20 @@ describe("daily job is idempotent", () => {
     expect(first.reminders.sent).toBeGreaterThanOrEqual(1);
     expect(second.reminders.sent).toBe(0);
     expect(second.pieces.sent).toBe(0);
-    expect(second.pieces.markedReady).toBe(0);
     expect(second.pieces.donated).toBe(0);
 
     const { data: bookingLogs } = await admin.from("notifications_log").select("template").eq("booking_id", bookingId);
     expect(bookingLogs).toEqual([{ template: "booking_reminder" }]);
 
-    // Day-14 and day-21 pieces both get exactly one "ready" message today (one message per day).
-    for (const id of pieceIds) {
-      const { data } = await admin.from("notifications_log").select("template").eq("piece_id", id);
-      expect(data).toEqual([{ template: "piece_ready" }]);
-    }
+    // Pieces are never moved to "ready" by the job: the day-14 piece only gets the "received" backup
+    // (this test piece had none logged), never "lista".
+    const { data: notReady } = await admin.from("notifications_log").select("template").eq("piece_id", pieceIds[0]);
+    expect(notReady).toEqual([{ template: "piece_received" }]);
+    const { data: p0 } = await admin.from("pieces").select("status").eq("id", pieceIds[0]).single();
+    expect(p0?.status).toBe("received");
+    // The piece marked ready 7 days ago gets "lista" (backup) today, one message per day.
+    const { data: ready } = await admin.from("notifications_log").select("template").eq("piece_id", pieceIds[1]);
+    expect(ready).toEqual([{ template: "piece_ready" }]);
   });
 
   it("the next day the day-21 piece gets its reminder, still once", async () => {
