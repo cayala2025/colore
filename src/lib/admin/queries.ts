@@ -4,6 +4,7 @@ import { addDays, isoWeekday } from "../calendar";
 import { supabaseAdmin } from "../supabase/admin";
 import { groupBookingsBySlot, type AdminBooking, type AdminSlot } from "./daySlots";
 import { PICKED_UP_VISIBLE_DAYS, type AdminPiece } from "./pieceBoard";
+import { noShowCount } from "./noShows";
 import { parsePieceQuery, pieceQueryFilter } from "./pieceSearch";
 import { buildWeek, type AdminWeekDay } from "./week";
 
@@ -12,6 +13,8 @@ export const ADMIN_BOOKING_COLUMNS =
 
 export type AdminDay = {
   date: string;
+  /** Past no-shows per booking id (only bookings with at least one). */
+  noShows: Record<string, number>;
   blocked: { reason: string | null } | null;
   slots: AdminSlot[];
 };
@@ -25,10 +28,22 @@ export async function getAdminDay(date: string): Promise<AdminDay> {
   ]);
   const error = schedule.error ?? blocked.error ?? bookings.error;
   if (error) throw new Error(`admin day query failed: ${error.message}`);
+  const dayBookings = bookings.data as AdminBooking[];
+  const phones = [...new Set(dayBookings.map((b) => b.phone))];
+  const history = phones.length
+    ? await db.from("bookings").select("id, phone, status").in("phone", phones).eq("status", "no_show")
+    : { data: [] };
+  const noShows: Record<string, number> = {};
+  for (const b of dayBookings) {
+    const n = noShowCount((history.data ?? []) as { id: string; phone: string; status: string }[], b);
+    if (n > 0) noShows[b.id] = n;
+  }
+
   return {
     date,
+    noShows,
     blocked: blocked.data ? { reason: (blocked.data as { reason: string | null }).reason } : null,
-    slots: groupBookingsBySlot(schedule.data as ScheduleSlotRow[], bookings.data as AdminBooking[]),
+    slots: groupBookingsBySlot(schedule.data as ScheduleSlotRow[], dayBookings),
   };
 }
 

@@ -56,6 +56,17 @@ export default async function AdminTodayPage({ searchParams }: PageProps<"/admin
           <DaySlotCard
             key={slot.start}
             slot={slot}
+            renderPhoneExtra={(b) =>
+              day.noShows[b.id] ? (
+                <span
+                  data-testid="no-show-badge"
+                  title={t.noShowTitle}
+                  className="rounded-full bg-danger px-2 py-0.5 text-xs font-semibold text-white"
+                >
+                  {t.noShowBadge(day.noShows[b.id])}
+                </span>
+              ) : null
+            }
             renderActions={(b) => (
               <>
                 {b.status === "confirmed" && <WhatsAppButton href={bookingWhatsappLink(b)} />}

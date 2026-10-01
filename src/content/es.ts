@@ -209,6 +209,8 @@ export const es = {
       noBookings: "Sin reservaciones.",
       people: (n: number) => `${n} ${n === 1 ? "persona" : "personas"}`,
       customerConfirmed: "Confirmó",
+      noShowBadge: (n: number) => (n === 1 ? "Faltó 1 vez" : `Faltó ${n} veces`),
+      noShowTitle: "Este teléfono tiene reservaciones a las que no llegó",
       offSchedule: "Fuera de horario",
       totals: (bookings: number, people: number) => `${bookings} reservaciones · ${people} personas`,
     },

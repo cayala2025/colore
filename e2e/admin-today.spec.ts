@@ -51,3 +51,20 @@ test("Llegó / No vino / Cancelar update the booking", async ({ page }) => {
   const byId = Object.fromEntries((data ?? []).map((r) => [r.id, r.status]));
   expect(byId).toEqual({ [a.id]: "attended", [b.id]: "no_show", [c.id]: "cancelled" });
 });
+
+test("no-show badge next to phones that missed before", async ({ page }) => {
+  const past = new Date(Date.now() - 20 * 86_400_000).toISOString().slice(0, 10);
+  const date = new Date(Date.now() + 11 * 86_400_000);
+  while (![0, 4, 5, 6].includes(date.getUTCDay())) date.setUTCDate(date.getUTCDate() + 1);
+  const iso = date.toISOString().slice(0, 10);
+
+  const repeat = await insertBooking(iso, "16:00");
+  const clean = await insertBooking(iso, "16:00");
+  const { data } = await db.from("bookings").select("phone").eq("id", repeat.id).single();
+  const old = await insertBooking(past, "16:00");
+  await db.from("bookings").update({ phone: data!.phone, status: "no_show" }).eq("id", old.id);
+
+  await page.goto(`/admin?fecha=${iso}`);
+  await expect(page.getByTestId(`booking-${repeat.id}`).getByTestId("no-show-badge")).toHaveText("Faltó 1 vez");
+  await expect(page.getByTestId(`booking-${clean.id}`).getByTestId("no-show-badge")).toHaveCount(0);
+});
