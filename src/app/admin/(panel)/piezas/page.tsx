@@ -1,40 +1,90 @@
+import Link from "next/link";
 import { connection } from "next/server";
 import { PieceCard } from "@/components/admin/PieceCard";
 import { es } from "@/content/es";
-import { BOARD_COLUMNS, groupPiecesByColumn, PICKED_UP_VISIBLE_DAYS } from "@/lib/admin/pieceBoard";
-import { getBoardPieces, signedPhotoUrls } from "@/lib/admin/queries";
+import { BOARD_COLUMNS, groupPiecesByColumn, PICKED_UP_VISIBLE_DAYS, type BoardPiece } from "@/lib/admin/pieceBoard";
+import { getBoardPieces, searchPieces, signedPhotoUrls } from "@/lib/admin/queries";
 import { requireAdmin } from "@/lib/adminAuth";
+import { studioDaysBetween } from "@/lib/time";
 
-export default async function AdminPiecesPage() {
+export default async function AdminPiecesPage({ searchParams }: PageProps<"/admin/piezas">) {
   await requireAdmin();
   await connection();
-  const pieces = await getBoardPieces();
-  const board = groupPiecesByColumn(pieces, new Date());
-  const photos = await signedPhotoUrls(Object.values(board).flat().map((p) => p.photo_path));
+  const { q } = await searchParams;
+  const query = typeof q === "string" ? q.trim().slice(0, 80) : "";
   const t = es.admin.pieces;
+  const now = new Date();
+
+  const results: BoardPiece[] | null = query
+    ? (await searchPieces(query)).map((p) => ({ ...p, day: studioDaysBetween(new Date(p.checked_in_at), now) }))
+    : null;
+  const board = results ? null : groupPiecesByColumn(await getBoardPieces(), now);
+  const shown = results ?? Object.values(board!).flat();
+  const photos = await signedPhotoUrls(shown.map((p) => p.photo_path));
+  const photoFor = (p: BoardPiece) => (p.photo_path ? photos[p.photo_path] : undefined);
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold">{t.title}</h1>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {BOARD_COLUMNS.map((col) => (
-          <section key={col} data-testid={`column-${col}`} className="rounded-card bg-line/40 p-3">
-            <h2 className="mb-2 flex items-baseline justify-between font-semibold">
-              {t.columns[col]}
-              <span className="text-sm font-medium text-muted">
-                {board[col].length}
-                {col === "picked_up" && ` · ${t.recentPickedUp(PICKED_UP_VISIBLE_DAYS)}`}
-              </span>
-            </h2>
-            <div className="flex flex-col gap-2">
-              {board[col].length === 0 && <p className="text-sm text-muted">{t.empty}</p>}
-              {board[col].map((p) => (
-                <PieceCard key={p.id} piece={p} photoUrl={p.photo_path ? photos[p.photo_path] : undefined} />
-              ))}
-            </div>
-          </section>
-        ))}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold">{t.title}</h1>
+        <form action="/admin/piezas" className="flex w-full gap-2 sm:w-auto" role="search">
+          <label htmlFor="piece-search" className="sr-only">
+            {t.search}
+          </label>
+          <input
+            id="piece-search"
+            name="q"
+            type="search"
+            defaultValue={query}
+            placeholder={t.searchPlaceholder}
+            autoComplete="off"
+            className="h-12 min-w-0 flex-1 rounded-xl border border-line bg-surface px-3 text-base sm:w-80"
+          />
+          <button type="submit" className="h-12 rounded-xl bg-accent px-4 font-semibold text-accent-ink">
+            {t.searchButton}
+          </button>
+        </form>
       </div>
+
+      {results ? (
+        <section data-testid="search-results" className="flex flex-col gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm text-muted">{t.results(results.length, query)}</p>
+            <Link href="/admin/piezas" className="min-h-11 content-center text-sm font-medium text-accent underline">
+              {t.clearSearch}
+            </Link>
+          </div>
+          {results.length === 0 && <p className="text-muted">{t.noResults}</p>}
+          <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+            {results.map((p) => (
+              <PieceCard key={p.id} piece={p} photoUrl={photoFor(p)}>
+                <span className="rounded-full bg-accent-soft px-2 py-0.5 text-xs font-medium">{t.statusLabel[p.status]}</span>
+                <span className="text-xs text-muted">{p.phone}</span>
+              </PieceCard>
+            ))}
+          </div>
+        </section>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {BOARD_COLUMNS.map((col) => (
+            <section key={col} data-testid={`column-${col}`} className="rounded-card bg-line/40 p-3">
+              <h2 className="mb-2 flex items-baseline justify-between font-semibold">
+                {t.columns[col]}
+                <span className="text-sm font-medium text-muted">
+                  {board![col].length}
+                  {col === "picked_up" && ` · ${t.recentPickedUp(PICKED_UP_VISIBLE_DAYS)}`}
+                </span>
+              </h2>
+              <div className="flex flex-col gap-2">
+                {board![col].length === 0 && <p className="text-sm text-muted">{t.empty}</p>}
+                {board![col].map((p) => (
+                  <PieceCard key={p.id} piece={p} photoUrl={photoFor(p)} />
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

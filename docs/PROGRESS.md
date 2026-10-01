@@ -109,3 +109,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S5.7 ✅ /admin/horario: per-weekday slot rows (start/end/capacity/active, save) + add slot; validation tested; time change blocked while upcoming bookings exist; no deletes (turn off instead). E2E restores the slot it edits.
 - S5.8 ✅ /admin/bloqueos: add (date ≥ today, optional reason; warns with count of existing bookings) and remove blocked dates; upcoming list. E2E: block → availability closed → remove.
 - S5.9 ✅ /admin/piezas board: Recibida / En horno / Lista / Recogida (last 7 days), oldest first, day counter, delayed badge, photo thumbnails via 1h signed URLs (batched); groupPiecesByColumn() tested. Test pieces now end as donated (off the board).
+- S5.10 ✅ Piece search on /admin/piezas (?q=): code in any form (42, c42, C-0042), phone digits, name; all statuses; input sanitized before PostgREST or-filter (tested); e2e.

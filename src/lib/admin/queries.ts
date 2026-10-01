@@ -4,6 +4,7 @@ import { addDays, isoWeekday } from "../calendar";
 import { supabaseAdmin } from "../supabase/admin";
 import { groupBookingsBySlot, type AdminBooking, type AdminSlot } from "./daySlots";
 import { PICKED_UP_VISIBLE_DAYS, type AdminPiece } from "./pieceBoard";
+import { parsePieceQuery, pieceQueryFilter } from "./pieceSearch";
 import { buildWeek, type AdminWeekDay } from "./week";
 
 export const ADMIN_BOOKING_COLUMNS =
@@ -78,4 +79,18 @@ export async function signedPhotoUrls(paths: (string | null)[], expiresIn = 3600
   const urls: Record<string, string> = {};
   for (const d of data ?? []) if (d.path && d.signedUrl) urls[d.path] = d.signedUrl;
   return urls;
+}
+
+/** Search all pieces (any status) by code, phone or name. Newest first, max 50. */
+export async function searchPieces(raw: string): Promise<AdminPiece[]> {
+  const filter = pieceQueryFilter(parsePieceQuery(raw));
+  if (!filter) return [];
+  const { data, error } = await supabaseAdmin()
+    .from("pieces")
+    .select(ADMIN_PIECE_COLUMNS)
+    .or(filter)
+    .order("checked_in_at", { ascending: false })
+    .limit(50);
+  if (error) throw new Error(`piece search failed: ${error.message}`);
+  return (data ?? []) as AdminPiece[];
 }
