@@ -213,7 +213,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Route `GET /api/cron/daily` protected by `CRON_SECRET`.
 - [x] [CC] Daily job part 1: reminders for tomorrow's bookings.
 - [x] [CC] Daily job part 2: piece timeline (ready / 21 / 30 / 40 / mark donated at 45).
-- [ ] [CC] `vercel.json` cron: once a day at 17:00 UTC.
+- [x] [CC] `vercel.json` cron: once a day at 17:00 UTC.
 - [ ] [CC] Test: running the job twice sends nothing twice.
 - [ ] [YOU] **Test the emails**. App: browser + Terminal + your email inbox.
   1. Start the site (`cd ~/Documents/colore` → `npm run dev`).

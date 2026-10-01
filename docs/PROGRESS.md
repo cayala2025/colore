@@ -90,3 +90,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S4.10 ✅ GET /api/cron/daily guarded by CRON_SECRET bearer (timing-safe, fails closed); unit + e2e tests.
 - S4.11 ✅ Daily job part 1: reminders for tomorrow's confirmed bookings (studio date) via notify(); route runs parts independently; e2e: runs twice → one reminder.
 - S4.12 ✅ Daily job part 2: piece timeline over active pieces (auto-ready at 14, ready/21/30/40 emails, donate at 45; retryable failures retried first; guarded status updates). E2E with 7 backdated pieces, run twice.
+- S4.13 ✅ vercel.json cron /api/cron/daily at 0 17 * * * (test locks it in; winter = 09:00 local noted in QUESTIONS).
