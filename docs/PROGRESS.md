@@ -84,3 +84,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S4.4 ✅ /r/[token]: shows booking + status; "Confirmar que voy" server action (only upcoming confirmed); GET never mutates; noindex; manageView() rules tested; e2e 3 ✅.
 - S4.5 ✅ Cancel (with "¿Seguro?" step; email link preselects it) → status cancelled + cancelled_at; e2e proves seats freed in DB and in /api/availability.
 - S4.6 ✅ Piece email templates (received: code, photo via signed URL, ready date, 45-day policy; ready / pickup reminder / final notice with last pickup date) + tests.
+- S4.7 ✅ src/lib/notify.ts: insert notifications_log row first (unique target+template) → send → mark sent/failed; failed rows retried via atomic claim (max 3); DB tests: once-only, parallel, retry, recover (DB 30 ✅).
