@@ -117,6 +117,47 @@ export const es = {
     },
   },
 
+  piece: {
+    pageTitle: "Deja tu pieza",
+    intro: "Toma una foto de tu pieza para que podamos avisarte cuando esté lista.",
+    photo: {
+      stepLabel: "Paso 1",
+      title: "Foto de tu pieza",
+      take: "Tomar foto",
+      hint: "Ponla sobre la mesa, con buena luz.",
+      retake: "Otra foto",
+      use: "Usar esta",
+      processing: "Preparando la foto…",
+      previewAlt: "Foto de tu pieza",
+      error: "No pudimos leer esa foto. Intenta tomar otra.",
+    },
+    form: {
+      stepLabel: "Paso 2",
+      title: "Tus datos",
+      prefilled: "Encontramos tu reservación de hoy y llenamos tus datos.",
+      optIn: "Quiero recibir avisos por WhatsApp",
+      policy: "Acepto la política de recolección",
+      policyText: (readyDays: number, donateDays: number) =>
+        `Tu pieza estará lista en unos ${readyDays} días; te avisaremos. Si no la recoges en ${donateDays} días después de dejarla, la donaremos.`,
+      policyRequired: "Necesitas aceptar la política de recolección.",
+      submit: "Registrar mi pieza",
+      submitting: "Registrando…",
+    },
+    errors: {
+      photoRequired: "Primero toma una foto de tu pieza.",
+      upload: "No pudimos subir la foto. Revisa tu conexión e intenta de nuevo.",
+    },
+    success: {
+      title: "¡Pieza registrada!",
+      codeLabel: "Tu código",
+      showStaff: "Muéstrale este código al staff",
+      readyBy: (date: string) => `Lista aproximadamente el ${date}`,
+      emailNote: "Te enviamos un correo con la foto y tu código. Te avisaremos cuando esté lista.",
+      policy: (donateDays: number) => `Si no la recoges en ${donateDays} días, la donaremos.`,
+      another: "Registrar otra pieza",
+    },
+  },
+
   format: {
     dateLong: (weekday: string, day: number, month: string) => `${weekday} ${day} de ${month}`,
     timeRange: (start: string, end: string) => `${start} – ${end}`,

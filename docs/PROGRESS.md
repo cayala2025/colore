@@ -62,3 +62,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S3.1 ✅ Migration pieces (status enum, delayed flag, timestamps, optional booking_id) + piece_code_seq/next_piece_code() → C-0001… (no truncation past 9999); RLS on.
 - S3.2 ✅ Migration notifications_log (booking_id|piece_id, template, channel, status pending/sent/failed) + unique (target, template) partial indexes; RLS on.
 - S3.3 ✅ Private Storage bucket 'pieces' via migration (5 MB, images only, no policies); tests: private, anon can't upload/list, service role upload + signed URL.
+- S3.4 ✅ /pieza step 1: big "Tomar foto" button (file input with capture=environment opens the rear camera); piece copy added to es.ts.

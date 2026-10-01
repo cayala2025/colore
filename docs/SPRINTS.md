@@ -184,7 +184,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Migration: `pieces` (see CLAUDE.md) + sequence for codes.
 - [x] [CC] Migration: `notifications_log` + unique index (target, template).
 - [x] [CC] Private Storage bucket `pieces`.
-- [ ] [CC] Page `/pieza`, step 1: big "Tomar foto" button (opens the phone camera).
+- [x] [CC] Page `/pieza`, step 1: big "Tomar foto" button (opens the phone camera).
 - [ ] [CC] Compress the photo in the browser before upload.
 - [ ] [CC] Show a preview with "Otra foto" / "Usar esta".
 - [ ] [CC] Step 2: name, phone, email, opt-in, "acepto la política de recolección" (explains 14 days + donation at 45).
