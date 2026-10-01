@@ -8,3 +8,4 @@
 - [Admin] When you add admin rows in Table Editor → `admins`, type the email in **lowercase** (the table enforces it).
 - [Testing] Automated tests write real rows to the **dev** DB with name "ZZ Test" and phones starting with 555. They are cancelled (never deleted) after each run. You can filter them out in Table Editor, or delete them yourself if you want a clean table.
 - [Turnstile] Playwright runs with Cloudflare's always-pass test keys. Your real keys (hostname `localhost`) are used by `npm run dev`. Remember to add the production domain to the widget (Sprint 6).
+- [Storage] DB tests upload tiny 1×1 test images to `pieces/test/` in the dev bucket (never deleted automatically). Safe to delete by hand.
