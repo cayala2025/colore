@@ -10,12 +10,14 @@ export function PieceFlow() {
   const [photo, setPhoto] = useState<Blob | null>(null);
   const [processing, setProcessing] = useState(false);
   const [photoError, setPhotoError] = useState(false);
+  const [accepted, setAccepted] = useState(false);
 
   async function handleFile(file: File) {
     setProcessing(true);
     setPhotoError(false);
     try {
       setPhoto(await compressImage(file));
+      setAccepted(false);
     } catch {
       setPhotoError(true);
     } finally {
@@ -26,7 +28,7 @@ export function PieceFlow() {
   return (
     <div className="flex flex-col gap-4">
       <StepCard id="step-photo" label={es.piece.photo.stepLabel} title={es.piece.photo.title} locked={false}>
-        <PhotoStep onFile={handleFile} />
+        <PhotoStep photo={photo} accepted={accepted} onFile={handleFile} onAccept={() => setAccepted(true)} />
         {processing && (
           <p role="status" className="mt-3 text-center text-sm text-muted">
             {es.piece.photo.processing}
@@ -35,11 +37,6 @@ export function PieceFlow() {
         {photoError && (
           <p role="alert" className="mt-3 text-center text-sm text-danger">
             {es.piece.photo.error}
-          </p>
-        )}
-        {photo && (
-          <p data-testid="photo-size" className="sr-only">
-            {photo.size}
           </p>
         )}
       </StepCard>
