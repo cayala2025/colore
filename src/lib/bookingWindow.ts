@@ -1,5 +1,8 @@
 import { addDays, daysBetween, monthOf, weekdayMon0 } from "./calendar";
 
+/** Largest party that can book online; bigger groups go through WhatsApp. */
+export const MAX_ONLINE_PARTY = 8;
+
 /** Customers can book up to this many days ahead (inclusive). */
 export const MAX_DAYS_AHEAD = 60;
 

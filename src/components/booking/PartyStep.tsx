@@ -1,7 +1,6 @@
 import { WhatsAppLink } from "@/components/WhatsAppLink";
 import { es } from "@/content/es";
-
-export const MAX_ONLINE_PARTY = 8;
+import { MAX_ONLINE_PARTY } from "@/lib/bookingWindow";
 
 type Props = {
   value: number | null;
