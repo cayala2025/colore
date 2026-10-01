@@ -184,6 +184,28 @@ export const es = {
     error: "No pudimos actualizar tu reservación. Intenta de nuevo.",
   },
 
+  admin: {
+    title: "Admin",
+    login: {
+      title: "Entrar al admin",
+      email: "Correo",
+      password: "Contraseña",
+      submit: "Entrar",
+      submitting: "Entrando…",
+      invalid: "Correo o contraseña incorrectos.",
+      notAdmin: "Este correo no tiene acceso al admin.",
+      error: "No pudimos entrar. Intenta de nuevo.",
+    },
+    logout: "Salir",
+    nav: {
+      today: "Hoy",
+      calendar: "Calendario",
+      schedule: "Horario",
+      blocks: "Bloqueos",
+      pieces: "Piezas",
+    },
+  },
+
   studio: {
     // Placeholder until the owner confirms (see docs/QUESTIONS.md).
     address: "Dirección por confirmar, Mexicali, B.C.",

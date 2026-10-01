@@ -100,3 +100,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - Left: studio address (placeholder), cron winter time (QUESTIONS).
 
 ## Sprint 5 — Admin
+- S5.1 ✅ /admin/login (email + password via Supabase Auth browser client; Spanish errors); SSR server client; getAdmin/requireAdmin (getUser + admins table); test-only bypass guarded by non-production AND E2E_ADMIN_BYPASS=1 (unit-tested).

@@ -230,7 +230,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
   2. Enter her email + a password. Tick **Auto Confirm User**. Click **Create user**.
   3. Left sidebar → **Table Editor** → `admins` → **Insert** → **Insert row** → type her email → **Save**.
   4. Do the same for your own email so you can log in too.
-- [ ] [CC] `/admin/login` (email + password via Supabase Auth).
+- [x] [CC] `/admin/login` (email + password via Supabase Auth).
 - [ ] [CC] Middleware: `/admin/*` requires login + admin email.
 - [ ] [CC] `/admin` home "Hoy": today's slots, seats used/free, list of bookings.
 - [ ] [CC] Buttons per booking: Llegó (attended), No vino (no_show), Cancelar.
