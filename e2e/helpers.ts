@@ -40,3 +40,10 @@ export async function fillBookingForm(
   await page.getByLabel("Acepto el aviso de privacidad").check();
   await expect(page.getByLabel("Quiero recibir avisos por WhatsApp")).toBeChecked();
 }
+
+export async function fillPieceForm(page: Page, { name = TEST_NAME, phone = randomTestPhone() } = {}) {
+  await page.getByLabel("Nombre completo").fill(name);
+  await page.getByLabel("Teléfono (WhatsApp)").fill(phone);
+  await page.getByLabel("Correo electrónico").fill("zz-test@example.com");
+  await page.getByLabel("Acepto la política de recolección").check();
+}

@@ -13,4 +13,10 @@ export default async function globalTeardown() {
     .update({ status: "cancelled", cancelled_at: new Date().toISOString() })
     .eq("name", "ZZ Test")
     .eq("status", "confirmed");
+  // Test pieces: mark picked up so they never get notifications.
+  await db
+    .from("pieces")
+    .update({ status: "picked_up", picked_up_at: new Date().toISOString() })
+    .eq("name", "ZZ Test")
+    .in("status", ["received", "firing", "ready"]);
 }

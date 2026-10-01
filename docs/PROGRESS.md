@@ -67,3 +67,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S3.6 ✅ Photo preview with "Otra foto" (reopens camera) / "Usar esta"; e2e verifies compression to 1600×1067 and the buttons.
 - S3.7 ✅ /pieza step 2 form (name, phone +52/+1, email, WhatsApp opt-in, pickup-policy checkbox explaining 14 days + donation at 45); booking form refactored into shared ContactForm.
 - S3.8 ✅ /pieza prefills name/email when the phone has a booking today (POST /api/pieces/lookup: today only, rate limited 10/min/IP); booking_id is linked server-side on submit. Privacy trade-off logged in QUESTIONS.
+- S3.9 ✅ POST /api/pieces (multipart): validate → Turnstile → upload photo to private bucket (YYYY-MM/uuid.jpg) → insert with today's booking_id → {code, readyDate}. E2E: check-in + booking link. Teardown marks ZZ Test pieces picked_up.

@@ -27,6 +27,8 @@ export function PieceFlow() {
   const [accepted, setAccepted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const [result, setResult] = useState<{ code: string; readyDate: string } | null>(null);
   const t = es.piece;
 
   async function handleFile(file: File) {
@@ -47,9 +49,48 @@ export function PieceFlow() {
       setFormError(t.errors.photoRequired);
       return;
     }
-    void values;
-    void turnstileToken; // Sent to POST /api/pieces in a later step.
-    setSubmitting(false);
+    setSubmitting(true);
+    setFormError(null);
+    const form = new FormData();
+    form.append("photo", photo, "pieza.jpg");
+    form.append("name", values.name);
+    form.append("country", values.country);
+    form.append("phone", values.phone);
+    form.append("email", values.email);
+    form.append("whatsappOptIn", String(values.whatsappOptIn));
+    form.append("policy", String(values.privacy));
+    form.append("turnstileToken", turnstileToken);
+    try {
+      const res = await fetch("/api/pieces", { method: "POST", body: form });
+      const body = (await res.json().catch(() => ({}))) as {
+        piece?: { code: string; readyDate: string };
+        error?: string;
+      };
+      if (res.ok && body.piece) {
+        setResult(body.piece);
+        return;
+      }
+      setFormError(
+        body.error === "turnstile"
+          ? es.booking.errors.turnstile
+          : body.error === "upload"
+            ? t.errors.upload
+            : es.booking.errors.generic,
+      );
+    } catch {
+      setFormError(t.errors.upload);
+    } finally {
+      setSubmitting(false);
+    }
+    setTurnstileResetKey((k) => k + 1);
+  }
+
+  if (result) {
+    return (
+      <section data-testid="piece-success" className="rounded-card border border-line bg-surface p-6 text-center">
+        <p className="text-5xl font-bold">{result.code}</p>
+      </section>
+    );
   }
 
   return (
@@ -80,6 +121,7 @@ export function PieceFlow() {
           submittingLabel={t.form.submitting}
           submitting={submitting}
           formError={formError}
+          turnstileResetKey={turnstileResetKey}
           onSubmit={handleSubmit}
         />
       </StepCard>
