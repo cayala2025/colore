@@ -2,8 +2,10 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { BookingActions } from "@/components/admin/BookingActions";
 import { DaySlotCard } from "@/components/admin/DaySlotCard";
+import { WhatsAppButton } from "@/components/admin/WhatsAppButton";
 import { es } from "@/content/es";
 import { getAdminDay } from "@/lib/admin/queries";
+import { bookingWhatsappLink } from "@/lib/admin/whatsappMessages";
 import { requireAdmin } from "@/lib/adminAuth";
 import { SEAT_HOLDING_STATUSES } from "@/lib/availability";
 import { addDays } from "@/lib/calendar";
@@ -54,7 +56,12 @@ export default async function AdminTodayPage({ searchParams }: PageProps<"/admin
           <DaySlotCard
             key={slot.start}
             slot={slot}
-            renderActions={(b) => <BookingActions id={b.id} status={b.status} />}
+            renderActions={(b) => (
+              <>
+                {b.status === "confirmed" && <WhatsAppButton href={bookingWhatsappLink(b)} />}
+                <BookingActions id={b.id} status={b.status} />
+              </>
+            )}
           />
         ))}
       </div>

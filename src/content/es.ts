@@ -222,6 +222,18 @@ export const es = {
       undo: "Deshacer",
       error: "No se pudo actualizar. Intenta de nuevo.",
     },
+    whatsapp: {
+      button: "Enviar WhatsApp",
+      bookingReminder: (name: string, date: string, time: string, link: string) =>
+        `Hola ${name}, te escribimos de Colore para recordarte tu reservación el ${date} a las ${time}. ` +
+        `¿Nos confirmas si vienes? Puedes confirmar o cancelar aquí: ${link}`,
+      pieceReady: (name: string, code: string, lastDay: string) =>
+        `Hola ${name}, ¡tu pieza ${code} ya está lista en Colore! Puedes pasar por ella hasta el ${lastDay}. ` +
+        `Muestra tu código al llegar.`,
+      pieceReminder: (name: string, code: string, lastDay: string) =>
+        `Hola ${name}, te recordamos que tu pieza ${code} te espera en Colore. ` +
+        `Puedes recogerla hasta el ${lastDay}; después la donaremos.`,
+    },
     bookingStatus: {
       confirmed: "Reservada",
       cancelled: "Cancelada",

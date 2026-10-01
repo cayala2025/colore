@@ -104,3 +104,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S5.2 ✅ src/proxy.ts (Next 16 'middleware'): /admin/* refreshes session, requires Supabase user (getUser) + own row in admins (RLS) else → /admin/login(?error=not_admin); panel layout re-checks requireAdmin(); nav + logout. E2E: redirect, forged cookie rejected, bypass needs cookie.
 - S5.3 ✅ /admin "Hoy": day navigation (?fecha), totals, per-slot used/free seats + bar, bookings list with status; blocked/closed notices; groupBookingsBySlot() tested (incl. off-schedule bookings).
 - S5.4 ✅ Per-booking Llegó / No vino / Cancelar (with confirm) + Deshacer; server action re-checks admin, validates transitions (cancelled can't be revived), compare-and-set update. Unit + e2e.
+- S5.5 ✅ "Enviar WhatsApp" per confirmed booking → wa.me/<customer E.164 digits> with prefilled reminder + manage link (message builders tested; +52 and +1).

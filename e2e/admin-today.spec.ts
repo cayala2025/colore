@@ -18,6 +18,9 @@ test("Hoy shows the day's slots, seats and bookings", async ({ page }) => {
   await expect(page.getByTestId(`booking-${id}`)).toContainText("ZZ Test");
   await expect(page.getByTestId(`booking-${id}`)).toContainText("Reservada");
   await expect(page.getByTestId("slot-20:00")).toBeVisible(); // Thu–Sun have 4 slots
+
+  const wa = page.getByTestId(`booking-${id}`).getByRole("link", { name: "Enviar WhatsApp" });
+  await expect(wa).toHaveAttribute("href", /^https:\/\/wa\.me\/52555\d{7}\?text=Hola%20ZZ/);
 });
 
 test("Llegó / No vino / Cancelar update the booking", async ({ page }) => {

@@ -234,7 +234,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 - [x] [CC] Middleware: `/admin/*` requires login + admin email.
 - [x] [CC] `/admin` home "Hoy": today's slots, seats used/free, list of bookings.
 - [x] [CC] Buttons per booking: Llegó (attended), No vino (no_show), Cancelar.
-- [ ] [CC] "Enviar WhatsApp" button per booking (wa.me link to the customer's number with prefilled reminder).
+- [x] [CC] "Enviar WhatsApp" button per booking (wa.me link to the customer's number with prefilled reminder).
 - [ ] [CC] `/admin/calendario`: week view with bookings per slot.
 - [ ] [CC] `/admin/horario`: edit slot times/capacity, turn slots on/off.
 - [ ] [CC] `/admin/bloqueos`: add/remove blocked dates.
