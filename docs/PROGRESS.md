@@ -35,3 +35,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - Left: real data (Sprint 2); `/privacidad` page is linked but comes in Sprint 6.
 
 ## Sprint 2 — Booking goes real
+- S2.1 ✅ Migration schedule_slots (ISO weekday, times, capacity, active; RLS on). Applied to dev DB via session pooler.

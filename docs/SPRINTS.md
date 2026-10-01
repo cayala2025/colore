@@ -159,7 +159,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
   5. To stop the site: click the Terminal window and press `Ctrl + C`.
 
 ## Sprint 2 — Booking goes real
-- [ ] [CC] Migration: `schedule_slots` (weekday, start_time, end_time, capacity, active).
+- [x] [CC] Migration: `schedule_slots` (weekday, start_time, end_time, capacity, active).
 - [ ] [CC] Seed the schedule from CLAUDE.md.
 - [ ] [CC] Migration: `blocked_dates` (date, reason).
 - [ ] [CC] Migration: `bookings` (see CLAUDE.md) + index on (date, start_time).
