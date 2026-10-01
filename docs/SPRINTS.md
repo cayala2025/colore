@@ -210,7 +210,7 @@ Rule for Claude Code: finish a step â†’ lint + typecheck + test + build green â†
 - [x] [CC] `src/lib/notify.ts`: write to `notifications_log` first, then send; skip if already sent.
 - [x] [CC] If `RESEND_API_KEY` is missing, log emails to the console instead.
 - [x] [CC] Send confirmation email right after booking; "received" email right after check-in.
-- [ ] [CC] Route `GET /api/cron/daily` protected by `CRON_SECRET`.
+- [x] [CC] Route `GET /api/cron/daily` protected by `CRON_SECRET`.
 - [ ] [CC] Daily job part 1: reminders for tomorrow's bookings.
 - [ ] [CC] Daily job part 2: piece timeline (ready / 21 / 30 / 40 / mark donated at 45).
 - [ ] [CC] `vercel.json` cron: once a day at 17:00 UTC.

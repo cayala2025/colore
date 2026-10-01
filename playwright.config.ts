@@ -26,6 +26,7 @@ export default defineConfig({
       TURNSTILE_SECRET_KEY: "1x0000000000000000000000000000000AA",
       // Never send real emails from tests: empty key → emails are logged to the console.
       RESEND_API_KEY: "",
+      CRON_SECRET: "e2e-cron-secret",
     },
     timeout: 120_000,
   },

@@ -87,3 +87,4 @@ Now: **Sprint 1 — Booking page look & feel (fake data)**. First 5 steps:
 - S4.7 ✅ src/lib/notify.ts: insert notifications_log row first (unique target+template) → send → mark sent/failed; failed rows retried via atomic claim (max 3); DB tests: once-only, parallel, retry, recover (DB 30 ✅).
 - S4.8 ✅ No RESEND_API_KEY → console sender (prints subject + plain text); Playwright forces this so tests never send real email; tests.
 - S4.9 ✅ Booking confirmation + piece "received" emails sent via after() right after create (src/lib/messages.ts; photo as 60-day signed URL; lastPickupDate helper). E2E asserts notifications_log rows (13 ✅).
+- S4.10 ✅ GET /api/cron/daily guarded by CRON_SECRET bearer (timing-safe, fails closed); unit + e2e tests.
