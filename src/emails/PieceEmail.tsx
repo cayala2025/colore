@@ -1,4 +1,4 @@
-import { Img, Text } from "@react-email/components";
+import { Img, Link, Text } from "@react-email/components";
 import { es } from "@/content/es";
 import { formatDateLong } from "@/lib/format";
 import { PICKUP_DAYS, READY_DAYS } from "@/lib/pieceTimeline";
@@ -80,7 +80,11 @@ export function PieceEmail({ kind, data }: { kind: PieceEmailKind; data: PieceEm
       ) : (
         <>
           <Text style={styles.label}>{es.email.labels.address}</Text>
-          <Text style={styles.value}>{es.studio.address}</Text>
+          <Text style={styles.value}>
+            <Link href={es.studio.mapsUrl} style={{ color: "inherit", textDecoration: "underline" }}>
+              {es.studio.address}
+            </Link>
+          </Text>
           <Text style={{ ...styles.p, fontWeight: 600 }}>
             {kind === "ready"
               ? es.email.pieceReady.policy(lastDay)

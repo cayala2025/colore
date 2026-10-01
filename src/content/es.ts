@@ -4,9 +4,10 @@ const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
 
 export const es = {
   brand: {
-    name: "Colore",
+    name: "Coloré",
+    description: "Reserva tu lugar en Coloré, estudio de pintura en cerámica en Mexicali.",
     tagline: "El arte está en todas partes",
-    logoAlt: "Colore. El arte está en todas partes",
+    logoAlt: "Coloré. El arte está en todas partes",
   },
 
   booking: {
@@ -22,7 +23,7 @@ export const es = {
       summary: (n: number) => `${n} ${plural(n, "persona", "personas")}`,
       more: "9 o más",
       moreHint: "Para grupos de 9 o más te atendemos por WhatsApp.",
-      whatsappText: "Hola, quiero reservar en Colore para un grupo de ___ personas",
+      whatsappText: "Hola, quiero reservar en Coloré para un grupo de ___ personas",
       devWhatsappMissing:
         "Aviso de desarrollo: falta NEXT_PUBLIC_WHATSAPP_NUMBER, el botón de WhatsApp no abre ningún chat.",
     },
@@ -83,6 +84,7 @@ export const es = {
       submit: "Reservar",
       submitting: "Reservando…",
       turnstileLoading: "Verificando que no eres un robot…",
+      turnstileFailed: "No pudimos verificar que no eres un robot. Revisa tu conexión e intenta de nuevo.",
     },
 
     errors: {
@@ -105,7 +107,7 @@ export const es = {
     notes: {
       text: "¿Niños menores de 14 o festejo?",
       cta: "Escríbenos por WhatsApp",
-      whatsappText: "Hola, tengo una pregunta sobre mi reservación en Colore",
+      whatsappText: "Hola, tengo una pregunta sobre mi reservación en Coloré",
     },
 
     success: {
@@ -340,13 +342,13 @@ export const es = {
     whatsapp: {
       button: "Enviar WhatsApp",
       bookingReminder: (name: string, date: string, time: string, link: string) =>
-        `Hola ${name}, te escribimos de Colore para recordarte tu reservación el ${date} a las ${time}. ` +
+        `Hola ${name}, te escribimos de Coloré para recordarte tu reservación el ${date} a las ${time}. ` +
         `¿Nos confirmas si vienes? Puedes confirmar o cancelar aquí: ${link}`,
       pieceReady: (name: string, code: string, lastDay: string) =>
-        `Hola ${name}, ¡tu pieza ${code} ya está lista en Colore! Puedes pasar por ella hasta el ${lastDay}. ` +
+        `Hola ${name}, ¡tu pieza ${code} ya está lista en Coloré! Puedes pasar por ella hasta el ${lastDay}. ` +
         `Muestra tu código al llegar.`,
       pieceReminder: (name: string, code: string, lastDay: string) =>
-        `Hola ${name}, te recordamos que tu pieza ${code} te espera en Colore. ` +
+        `Hola ${name}, te recordamos que tu pieza ${code} te espera en Coloré. ` +
         `Puedes recogerla hasta el ${lastDay}; después la donaremos.`,
     },
     bookingStatus: {
@@ -365,13 +367,12 @@ export const es = {
   },
 
   studio: {
-    // Placeholder until the owner confirms (see docs/QUESTIONS.md).
-    address: "Dirección por confirmar, Mexicali, B.C.",
-    mapsUrl: "",
+    address: "Plaza Eins, Calzada Macristy, Av. Mariano Matamoros 798, Cataviña, 21240 Mexicali, Baja California",
+    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Plaza%20Eins%2C%20Calzada%20Macristy%2C%20Av.%20Mariano%20Matamoros%20798%2C%20Catavi%C3%B1a%2C%2021240%20Mexicali%2C%20Baja%20California",
   },
 
   email: {
-    footer: "Colore · Estudio de pintura en cerámica · Mexicali",
+    footer: "Coloré · Estudio de pintura en cerámica · Mexicali",
     footerAuto: "Este es un correo automático. Si tienes dudas, contesta este correo o escríbenos por WhatsApp.",
     labels: {
       date: "Día",
@@ -382,7 +383,7 @@ export const es = {
       readyBy: "Lista aproximadamente el",
     },
     bookingConfirmation: {
-      subject: (date: string) => `Tu reservación en Colore: ${date}`,
+      subject: (date: string) => `Tu reservación en Coloré: ${date}`,
       preview: "Tu lugar está reservado.",
       title: (name: string) => `¡Listo, ${name}!`,
       intro: "Tu lugar está reservado. Estos son los detalles:",
@@ -410,7 +411,7 @@ export const es = {
     },
     pieceReminder: {
       subject: (code: string) => `Tu pieza ${code} te espera`,
-      preview: "Tu pieza sigue en Colore.",
+      preview: "Tu pieza sigue en Coloré.",
       title: "Tu pieza te espera",
       intro: "Tu pieza ya está lista y sigue con nosotros. ¡Pasa por ella!",
       policy: (date: string) => `Puedes recogerla hasta el ${date}.`,
@@ -419,11 +420,11 @@ export const es = {
       subject: (code: string) => `Último aviso: tu pieza ${code} se donará en 5 días`,
       preview: "Se donará en 5 días.",
       title: "Último aviso",
-      intro: "Tu pieza sigue en Colore. Si no pasas por ella, se donará en 5 días.",
+      intro: "Tu pieza sigue en Coloré. Si no pasas por ella, se donará en 5 días.",
       policy: (date: string) => `Último día para recogerla: ${date}.`,
     },
     bookingReminder: {
-      subject: "Mañana pintas en Colore",
+      subject: "Mañana pintas en Coloré",
       preview: "Te esperamos mañana. Confirma o cancela tu lugar.",
       title: (name: string) => `¡Nos vemos mañana, ${name}!`,
       intro: "Te recordamos tu reservación:",

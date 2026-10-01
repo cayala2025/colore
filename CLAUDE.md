@@ -1,6 +1,6 @@
 # Colore — Booking + Piece Tracking
 
-Colore is a paint-your-own-pottery studio in Mexicali, Baja California (one location).
+Colore (brand name written **Coloré** in all customer-facing text) is a paint-your-own-pottery studio in Mexicali, Baja California (one location): Plaza Eins, Calzada Macristy, Av. Mariano Matamoros 798, Cataviña, 21240 Mexicali, B.C.
 This app does two things:
 1. **Bookings**: customers reserve seats in a 2-hour slot. No payment, no deposit.
 2. **Piece tracking**: after painting, customers scan a QR, photograph their piece, and get notified when it is ready (14 days) and reminded until pickup. Unclaimed pieces are donated at day 45.
@@ -38,7 +38,7 @@ Open questions for the owner (never block on them): `docs/QUESTIONS.md`
 
 ### Bookings
 - Customers see only "Disponible" / "No disponible" per slot, never seat counts (the public API does not send them).
-- Party size 1–8 online. "9 o más" opens WhatsApp (`NEXT_PUBLIC_WHATSAPP_NUMBER`; it may be EMPTY during development: then the button still renders, links to `#`, and shows a dev-only warning. Never hardcode a number) with the prefilled text: "Hola, quiero reservar en Colore para un grupo de ___ personas".
+- Party size 1–8 online. "9 o más" opens WhatsApp (`NEXT_PUBLIC_WHATSAPP_NUMBER`; it may be EMPTY during development: then the button still renders, links to `#`, and shows a dev-only warning. Never hardcode a number) with the prefilled text: "Hola, quiero reservar en Coloré para un grupo de ___ personas".
 - Fields: name, phone (WhatsApp), email, WhatsApp opt-in checkbox, privacy checkbox.
 - A slot is available for a party if `capacity - sum(party_size of confirmed bookings) >= party_size`.
 - Only ONE upcoming confirmed booking per phone number.

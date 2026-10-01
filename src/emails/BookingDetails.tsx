@@ -1,4 +1,4 @@
-import { Text } from "@react-email/components";
+import { Link, Text } from "@react-email/components";
 import { es } from "@/content/es";
 import { formatDateLong, formatTimeRange } from "@/lib/format";
 import { styles } from "./Layout";
@@ -25,7 +25,11 @@ export function BookingDetails({ date, start, end, party }: BookingEmailData) {
       <Text style={styles.label}>{l.people}</Text>
       <Text style={styles.value}>{party}</Text>
       <Text style={styles.label}>{l.address}</Text>
-      <Text style={styles.value}>{es.studio.address}</Text>
+      <Text style={styles.value}>
+        <Link href={es.studio.mapsUrl} style={{ color: "inherit", textDecoration: "underline" }}>
+          {es.studio.address}
+        </Link>
+      </Text>
     </>
   );
 }

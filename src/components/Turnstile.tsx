@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { es } from "@/content/es";
+import { turnstileSiteKey } from "@/lib/turnstileKeys";
 
-/** Cloudflare's documented test site key: always passes. Used when the real key is missing. */
-const TEST_SITE_KEY = "1x00000000000000000000AA";
 const SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 
 type TurnstileApi = {
@@ -45,6 +45,7 @@ export function Turnstile({ onToken, resetKey = 0 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
   const onTokenRef = useRef(onToken);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     onTokenRef.current = onToken;
@@ -56,15 +57,29 @@ export function Turnstile({ onToken, resetKey = 0 }: Props) {
       .then(() => {
         if (cancelled || !ref.current || !window.turnstile) return;
         widgetId.current = window.turnstile.render(ref.current, {
-          sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || TEST_SITE_KEY,
+          sitekey: turnstileSiteKey({
+            NODE_ENV: process.env.NODE_ENV,
+            NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+          }),
           language: "es",
           appearance: "interaction-only",
-          callback: (token: string) => onTokenRef.current(token),
+          callback: (token: string) => {
+            setFailed(false);
+            onTokenRef.current(token);
+          },
           "expired-callback": () => onTokenRef.current(null),
-          "error-callback": () => onTokenRef.current(null),
+          "error-callback": (code: string) => {
+            console.error(`[turnstile] error ${code}`);
+            setFailed(true);
+            onTokenRef.current(null);
+            return true; // handled: we show our own message
+          },
         });
       })
-      .catch(() => onTokenRef.current(null));
+      .catch(() => {
+        setFailed(true);
+        onTokenRef.current(null);
+      });
     return () => {
       cancelled = true;
       if (widgetId.current && window.turnstile) window.turnstile.remove(widgetId.current);
@@ -79,5 +94,23 @@ export function Turnstile({ onToken, resetKey = 0 }: Props) {
     }
   }, [resetKey]);
 
-  return <div ref={ref} className="min-h-0" />;
+  function retry() {
+    setFailed(false);
+    if (widgetId.current && window.turnstile) window.turnstile.reset(widgetId.current);
+    else window.location.reload();
+  }
+
+  return (
+    <>
+      <div ref={ref} className="min-h-0" />
+      {failed && (
+        <div role="alert" data-testid="turnstile-error" className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-danger/10 p-3 text-sm text-danger">
+          <span>{es.booking.form.turnstileFailed}</span>
+          <button type="button" onClick={retry} className="min-h-11 rounded-lg border border-line bg-surface px-3 font-medium text-ink">
+            {es.booking.date.retry}
+          </button>
+        </div>
+      )}
+    </>
+  );
 }

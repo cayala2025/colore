@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { es } from "@/content/es";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Colore",
-  description: "Reserva tu lugar en Colore, estudio de pintura en cerámica en Mexicali.",
+  title: es.brand.name,
+  description: es.brand.description,
 };
 
 export const viewport: Viewport = {

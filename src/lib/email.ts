@@ -14,7 +14,7 @@ export const resendSender: EmailSender = async ({ to, subject, react }) => {
   resend ??= new Resend(process.env.RESEND_API_KEY);
   const [html, text] = await Promise.all([render(react), render(react, { plainText: true })]);
   const { data, error } = await resend.emails.send({
-    from: process.env.EMAIL_FROM || "Colore <onboarding@resend.dev>",
+    from: process.env.EMAIL_FROM || "Coloré <onboarding@resend.dev>",
     to,
     subject,
     html,
