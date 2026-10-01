@@ -201,7 +201,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
   5. Supabase → **Storage** → `pieces` bucket: the photo is there. **Table Editor** → `pieces`: the row is there.
 
 ## Sprint 4 — Emails + daily cron
-- [ ] [CC] Install Resend + React Email. Shared email layout in Spanish.
+- [x] [CC] Install Resend + React Email. Shared email layout in Spanish.
 - [ ] [CC] Template: booking confirmation (date, time, people, address, manage link).
 - [ ] [CC] Template: booking reminder (day before, "Confirmar" / "Cancelar").
 - [ ] [CC] Page `/r/[token]`: shows the booking, confirm and cancel buttons.

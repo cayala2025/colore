@@ -158,6 +158,17 @@ export const es = {
     },
   },
 
+  studio: {
+    // Placeholder until the owner confirms (see docs/QUESTIONS.md).
+    address: "Dirección por confirmar, Mexicali, B.C.",
+    mapsUrl: "",
+  },
+
+  email: {
+    footer: "Colore · Estudio de pintura en cerámica · Mexicali",
+    footerAuto: "Este es un correo automático. Si tienes dudas, contesta este correo o escríbenos por WhatsApp.",
+  },
+
   qrCard: {
     title: "¿Terminaste tu pieza?",
     body: "Escanea este código, tómale una foto y te avisamos cuando esté lista.",
