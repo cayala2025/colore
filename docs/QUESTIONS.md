@@ -29,3 +29,5 @@ ANSWERS (Carlos):
 - Studio address: still pending, keep the placeholder. I'll send it later.
 ## Follow-ups (session 2)
 - [Brand — FYI] Logo cropped into `public/brand/colore-logo.jpg` and used in the site header (on a band matching its pink) and emails; palette retuned to the logo (pink `#f5d5d6`, terracotta `#b04a38`). The logo spells **"Coloré"** (with accent). The site text says "Colore". Should the name be written "Coloré" everywhere?
+- [Done — session 2] Applied your answers: logo + tagline + palette; slots show only Disponible / No disponible (seat counts no longer leave the server); /pieza prefill and lookup endpoint removed (silent booking link kept); pieces never auto-ready, "lista" only when staff marks it, 31 days from "lista" to donation, new "Revisar: pasaron 14 días" list + count on Hoy; cron unchanged. CLAUDE.md business rules updated to match.
+- Still open: WhatsApp number (kept open), studio address (placeholder), "Colore" vs "Coloré" spelling (above).
