@@ -142,3 +142,4 @@ All [CC] steps in Sprints 1–5 are ticked (75), each committed after lint + typ
 - Owner answer (privacy): removed /pieza prefill, POST /api/pieces/lookup and the rate limiter; today's booking is still linked silently on the server (e2e checks form stays empty, lookup 404s, booking_id set).
 - Owner answer (pieces): no auto-ready; 'lista' only when staff marks ready; reminders/final/donation count from the ready date (31 days for every piece); new 'Revisar: pasaron 14 días' list + count on Hoy; copy updated; CLAUDE.md rules updated.
 - Fix: Turnstile stuck on phones (error 110200, hostname not allowed) → test keys in dev, real keys in production, visible error + retry; name 'Coloré' everywhere; studio address + Maps link in emails.
+- Admin month view (1/2): buildMonth/summarizeMonth/fullness pure functions + tests; week and month share one date-range query.

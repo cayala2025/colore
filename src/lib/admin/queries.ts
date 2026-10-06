@@ -1,12 +1,13 @@
 import "server-only";
 import type { ScheduleSlotRow } from "../availability";
-import { addDays, isoWeekday } from "../calendar";
+import { addDays, daysInMonth, isoWeekday } from "../calendar";
 import { supabaseAdmin } from "../supabase/admin";
 import { groupBookingsBySlot, type AdminBooking, type AdminSlot } from "./daySlots";
 import { PICKED_UP_VISIBLE_DAYS, type AdminPiece } from "./pieceBoard";
 import { needsReview } from "../pieceTimeline";
 import { noShowCount } from "./noShows";
 import { parsePieceQuery, pieceQueryFilter } from "./pieceSearch";
+import { buildMonth, summarizeMonth, type MonthDay, type MonthSummary } from "./month";
 import { buildWeek, type AdminWeekDay } from "./week";
 
 export const ADMIN_BOOKING_COLUMNS =
@@ -48,27 +49,42 @@ export async function getAdminDay(date: string): Promise<AdminDay> {
   };
 }
 
-export async function getAdminWeek(monday: string): Promise<AdminWeekDay[]> {
+type RangeData = { schedule: ScheduleSlotRow[]; blockedDates: string[]; bookings: AdminBooking[] };
+
+/** Schedule, blocked dates and bookings (confirmed, attended, no-show) between two dates, inclusive. */
+async function getAdminRange(from: string, to: string): Promise<RangeData> {
   const db = supabaseAdmin();
-  const sunday = addDays(monday, 6);
   const [schedule, blocked, bookings] = await Promise.all([
     db.from("schedule_slots").select("weekday, start_time, end_time, capacity, active"),
-    db.from("blocked_dates").select("date").gte("date", monday).lte("date", sunday),
+    db.from("blocked_dates").select("date").gte("date", from).lte("date", to),
     db
       .from("bookings")
       .select(ADMIN_BOOKING_COLUMNS)
-      .gte("date", monday)
-      .lte("date", sunday)
+      .gte("date", from)
+      .lte("date", to)
       .in("status", ["confirmed", "attended", "no_show"]),
   ]);
   const error = schedule.error ?? blocked.error ?? bookings.error;
-  if (error) throw new Error(`admin week query failed: ${error.message}`);
-  return buildWeek(
-    monday,
-    schedule.data as ScheduleSlotRow[],
-    (blocked.data ?? []).map((b) => b.date as string),
-    bookings.data as AdminBooking[],
-  );
+  if (error) throw new Error(`admin calendar query failed: ${error.message}`);
+  return {
+    schedule: schedule.data as ScheduleSlotRow[],
+    blockedDates: (blocked.data ?? []).map((b) => b.date as string),
+    bookings: bookings.data as AdminBooking[],
+  };
+}
+
+export async function getAdminWeek(monday: string): Promise<AdminWeekDay[]> {
+  const { schedule, blockedDates, bookings } = await getAdminRange(monday, addDays(monday, 6));
+  return buildWeek(monday, schedule, blockedDates, bookings);
+}
+
+/** Month view ("YYYY-MM"): one day summary per date plus month totals. */
+export async function getAdminMonth(month: string): Promise<{ days: MonthDay[]; summary: MonthSummary }> {
+  const from = `${month}-01`;
+  const to = `${month}-${String(daysInMonth(month)).padStart(2, "0")}`;
+  const { schedule, blockedDates, bookings } = await getAdminRange(from, to);
+  const days = buildMonth(month, schedule, blockedDates, bookings);
+  return { days, summary: summarizeMonth(days, bookings) };
 }
 
 export const ADMIN_PIECE_COLUMNS =
