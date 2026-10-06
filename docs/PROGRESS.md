@@ -143,3 +143,4 @@ All [CC] steps in Sprints 1–5 are ticked (75), each committed after lint + typ
 - Owner answer (pieces): no auto-ready; 'lista' only when staff marks ready; reminders/final/donation count from the ready date (31 days for every piece); new 'Revisar: pasaron 14 días' list + count on Hoy; copy updated; CLAUDE.md rules updated.
 - Fix: Turnstile stuck on phones (error 110200, hostname not allowed) → test keys in dev, real keys in production, visible error + retry; name 'Coloré' everywhere; studio address + Maps link in emails.
 - Admin month view (1/2): buildMonth/summarizeMonth/fullness pure functions + tests; week and month share one date-range query.
+- Admin month view (2/2): Calendario Semana | Mes switch (week stays default); month grid with people/capacity per day, color by fullness, per-slot bars on md+, legend, month summary (bookings, people, no-shows, busiest day); past months allowed; tap a day → Hoy. E2E + 375px check.
