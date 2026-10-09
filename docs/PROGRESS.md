@@ -144,3 +144,4 @@ All [CC] steps in Sprints 1–5 are ticked (75), each committed after lint + typ
 - Fix: Turnstile stuck on phones (error 110200, hostname not allowed) → test keys in dev, real keys in production, visible error + retry; name 'Coloré' everywhere; studio address + Maps link in emails.
 - Admin month view (1/2): buildMonth/summarizeMonth/fullness pure functions + tests; week and month share one date-range query.
 - Admin month view (2/2): Calendario Semana | Mes switch (week stays default); month grid with people/capacity per day, color by fullness, per-slot bars on md+, legend, month summary (bookings, people, no-shows, busiest day); past months allowed; tap a day → Hoy. E2E + 375px check.
+- Step 2.2: DB test suites locked (ALLOW_LIVE_DB_TESTS=yes on the command line + TEST_EMAIL); tests use name TEST, owner email, dates 50–60 days ahead, delete only their own rows; daily-job runs, schedule edit and bulk teardown removed. Gate now runs lint/typecheck/unit/build only.

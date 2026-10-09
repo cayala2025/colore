@@ -1,15 +1,13 @@
 import { expect, test } from "@playwright/test";
-import { db, insertBooking } from "./db";
+import { db, insertBooking, testDates } from "./db";
 
 test.beforeEach(async ({ context }) => {
   await context.addCookies([{ name: "e2e_admin", value: "1", url: "http://localhost:3100" }]);
 });
 
-/** A Friday ~25 days ahead (open day with 4 slots). */
+/** A Friday 50+ days ahead (open day with 4 slots). */
 function testFriday() {
-  const d = new Date(Date.now() + 25 * 86_400_000);
-  while (d.getUTCDay() !== 5) d.setUTCDate(d.getUTCDate() + 1);
-  return d.toISOString().slice(0, 10);
+  return testDates().find((d) => new Date(`${d}T12:00:00Z`).getUTCDay() === 5)!;
 }
 
 test("week is the default; switch to Mes and back", async ({ page }) => {

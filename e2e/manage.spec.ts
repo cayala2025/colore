@@ -4,7 +4,7 @@ import { createTestBooking, db, futureDate } from "./db";
 test("manage link: shows the booking and confirms attendance", async ({ page }) => {
   const { id, manage_token } = await createTestBooking(futureDate(20));
   await page.goto(`/r/${manage_token}?accion=confirmar`);
-  await expect(page.getByTestId("manage-booking")).toContainText("Hola, ZZ");
+  await expect(page.getByTestId("manage-booking")).toContainText("Hola, TEST");
   await expect(page.getByTestId("manage-status")).toHaveText("Reservada");
 
   await page.getByRole("button", { name: "Confirmar que voy" }).click();

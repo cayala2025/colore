@@ -1,22 +1,15 @@
-// Test bookings are never deleted: cancel them so their seats are free again.
+// Delete exactly the rows this run created (name "TEST" + TEST_EMAIL + created since the run started).
 import { loadEnvConfig } from "@next/env";
 import { createClient } from "@supabase/supabase-js";
+import { deleteTestRows, testEmail } from "../test-support/liveDb";
 
 export default async function globalTeardown() {
   loadEnvConfig(process.cwd());
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return;
-  const db = createClient(url, key, { auth: { persistSession: false } });
-  await db
-    .from("bookings")
-    .update({ status: "cancelled", cancelled_at: new Date().toISOString() })
-    .eq("name", "ZZ Test")
-    .eq("status", "confirmed");
-  // Test pieces: move to "donated" so they never get notifications and stay off the admin board.
-  await db
-    .from("pieces")
-    .update({ status: "donated", donated_at: new Date().toISOString() })
-    .eq("name", "ZZ Test")
-    .in("status", ["received", "firing", "ready", "picked_up"]);
+  const since = process.env.TEST_RUN_STARTED_AT;
+  if (!since) return;
+  const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
+    auth: { persistSession: false },
+  });
+  const removed = await deleteTestRows(db, testEmail().toLowerCase(), since);
+  console.log(`[teardown] deleted this run's TEST rows (pieces: ${removed.pieces}, photos: ${removed.photos})`);
 }

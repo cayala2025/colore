@@ -29,8 +29,8 @@ test("search by code, phone or name", async ({ page }) => {
   await page.goto(`/admin/piezas?q=${encodeURIComponent(data!.phone.slice(-7))}`);
   await expect(page.getByTestId(`piece-${piece.code}`)).toBeVisible();
 
-  await page.goto("/admin/piezas?q=zz%20test");
-  await expect(page.getByTestId("search-results")).toContainText("ZZ Test");
+  await page.goto("/admin/piezas?q=test");
+  await expect(page.getByTestId("search-results")).toContainText("TEST");
 
   await page.goto("/admin/piezas?q=nadie-se-llama-asi-xyz");
   await expect(page.getByText("No encontramos piezas")).toBeVisible();

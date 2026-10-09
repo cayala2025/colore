@@ -19,19 +19,21 @@ describe("pieces bucket", () => {
   });
 
   it("anon cannot upload or list", async () => {
-    const up = await anon.storage.from("pieces").upload(`test/anon-${Date.now()}.jpg`, JPEG, { contentType: "image/jpeg" });
+    const up = await anon.storage.from("pieces").upload(`test/TEST-anon-${Date.now()}.jpg`, JPEG, { contentType: "image/jpeg" });
     expect(up.error).not.toBeNull();
     const list = await anon.storage.from("pieces").list("test");
     expect(list.data ?? []).toEqual([]);
   });
 
   it("service role can upload and create a signed URL", async () => {
-    const path = `test/zz-test-${Date.now()}.jpg`;
+    const path = `test/TEST-${Date.now()}.jpg`;
     const up = await admin.storage.from("pieces").upload(path, JPEG, { contentType: "image/jpeg" });
     expect(up.error).toBeNull();
     const signed = await admin.storage.from("pieces").createSignedUrl(path, 60);
     expect(signed.data?.signedUrl).toContain("token=");
     const res = await fetch(signed.data!.signedUrl);
     expect(res.status).toBe(200);
+    // Delete exactly what this test uploaded.
+    expect((await admin.storage.from("pieces").remove([path])).error).toBeNull();
   });
 });

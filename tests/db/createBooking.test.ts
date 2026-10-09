@@ -1,13 +1,11 @@
-import { afterAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { addDays } from "@/lib/calendar";
 import { todayInStudio } from "@/lib/time";
-import { admin, book, cancelTestBookings, fillUntil, seatsLeft, testDate, testPhone } from "./helpers";
-
-afterAll(cancelTestBookings);
+import { admin, book, fillUntil, seatsLeft, testDate, testPhone } from "./helpers";
 
 describe("create_booking RPC", () => {
   it("creates a booking and returns a manage token", async () => {
-    const date = await testDate(40);
+    const date = await testDate(2);
     const { data, error } = await book({ date, start: "16:00", party: 2 });
     expect(error).toBeNull();
     expect(data[0].manage_token).toMatch(/^[0-9a-f]{64}$/);
@@ -15,7 +13,7 @@ describe("create_booking RPC", () => {
   });
 
   it("rejects a party that does not fit (slot_full)", async () => {
-    const date = await testDate(41);
+    const date = await testDate(3);
     await fillUntil(date, "18:00", 7);
     const { error } = await book({ date, start: "18:00", party: 8 });
     expect(error?.message).toBe("slot_full");
@@ -25,7 +23,7 @@ describe("create_booking RPC", () => {
   });
 
   it("rejects invalid party sizes", async () => {
-    const date = await testDate(42);
+    const date = await testDate(2);
     expect((await book({ date, start: "11:00", party: 0 })).error?.message).toBe("invalid_party");
     expect((await book({ date, start: "11:00", party: 9 })).error?.message).toBe("invalid_party");
   });
@@ -34,7 +32,7 @@ describe("create_booking RPC", () => {
     let monday = addDays(todayInStudio(), 10);
     while (new Date(`${monday}T12:00:00Z`).getUTCDay() !== 1) monday = addDays(monday, 1);
     expect((await book({ date: monday, start: "11:00", party: 2 })).error?.message).toBe("slot_not_found");
-    const date = await testDate(43);
+    const date = await testDate(2);
     expect((await book({ date, start: "12:00", party: 2 })).error?.message).toBe("slot_not_found");
   });
 
@@ -48,7 +46,7 @@ describe("create_booking RPC", () => {
     const { createClient } = await import("@supabase/supabase-js");
     const anon = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
     const { error } = await anon.rpc("create_booking", {
-      p_date: await testDate(44),
+      p_date: await testDate(2),
       p_start_time: "11:00",
       p_party_size: 1,
       p_name: "x",
@@ -63,22 +61,22 @@ describe("create_booking RPC", () => {
 describe("one upcoming booking per phone", () => {
   it("rejects a second upcoming booking for the same phone", async () => {
     const phone = testPhone();
-    const first = await book({ date: await testDate(45), start: "11:00", party: 2, phone });
+    const first = await book({ date: await testDate(2), start: "11:00", party: 2, phone });
     expect(first.error).toBeNull();
-    const second = await book({ date: await testDate(52), start: "16:00", party: 2, phone });
+    const second = await book({ date: await testDate(4), start: "16:00", party: 2, phone });
     expect(second.error?.message).toBe("phone_has_booking");
   });
 
   it("allows booking again once the previous one is cancelled", async () => {
     const phone = testPhone();
-    const first = await book({ date: await testDate(46), start: "11:00", party: 2, phone });
+    const first = await book({ date: await testDate(4), start: "11:00", party: 2, phone });
     await admin.from("bookings").update({ status: "cancelled" }).eq("id", first.data[0].id);
-    const again = await book({ date: await testDate(53), start: "11:00", party: 2, phone });
+    const again = await book({ date: await testDate(5), start: "11:00", party: 2, phone });
     expect(again.error).toBeNull();
   });
 
   it("rejects phones that are not E.164 (+52/+1)", async () => {
-    const { error } = await book({ date: await testDate(47), start: "11:00", party: 2, phone: "6861234567" });
+    const { error } = await book({ date: await testDate(2), start: "11:00", party: 2, phone: "6861234567" });
     expect(error?.message).toBe("invalid_phone");
   });
 });

@@ -1,14 +1,23 @@
 import { expect, type Page } from "@playwright/test";
+import { TEST_NAME, testEmail } from "../test-support/liveDb";
+import { minTestDate } from "./db";
 
-/** Pick the first enabled date that has a slot fitting the party; returns the date and slot start. */
+export { TEST_NAME };
+
+/**
+ * Pick the first enabled date at least MIN_DAYS_AHEAD days away that has a slot fitting the party
+ * (tests never book near real customers' dates). Returns the date and slot start.
+ */
 export async function pickFirstAvailableDateAndSlot(page: Page): Promise<{ date: string; start: string }> {
-  for (let monthTries = 0; monthTries < 3; monthTries++) {
+  const min = minTestDate();
+  for (let monthTries = 0; monthTries < 4; monthTries++) {
     await expect(page.getByText("Cargando disponibilidad…")).toHaveCount(0);
     const dates = page.locator("[data-date]:not([disabled])");
     const count = await dates.count();
     for (let i = 0; i < count; i++) {
       const dateBtn = dates.nth(i);
       const date = (await dateBtn.getAttribute("data-date"))!;
+      if (date < min) continue;
       await dateBtn.click();
       const slot = page.locator("[data-slot]:not([disabled])").first();
       if (await slot.isVisible().catch(() => false)) {
@@ -19,24 +28,18 @@ export async function pickFirstAvailableDateAndSlot(page: Page): Promise<{ date:
     }
     await page.getByRole("button", { name: "Mes siguiente" }).click();
   }
-  throw new Error("No available date/slot found");
+  throw new Error(`No available date/slot found on or after ${min}`);
 }
-
-/** Name used for every test booking (cancelled in global teardown). */
-export const TEST_NAME = "ZZ Test";
 
 /** Random 10-digit test phone (555 prefix) so runs never collide on "one booking per phone". */
 export function randomTestPhone(): string {
   return `555${String(Math.floor(Math.random() * 1e7)).padStart(7, "0")}`;
 }
 
-export async function fillBookingForm(
-  page: Page,
-  { name = TEST_NAME, phone = randomTestPhone(), email = "zz-test@example.com" } = {},
-) {
+export async function fillBookingForm(page: Page, { name = TEST_NAME, phone = randomTestPhone() } = {}) {
   await page.getByLabel("Nombre completo").fill(name);
   await page.getByLabel("Teléfono (WhatsApp)").fill(phone);
-  await page.getByLabel("Correo electrónico").fill(email);
+  await page.getByLabel("Correo electrónico").fill(testEmail());
   await page.getByLabel("Acepto el aviso de privacidad").check();
   await expect(page.getByLabel("Quiero recibir avisos por WhatsApp")).toBeChecked();
 }
@@ -44,6 +47,6 @@ export async function fillBookingForm(
 export async function fillPieceForm(page: Page, { name = TEST_NAME, phone = randomTestPhone() } = {}) {
   await page.getByLabel("Nombre completo").fill(name);
   await page.getByLabel("Teléfono (WhatsApp)").fill(phone);
-  await page.getByLabel("Correo electrónico").fill("zz-test@example.com");
+  await page.getByLabel("Correo electrónico").fill(testEmail());
   await page.getByLabel("Acepto la política de recolección").check();
 }

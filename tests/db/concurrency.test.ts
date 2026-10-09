@@ -1,11 +1,9 @@
-import { afterAll, describe, expect, it } from "vitest";
-import { book, cancelTestBookings, fillUntil, seatsLeft, testDate } from "./helpers";
-
-afterAll(cancelTestBookings);
+import { describe, expect, it } from "vitest";
+import { book, fillUntil, seatsLeft, testDate } from "./helpers";
 
 describe("seats are never oversold", () => {
   it("2 parallel bookings for the last seats → exactly one succeeds", async () => {
-    const date = await testDate(30);
+    const date = await testDate(0);
     await fillUntil(date, "20:00", 5);
 
     const results = await Promise.all([
@@ -19,7 +17,7 @@ describe("seats are never oversold", () => {
   });
 
   it("a burst of 12 parallel bookings never exceeds capacity", async () => {
-    const date = await testDate(31);
+    const date = await testDate(1);
     await fillUntil(date, "11:00", 10);
 
     const results = await Promise.all(Array.from({ length: 12 }, () => book({ date, start: "11:00", party: 3 })));

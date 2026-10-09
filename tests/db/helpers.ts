@@ -1,25 +1,42 @@
 import { createClient } from "@supabase/supabase-js";
 import { addDays, isoWeekday } from "@/lib/calendar";
 import { todayInStudio } from "@/lib/time";
+import { MIN_DAYS_AHEAD, TEST_NAME, testEmail } from "../../test-support/liveDb";
+
+export { TEST_NAME };
 
 export const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
   auth: { persistSession: false },
 });
 
-export const TEST_NAME = "ZZ Test";
+/** The owner's email (TEST_EMAIL), lowercased like the database stores it. */
+export const EMAIL = testEmail().toLowerCase();
 
 /** Random test phone (+52 555 …), unique enough per run. */
 export function testPhone(): string {
   return `+52555${String(Math.floor(Math.random() * 1e7)).padStart(7, "0")}`;
 }
 
-/** A future Thursday–Sunday date that is not blocked, `offset` days-ish ahead. */
-export async function testDate(offset = 50): Promise<string> {
-  let date = addDays(todayInStudio(), offset);
-  while (isoWeekday(date) < 4) date = addDays(date, 1);
-  const { data } = await admin.from("blocked_dates").select("date").eq("date", date);
-  if (data?.length) return testDate(offset + 7);
-  return date;
+/** Thursday–Sunday, not blocked, between MIN_DAYS_AHEAD and 60 days ahead. */
+async function testDates(): Promise<string[]> {
+  const today = todayInStudio();
+  const candidates: string[] = [];
+  for (let i = MIN_DAYS_AHEAD; i <= 60; i++) {
+    const d = addDays(today, i);
+    if (isoWeekday(d) >= 4) candidates.push(d);
+  }
+  const { data } = await admin.from("blocked_dates").select("date").in("date", candidates);
+  const blocked = new Set((data ?? []).map((b) => b.date as string));
+  return candidates.filter((d) => !blocked.has(d));
+}
+
+/**
+ * The n-th test date. Tests that fill a slot to capacity use their own index so they never collide:
+ * 0 = concurrency 20:00, 1 = concurrency 11:00, 3 = slot_full 18:00. Others use 2, 4, 5.
+ */
+export async function testDate(n: number): Promise<string> {
+  const dates = await testDates();
+  return dates[n % dates.length];
 }
 
 export async function seatsLeft(date: string, start: string): Promise<number> {
@@ -38,14 +55,14 @@ export async function seatsLeft(date: string, start: string): Promise<number> {
   return slot!.capacity - (rows ?? []).reduce((s, r) => s + r.party_size, 0);
 }
 
-export function book(args: { date: string; start: string; party: number; phone?: string; email?: string }) {
+export function book(args: { date: string; start: string; party: number; phone?: string }) {
   return admin.rpc("create_booking", {
     p_date: args.date,
     p_start_time: args.start,
     p_party_size: args.party,
     p_name: TEST_NAME,
     p_phone: args.phone ?? testPhone(),
-    p_email: args.email ?? "zz-test@example.com",
+    p_email: EMAIL,
     p_whatsapp_opt_in: false,
   });
 }
@@ -59,13 +76,4 @@ export async function fillUntil(date: string, start: string, left: number) {
     if (error) throw new Error(`fill failed: ${error.message}`);
     remaining -= party;
   }
-}
-
-/** Test rows are never deleted: cancel them so their seats are free again. */
-export async function cancelTestBookings() {
-  await admin
-    .from("bookings")
-    .update({ status: "cancelled", cancelled_at: new Date().toISOString() })
-    .eq("name", TEST_NAME)
-    .eq("status", "confirmed");
 }
