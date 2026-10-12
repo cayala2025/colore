@@ -97,3 +97,10 @@ Open questions for the owner (never block on them): `docs/QUESTIONS.md`
 - `NEXT_PUBLIC_WHATSAPP_NUMBER` (digits only, e.g. 5216860000000). Empty until Colore gets its phone; everything must work without it
 - `NEXT_PUBLIC_SITE_URL`
 - `CRON_SECRET` (Vercel sends it as a Bearer token to cron routes; reject requests without it)
+## LIVE DATABASE (read this first)
+- There is only ONE Supabase project (colore-dev) and it is the LIVE production database with real customer data. There is no separate test database.
+- Never delete, truncate, or bulk-update rows in bookings, pieces, notifications_log, or Storage.
+- Migrations must be additive only (new tables, new columns with defaults). Never drop or rename a table or column. Before applying ANY migration, stop and ask me.
+- After each step run only: lint, typecheck, unit tests (Vitest, which use no database), and build.
+- Do NOT run Playwright or any test that writes to the database unless I explicitly ask. When I do ask: use the name "TEST", my own email, a date at least 50 days ahead, and delete those exact rows when the test finishes.
+- Never trigger emails to any address except mine.

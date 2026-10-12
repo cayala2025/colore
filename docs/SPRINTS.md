@@ -268,7 +268,7 @@ Rule for Claude Code: finish a step → lint + typecheck + test + build green �
 ### B. Go live
 - [ ] [YOU] **Buy the domain**. App: browser.
   1. Buy e.g. `colore.mx` at a registrar that sells .mx (Akky.mx, GoDaddy, etc.). Keep the login; you'll add DNS records there.
-- [ ] [YOU] **Create the production database**. App: browser + Terminal.
+- [x] [YOU] **Create the production database**. App: browser + Terminal. SKIPPED: colore-dev is the live database
   1. Supabase → **New project** → `colore-prod`, same region, generate + save a new DB password.
   2. Copy its keys the same way as Sprint 0 (Connect button + Project Settings → API Keys). Keep them in a separate note labeled PROD.
   3. Terminal: `cd ~/Documents/colore` → `npx supabase db push --db-url "PASTE_PROD_DB_URL"` → Enter. This creates all tables in prod.
