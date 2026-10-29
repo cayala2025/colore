@@ -45,6 +45,17 @@ describe("weeklyDemand", () => {
   });
 });
 
+describe("weeklyDemand manual override", () => {
+  it("wins over the plan and keeps other products computed", () => {
+    const d = weeklyDemand(["a", "b"], [], { a: 75, b: 25 }, "2026-11-02", 100, { a: 40, b: null });
+    expect(d.a).toEqual({ perWeek: 40, source: "manual" });
+    expect(d.b).toEqual({ perWeek: 25, source: "plan" });
+  });
+  it("accepts a manual zero", () => {
+    expect(weeklyDemand(["a"], [], { a: 75 }, "2026-11-02", 100, { a: 0 }).a).toEqual({ perWeek: 0, source: "manual" });
+  });
+});
+
 describe("reorderSuggestion", () => {
   const base = { demandPerWeek: 10, caseSize: 12, caseCostUsd: 44.28, seasonal: false };
 

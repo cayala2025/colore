@@ -49,3 +49,18 @@ describe("heatmap", () => {
     expect(h.max).toBe(5);
   });
 });
+
+describe("slotLabelFor grace window", () => {
+  it("counts early arrivals for the next slot", () => {
+    expect(slotLabelFor("10:45", 30)).toBe("11–13");
+    expect(slotLabelFor("15:30", 30)).toBe("16–18");
+    expect(slotLabelFor("10:30", 30)).toBe("11–13");
+  });
+  it("does not stretch past the grace", () => {
+    expect(slotLabelFor("10:29", 30)).toBe("Fuera de turno");
+    expect(slotLabelFor("13:30", 30)).toBe("Fuera de turno");
+  });
+  it("is off by default", () => {
+    expect(slotLabelFor("10:45")).toBe("Fuera de turno");
+  });
+});

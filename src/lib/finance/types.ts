@@ -23,6 +23,7 @@ export type FinanceSettings = {
   kilnWeeklyMin: number;
   kilnWeeklyMax: number;
   resicoAnnualCap: number;
+  slotGraceMinutes: number;
 };
 
 export const DEFAULT_SETTINGS: FinanceSettings = {
@@ -46,6 +47,7 @@ export const DEFAULT_SETTINGS: FinanceSettings = {
   kilnWeeklyMin: 210,
   kilnWeeklyMax: 280,
   resicoAnnualCap: 3_500_000,
+  slotGraceMinutes: 30,
 };
 
 export type Product = {
@@ -59,6 +61,7 @@ export type Product = {
   seasonal: boolean;
   active: boolean;
   sort: number;
+  weeklyDemandOverride: number | null;
 };
 
 /** One non-voided sale ticket, with the snapshot numbers of its items. */

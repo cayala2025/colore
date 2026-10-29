@@ -27,14 +27,31 @@ export function stockByProduct(productIds: string[], i: StockInputs): Record<str
   return out;
 }
 
-export type DemandSource = "sales" | "plan";
+export type DemandSource = "sales" | "plan" | "manual";
 
 /**
  * Weekly demand per product. With ≥2 complete weeks since the first sale, it is the average of the last
  * up-to-4 complete weeks (Mon–Sun) of sales; otherwise the planned weekly customers split by each
- * product's share in the latest count.
+ * product's share in the latest count. A manual override per product wins over both.
  */
 export function weeklyDemand(
+  productIds: string[],
+  sold: { productId: string; studioDate: string }[],
+  countQuantities: Record<string, number>,
+  today: string,
+  planWeeklyCustomers: number,
+  overrides: Record<string, number | null | undefined> = {},
+): Record<string, { perWeek: number; source: DemandSource }> {
+  const computed = computeDemand(productIds, sold, countQuantities, today, planWeeklyCustomers);
+  const out: Record<string, { perWeek: number; source: DemandSource }> = {};
+  for (const id of productIds) {
+    const o = overrides[id];
+    out[id] = o === null || o === undefined ? computed[id] : { perWeek: o, source: "manual" };
+  }
+  return out;
+}
+
+function computeDemand(
   productIds: string[],
   sold: { productId: string; studioDate: string }[],
   countQuantities: Record<string, number>,

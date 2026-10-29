@@ -10,9 +10,17 @@ const SHIFTS: { label: string; from: string; to: string }[] = [
   { label: "20–22", from: "20:00", to: "22:00" },
 ];
 
-/** Slot label for a studio-local "HH:MM" time. */
-export function slotLabelFor(time: string): string {
-  return SHIFTS.find((s) => time >= s.from && time < s.to)?.label ?? OFF_SHIFT;
+const minutes = (hhmm: string) => Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3, 5));
+
+/**
+ * Slot label for a studio-local "HH:MM" time. A time outside every slot still counts for the next slot
+ * when it falls within `graceMinutes` before that slot starts (early arrivals).
+ */
+export function slotLabelFor(time: string, graceMinutes = 0): string {
+  const inside = SHIFTS.find((s) => time >= s.from && time < s.to);
+  if (inside) return inside.label;
+  const early = SHIFTS.find((s) => minutes(s.from) - minutes(time) > 0 && minutes(s.from) - minutes(time) <= graceMinutes);
+  return early?.label ?? OFF_SHIFT;
 }
 
 /** Monday–Sunday range containing `date`. */

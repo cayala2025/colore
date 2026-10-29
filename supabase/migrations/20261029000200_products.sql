@@ -9,6 +9,8 @@ create table public.products (
   case_cost_usd numeric(12,2) not null check (case_cost_usd >= 0),
   seasonal boolean not null default false,
   active boolean not null default true,
+  -- Manual weekly demand (pieces/week). Null = computed from sales or the plan.
+  weekly_demand_override numeric(8,2) check (weekly_demand_override >= 0),
   sort integer not null default 0
 );
 

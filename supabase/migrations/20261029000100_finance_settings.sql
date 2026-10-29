@@ -21,6 +21,8 @@ create table public.finance_settings (
   kiln_weekly_min integer not null default 210,
   kiln_weekly_max integer not null default 280,
   resico_annual_cap numeric(14,2) not null default 3500000,
+  -- Minutes before a slot starts during which a sale still counts for that slot (early arrivals).
+  slot_grace_minutes integer not null default 30 check (slot_grace_minutes >= 0),
   updated_at timestamptz not null default now()
 );
 
