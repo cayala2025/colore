@@ -150,3 +150,5 @@ All [CC] steps in Sprints 1–5 are ticked (75), each committed after lint + typ
 ## Sprint 8 — Cobro, cortes e inventario (branch sprint-8-cobro)
 Plan: (1) migrations written first, NOT applied until Carlos approves; (2) pure finance functions + Vitest in src/lib/finance; (3) /cobro POS; (4) admin nav + Hoy banner; (5) /admin/cortes Día/Semana/Mes; (6) /admin/inventario; (7) 375px/tablet check, CLAUDE.md section, regression report.
 Order: migrations + pure functions first (no DB needed), then UI against planned types.
+- Sprint 8 migrations written, NOT applied (waiting for Carlos): supabase/migrations/20261029000100…000600 (settings, products, sales, closes, inventory + seed count, create_sale). create_sale file is numbered last because it reads daily_closes.
+- Sprint 8 pure functions + tests in src/lib/finance (money, resico, slots, stock). Card fee is taken out of what is left before fixed costs (that is what the 168.48 test anchor requires). Stock/receipts/sales count only if dated AFTER the count date.
