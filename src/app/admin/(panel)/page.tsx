@@ -7,6 +7,7 @@ import { es } from "@/content/es";
 import { getAdminDay, getReviewPieces } from "@/lib/admin/queries";
 import { bookingWhatsappLink } from "@/lib/admin/whatsappMessages";
 import { requireAdmin } from "@/lib/adminAuth";
+import { pendingCloseDates } from "@/lib/finance/queries";
 import { SEAT_HOLDING_STATUSES } from "@/lib/availability";
 import { addDays } from "@/lib/calendar";
 import { formatDateLong } from "@/lib/format";
@@ -20,7 +21,8 @@ export default async function AdminTodayPage({ searchParams }: PageProps<"/admin
   const { fecha } = await searchParams;
   const today = todayInStudio();
   const date = typeof fecha === "string" && /^\d{4}-\d{2}-\d{2}$/.test(fecha) ? fecha : today;
-  const [day, review] = await Promise.all([getAdminDay(date), getReviewPieces()]);
+  const yesterday = addDays(today, -1);
+  const [day, review, pendingCut] = await Promise.all([getAdminDay(date), getReviewPieces(), pendingCloseDates(yesterday, yesterday).catch(() => [])]);
   const t = es.admin.today;
 
   const active = day.slots.flatMap((s) => s.bookings).filter((b) => SEAT_HOLDING_STATUSES.includes(b.status));
@@ -56,6 +58,17 @@ export default async function AdminTodayPage({ searchParams }: PageProps<"/admin
         >
           <span>{es.admin.pieces.review.homeBanner(review.length)}</span>
           <span className="font-semibold text-accent underline">{es.admin.pieces.review.homeLink}</span>
+        </Link>
+      )}
+
+      {pendingCut.length > 0 && (
+        <Link
+          href={`/admin/cortes?fecha=${yesterday}`}
+          data-testid="cut-banner"
+          className="flex min-h-11 flex-wrap items-center justify-between gap-2 rounded-xl border border-accent/40 bg-accent/5 p-3 text-sm"
+        >
+          <span>{es.admin.today.cutPending}</span>
+          <span className="font-semibold text-accent underline">{es.admin.today.cutPendingLink}</span>
         </Link>
       )}
 

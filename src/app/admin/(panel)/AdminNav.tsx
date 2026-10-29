@@ -11,6 +11,8 @@ const LINKS = [
   { href: "/admin/piezas", label: es.admin.nav.pieces },
   { href: "/admin/horario", label: es.admin.nav.schedule },
   { href: "/admin/bloqueos", label: es.admin.nav.blocks },
+  { href: "/admin/cortes", label: es.admin.nav.cuts },
+  { href: "/admin/inventario", label: es.admin.nav.inventory },
 ];
 
 export function AdminNav({ email }: { email: string }) {
