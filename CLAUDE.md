@@ -5,6 +5,8 @@ This app does two things:
 1. **Bookings**: customers reserve seats in a 2-hour slot. No payment, no deposit.
 2. **Piece tracking**: after painting, customers scan a QR, photograph their piece, and get notified when it is ready (14 days) and reminded until pickup. Unclaimed pieces are donated at day 45.
 
+Carlos OS project row (Notion): https://app.notion.com/p/408c9f085e9181fd9a61fb8a60ee34b1 (Coloré Cursos: the whole booking platform + admin)
+
 Full plan with tiny steps: `docs/SPRINTS.md` (read it at the start of every session; only [CC] steps are yours)
 Progress log (append after every step): `docs/PROGRESS.md`
 Open questions for the owner (never block on them): `docs/QUESTIONS.md`
