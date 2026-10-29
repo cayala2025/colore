@@ -69,6 +69,7 @@ Staff point of sale at `/cobro` (admin only), cash cuts in `/admin/cortes` (Día
 - Every variable number (IVA, ISR, card fee, FX, waste, fixed costs, targets, lead times, early-arrival grace) lives in the single `finance_settings` row and is edited in the admin. Never hardcode them. Manual per-product weekly demand: `products.weekly_demand_override`.
 - Sales are never deleted: voided with a reason (who/when/why stay visible). No line edits after saving: void and re-enter. Discounts need the admin code (stored hashed in `finance_settings.discount_code_hash`; discounts are off until it is set).
 - A day closed in `daily_closes` (reopened_at is null) rejects new sales and voids. `create_sale`, `void_sale` and `close_day` share one advisory lock per studio date.
+- Cashier accounts: emails in the `staff` table (active = true) may use `/cobro` only (sell, void with a reason; discounts still need the code). They sign in at `/cobro/login`; `/admin` redirects them to `/cobro`. Admins manage them in Ajustes → Personal de Cobro. Role rules: `src/lib/access.ts`; `requireStaff()` guards /cobro, `requireAdmin()` everything else. Closing the day is admin-only.
 - Card terminals are not integrated; see `docs/CARD-TERMINAL.md`.
 
 ### Notifications

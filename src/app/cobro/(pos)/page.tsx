@@ -1,4 +1,4 @@
-import { requireAdmin } from "@/lib/adminAuth";
+import { requireStaff } from "@/lib/adminAuth";
 import { loadDiscountHash, loadProducts, loadSalesForDate, loadStock } from "@/lib/finance/queries";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { todayInStudio } from "@/lib/time";
@@ -6,7 +6,7 @@ import { PosClient } from "./PosClient";
 import { SalesToday } from "./SalesToday";
 
 export default async function CobroPage() {
-  await requireAdmin();
+  await requireStaff();
   const date = todayInStudio();
   const [products, sales, hash, close] = await Promise.all([
     loadProducts(),

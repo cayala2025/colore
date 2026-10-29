@@ -668,6 +668,8 @@ export const es = {
     pos: {
       title: "Cobro",
       backToAdmin: "Volver al admin",
+      signOut: "Salir",
+      login: { title: "Entrar a Cobro", notStaff: "Este correo no tiene acceso a Cobro." },
       products: "Piezas",
       stockLeft: (n: number) => `Quedan ${n}`,
       ticket: "Ticket",
@@ -723,6 +725,18 @@ export const es = {
       title: "Ajustes de cobro y cortes",
       intro:
         "Todos los números que usan los cortes y el inventario salen de aquí. Cámbialos cuando cambie la realidad; los cortes ya cerrados no se modifican.",
+      staff: {
+        title: "Personal de Cobro",
+        hint: "Cuentas que solo pueden entrar a Cobro (vender y cancelar ventas con motivo). No ven el admin. Primero crea el usuario en Supabase → Authentication; aquí solo das o quitas el acceso.",
+        empty: "Todavía no hay personal.",
+        email: "Correo de la cuenta",
+        add: "Dar acceso",
+        added: "Acceso dado.",
+        remove: "Quitar acceso",
+        off: "Sin acceso",
+        invalid: "Escribe un correo válido.",
+        isAdmin: "Ese correo ya es admin.",
+      },
       discountCode: {
         title: "Código de descuentos",
         hint: "Quien dé un descuento en Cobro necesita este código. Se guarda cifrado; no se puede ver después, solo cambiar.",

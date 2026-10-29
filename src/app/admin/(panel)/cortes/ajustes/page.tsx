@@ -1,13 +1,14 @@
 import { es } from "@/content/es";
 import { requireAdmin } from "@/lib/adminAuth";
-import { loadDiscountHash, loadSettings } from "@/lib/finance/queries";
+import { loadDiscountHash, loadSettings, loadStaff } from "@/lib/finance/queries";
 import { SETTING_FIELDS, toFormValue } from "@/lib/finance/settings";
 import { DiscountCodeForm } from "./DiscountCodeForm";
+import { StaffSection } from "./StaffSection";
 import { SettingsForm } from "./SettingsForm";
 
 export default async function FinanceSettingsPage() {
   await requireAdmin();
-  const [settings, hash] = await Promise.all([loadSettings(), loadDiscountHash()]);
+  const [settings, hash, staff] = await Promise.all([loadSettings(), loadDiscountHash(), loadStaff()]);
   const initial = Object.fromEntries(SETTING_FIELDS.map((f) => [f.key, toFormValue(f, settings)]));
   const t = es.finance.settings;
   return (
@@ -17,6 +18,7 @@ export default async function FinanceSettingsPage() {
         <p className="text-sm text-muted">{t.intro}</p>
       </div>
       <DiscountCodeForm enabled={Boolean(hash)} />
+      <StaffSection staff={staff} />
       <SettingsForm initial={initial} />
     </div>
   );

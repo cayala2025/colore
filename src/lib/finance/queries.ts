@@ -335,3 +335,11 @@ export async function loadCushionSaved(): Promise<number> {
   if (error) throw new Error(error.message);
   return (data ?? []).reduce((n, c) => n + num(c.profit_mxn), 0);
 }
+
+export type StaffMember = { email: string; active: boolean };
+
+export async function loadStaff(): Promise<StaffMember[]> {
+  const { data, error } = await supabaseAdmin().from("staff").select("email, active").order("created_at");
+  if (error) throw new Error(`staff load failed: ${error.message}`);
+  return data ?? [];
+}

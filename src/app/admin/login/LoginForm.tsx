@@ -7,13 +7,13 @@ import { supabaseBrowser } from "@/lib/supabase/browser";
 
 const inputClass = "mt-1 block h-12 w-full rounded-xl border border-line bg-bg px-3 text-base focus:border-accent";
 
-export function LoginForm({ notAdmin }: { notAdmin: boolean }) {
+export function LoginForm({ notAdmin, redirectTo = "/admin", deniedText }: { notAdmin: boolean; redirectTo?: string; deniedText?: string }) {
   const t = es.admin.login;
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(notAdmin ? t.notAdmin : null);
+  const [error, setError] = useState<string | null>(notAdmin ? (deniedText ?? t.notAdmin) : null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -25,7 +25,7 @@ export function LoginForm({ notAdmin }: { notAdmin: boolean }) {
       setSubmitting(false);
       return;
     }
-    router.replace("/admin");
+    router.replace(redirectTo);
     router.refresh();
   }
 

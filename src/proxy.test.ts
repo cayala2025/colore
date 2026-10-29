@@ -7,6 +7,6 @@ function gated(pathname: string): boolean {
 }
 
 describe("proxy matcher", () => {
-  it.each(["/admin", "/admin/", "/admin/piezas", "/admin/cortes/ajustes", "/cobro", "/cobro/"])("gates %s", (p) => expect(gated(p)).toBe(true));
+  it.each(["/admin", "/admin/", "/admin/piezas", "/admin/cortes/ajustes", "/cobro", "/cobro/", "/cobro/login"])("gates %s", (p) => expect(gated(p)).toBe(true));
   it.each(["/", "/pieza", "/r/abc123", "/api/availability", "/api/bookings", "/api/pieces", "/administrador", "/cobros"])("does not gate %s", (p) => expect(gated(p)).toBe(false));
 });

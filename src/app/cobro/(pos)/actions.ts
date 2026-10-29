@@ -1,7 +1,7 @@
 "use server";
 
 import { refresh } from "next/cache";
-import { requireAdmin } from "@/lib/adminAuth";
+import { requireStaff } from "@/lib/adminAuth";
 import { verifyDiscountCode } from "@/lib/finance/discountCode";
 import { findPieceByCode, loadDiscountHash, loadProducts, loadSettings } from "@/lib/finance/queries";
 import { isPaymentMethod, parsePieceCode, priceTicket, type TicketLine } from "@/lib/finance/sale";
@@ -31,7 +31,7 @@ function dbError(message: string): SaleErrorKey {
 }
 
 export async function createSaleAction(input: SaleInput): Promise<SaleResult> {
-  const admin = await requireAdmin();
+  const user = await requireStaff();
   if (!isPaymentMethod(input.method)) return { ok: false, error: "method" };
 
   const products = await loadProducts();
@@ -60,7 +60,7 @@ export async function createSaleAction(input: SaleInput): Promise<SaleResult> {
     p_payment_method: input.method,
     p_reference: input.reference.slice(0, 120),
     p_booking_id: piece?.bookingId ?? null,
-    p_created_by: admin.email,
+    p_created_by: user.email,
     p_items: items,
     p_discount_mxn: priced.discount,
     p_discount_reason: discount?.reason.trim().slice(0, 200) ?? null,
@@ -71,9 +71,9 @@ export async function createSaleAction(input: SaleInput): Promise<SaleResult> {
 }
 
 export async function voidSaleAction(saleId: string, reason: string): Promise<{ ok: true } | { ok: false; error: SaleErrorKey }> {
-  const admin = await requireAdmin();
+  const user = await requireStaff();
   if (!reason.trim()) return { ok: false, error: "reasonMissing" };
-  const { error } = await supabaseAdmin().rpc("void_sale", { p_sale_id: saleId, p_reason: reason.trim().slice(0, 200), p_voided_by: admin.email });
+  const { error } = await supabaseAdmin().rpc("void_sale", { p_sale_id: saleId, p_reason: reason.trim().slice(0, 200), p_voided_by: user.email });
   if (error) return { ok: false, error: dbError(error.message) };
   refresh();
   return { ok: true };

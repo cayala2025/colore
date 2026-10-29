@@ -29,3 +29,22 @@ export async function requireAdmin(): Promise<Admin> {
   if (!admin) redirect("/admin/login");
   return admin;
 }
+
+export type Staff = { email: string; role: "admin" | "staff" };
+
+/** Active cashier accounts (`staff`); admins are NOT in this table. */
+export async function isStaffEmail(email: string): Promise<boolean> {
+  const { data, error } = await supabaseAdmin().from("staff").select("email").eq("email", email.toLowerCase()).eq("active", true).maybeSingle();
+  if (error) throw new Error(`staff lookup failed: ${error.message}`);
+  return Boolean(data);
+}
+
+/** Use at the top of every /cobro page and server action: admins and active staff pass. */
+export async function requireStaff(): Promise<Staff> {
+  const admin = await getAdmin();
+  if (admin) return { email: admin.email, role: "admin" };
+  const supabase = await supabaseServer();
+  const email = (await supabase.auth.getUser()).data.user?.email;
+  if (email && (await isStaffEmail(email))) return { email: email.toLowerCase(), role: "staff" };
+  redirect("/cobro/login");
+}
