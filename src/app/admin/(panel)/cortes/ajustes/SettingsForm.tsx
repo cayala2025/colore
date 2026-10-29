@@ -3,7 +3,6 @@
 import { useState, useTransition } from "react";
 import { es } from "@/content/es";
 import { SETTING_FIELDS, type SettingField } from "@/lib/finance/settings";
-import type { FinanceSettings } from "@/lib/finance/types";
 import { saveSettings, type SettingsResult } from "./actions";
 
 type Group = SettingField["group"];
