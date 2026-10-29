@@ -305,3 +305,33 @@ export async function loadLatestCountDate(): Promise<string | null> {
   if (error) throw new Error(error.message);
   return data?.[0]?.counted_on ?? null;
 }
+
+/** Dates in [from, to] with an active (not reopened) daily close. */
+export async function loadClosedDates(from: string, to: string): Promise<string[]> {
+  const { data, error } = await db().from("daily_closes").select("studio_date").gte("studio_date", from).lte("studio_date", to).is("reopened_at", null);
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((c) => c.studio_date as string);
+}
+
+export type WeeklyClose = { weekStart: string; closedBy: string; closedAt: string; checklist: Record<string, boolean>; notes: string | null };
+
+export async function loadWeeklyClose(weekStart: string): Promise<WeeklyClose | null> {
+  const { data, error } = await db().from("weekly_closes").select("*").eq("week_start", weekStart).maybeSingle();
+  if (error) throw new Error(error.message);
+  return data ? { weekStart: data.week_start, closedBy: data.closed_by, closedAt: data.closed_at, checklist: data.checklist ?? {}, notes: data.notes } : null;
+}
+
+export type ExpenseView = { id: string; spentOn: string; category: string; amountMxn: number; note: string | null };
+
+export async function loadExpenses(from: string, to: string): Promise<ExpenseView[]> {
+  const { data, error } = await db().from("expenses").select("*").gte("spent_on", from).lte("spent_on", to).order("spent_on", { ascending: false }).order("created_at", { ascending: false });
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((e) => ({ id: e.id, spentOn: e.spent_on, category: e.category, amountMxn: num(e.amount_mxn), note: e.note }));
+}
+
+/** Profit apartado so far: sum of "Ganancia y colchón" from active daily closes. */
+export async function loadCushionSaved(): Promise<number> {
+  const { data, error } = await db().from("daily_closes").select("profit_mxn").is("reopened_at", null);
+  if (error) throw new Error(error.message);
+  return (data ?? []).reduce((n, c) => n + num(c.profit_mxn), 0);
+}

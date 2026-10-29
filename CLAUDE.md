@@ -34,6 +34,7 @@ Open questions for the owner (never block on them): `docs/QUESTIONS.md`
 | Mon | closed | closed | closed | closed |
 | Tue–Wed | 30 | 30 | 30 | — |
 | Thu–Sun | 30 | 30 | 30 | 30 |
+- (Business now plans 35 seats per slot and Sunday with 3 turns; the schedule DATA is changed by the owner in /admin/horario, not by migration. The table above shows the seed.)
 - Capacity is 30 seats per slot. Seed these values in the DB; admin can edit them later.
 - Admin can block full dates (holidays, private events).
 - Customers can book up to 60 days ahead. Slots that already started cannot be booked.
@@ -61,6 +62,14 @@ Open questions for the owner (never block on them): `docs/QUESTIONS.md`
   - Max one message per piece per day; if days are missed, send only the latest milestone (no bursts).
 - Statuses: `received`, `firing`, `ready`, `picked_up`, `donated`. `picked_up` and `donated` stop all messages.
 - Compress photos in the browser before upload (max ~1600px long edge, JPEG ~0.8). Store in a PRIVATE bucket. Admin sees them via signed URLs.
+
+### Cobro y cortes (Sprint 8)
+Staff point of sale at `/cobro` (admin only), cash cuts in `/admin/cortes` (Día | Semana | Mes), stock and reordering in `/admin/inventario`, all editable numbers in `/admin/cortes/ajustes`. Plan: `docs/SPRINTS.md` → Sprint 8.
+- All math is pure functions in `src/lib/finance/` (Vitest). Money is MXN `numeric(12,2)`; round only for display. Business day = studio date (America/Tijuana).
+- Every variable number (IVA, ISR, card fee, FX, waste, fixed costs, targets, lead times, early-arrival grace) lives in the single `finance_settings` row and is edited in the admin. Never hardcode them. Manual per-product weekly demand: `products.weekly_demand_override`.
+- Sales are never deleted: voided with a reason (who/when/why stay visible). No line edits after saving: void and re-enter. Discounts need the admin code (stored hashed in `finance_settings.discount_code_hash`; discounts are off until it is set).
+- A day closed in `daily_closes` (reopened_at is null) rejects new sales and voids. `create_sale`, `void_sale` and `close_day` share one advisory lock per studio date.
+- Card terminals are not integrated; see `docs/CARD-TERMINAL.md`.
 
 ### Notifications
 - Every send is written to `notifications_log` first. Never send the same template twice to the same booking/piece (unique index on target + template).
