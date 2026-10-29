@@ -6,7 +6,7 @@ import { formatMxn } from "@/lib/finance/format";
 import { priceOrder } from "@/lib/finance/inventoryInput";
 import type { AdjustmentView, OrderView } from "@/lib/finance/queries";
 import {
-  cancelOrderAction, createOrderAction, receiveOrderAction, recordBreakageAction, saveCountAction, updateProductAction,
+  cancelOrderAction, createOrderAction, receiveOrderAction, recordBreakageAction, saveCountAction, updateProductAction, createProductAction,
   type FormResult,
 } from "./actions";
 
@@ -239,7 +239,61 @@ export function ProductsEditor({ products }: { products: EditableProduct[] }) {
     <section className={box} aria-label={f.products.title}>
       <h2 className="font-semibold">{f.products.title}</h2>
       <p className="text-sm text-muted">{f.products.hint}</p>
+      <p className="text-sm text-muted">{f.products.retireHint}</p>
       <ul className="mt-2 divide-y divide-line">{products.map((p) => <ProductRow key={p.id} p={p} />)}</ul>
+      <NewProductForm />
     </section>
+  );
+}
+
+function NewProductForm() {
+  const t = f.products;
+  const empty = { name: "", price: "", cost: "", caseSize: "", caseCost: "", demand: "", seasonal: false };
+  const [v, setV] = useState(empty);
+  const { result, pending, run } = useRun();
+  const set = (k: keyof typeof v) => (e: React.ChangeEvent<HTMLInputElement>) => setV({ ...v, [k]: e.target.value });
+  const num = (x: string) => (x.trim() === "" ? Number.NaN : Number(x.replace(",", ".")));
+  return (
+    <div className="mt-4 flex flex-col gap-2 border-t border-line pt-4">
+      <h3 className="font-semibold">{t.newTitle}</h3>
+      <p className="text-sm text-muted">{t.newHint}</p>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+        <label className="col-span-2 flex flex-col gap-1 text-xs text-muted sm:col-span-3 lg:col-span-1">{t.name}<input className={field} value={v.name} onChange={set("name")} /></label>
+        <label className="flex flex-col gap-1 text-xs text-muted">{t.price}<input inputMode="decimal" className={field} value={v.price} onChange={set("price")} /></label>
+        <label className="flex flex-col gap-1 text-xs text-muted">{t.cost}<input inputMode="decimal" className={field} value={v.cost} onChange={set("cost")} /></label>
+        <label className="flex flex-col gap-1 text-xs text-muted">{t.caseSize}<input inputMode="numeric" className={field} value={v.caseSize} onChange={set("caseSize")} /></label>
+        <label className="flex flex-col gap-1 text-xs text-muted">{t.caseCost}<input inputMode="decimal" className={field} value={v.caseCost} onChange={set("caseCost")} /></label>
+        <label className="flex flex-col gap-1 text-xs text-muted">{t.demand}<input inputMode="decimal" className={field} value={v.demand} placeholder={t.demandHint} onChange={set("demand")} /></label>
+      </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <label className="flex min-h-11 items-center gap-2 text-sm">
+          <input type="checkbox" className="h-5 w-5 accent-accent" checked={v.seasonal} onChange={(e) => setV({ ...v, seasonal: e.target.checked })} />
+          {t.seasonal}
+        </label>
+        <button
+          type="button"
+          className={primary}
+          disabled={pending}
+          onClick={() =>
+            run(
+              () =>
+                createProductAction({
+                  name: v.name,
+                  priceMxn: num(v.price),
+                  costUsd: num(v.cost),
+                  caseSize: num(v.caseSize),
+                  caseCostUsd: num(v.caseCost),
+                  seasonal: v.seasonal,
+                  weeklyDemandOverride: v.demand.trim() === "" ? null : num(v.demand),
+                }),
+              () => setV(empty),
+            )
+          }
+        >
+          {pending ? f.saving : t.add}
+        </button>
+        {result?.ok ? <span className="text-sm text-success">{t.added}</span> : <Status result={result} />}
+      </div>
+    </div>
   );
 }

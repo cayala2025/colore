@@ -1,6 +1,6 @@
 import type { Product } from "./types";
 
-export type ErrorKey = "empty" | "invalid" | "unknownProduct" | "missingCounts" | "reasonInvalid";
+export type ErrorKey = "empty" | "invalid" | "unknownProduct" | "missingCounts" | "reasonInvalid" | "duplicate";
 
 type Result<T> = ({ ok: true } & T) | { ok: false; error: ErrorKey };
 
@@ -68,3 +68,32 @@ export function parseProductEdit(e: ProductEdit): Result<{ edit: ProductEdit }> 
 }
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
+
+/** URL-safe, unique product code from a name ("Plato hondo" -> "plato-hondo", "plato-hondo-2" if taken). */
+export function skuFromName(name: string, taken: string[]): string {
+  const base = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "pieza";
+  let sku = base;
+  for (let n = 2; taken.includes(sku); n++) sku = `${base}-${n}`;
+  return sku;
+}
+
+export type NewProduct = {
+  name: string;
+  priceMxn: number;
+  costUsd: number;
+  caseSize: number;
+  caseCostUsd: number;
+  seasonal: boolean;
+  weeklyDemandOverride: number | null;
+};
+
+/** A new sellable piece. Every number must be typed: nothing is defaulted. */
+export function parseNewProduct(input: NewProduct, existing: Pick<Product, "name">[]): Result<{ product: NewProduct }> {
+  const name = input.name.trim().replace(/\s+/g, " ");
+  if (name.length < 2 || name.length > 60) return { ok: false, error: "invalid" };
+  if (existing.some((p) => p.name.trim().toLowerCase() === name.toLowerCase())) return { ok: false, error: "duplicate" };
+  const parsed = parseProductEdit({ id: "new", ...input, active: true });
+  if (!parsed.ok) return parsed;
+  if (input.priceMxn <= 0 || input.costUsd <= 0 || input.caseCostUsd <= 0) return { ok: false, error: "invalid" };
+  return { ok: true, product: { ...input, name } };
+}

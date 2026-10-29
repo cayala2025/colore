@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseBreakage, parseCount, parseProductEdit, priceOrder } from "./inventoryInput";
+import { parseBreakage, parseCount, parseNewProduct, parseProductEdit, priceOrder, skuFromName } from "./inventoryInput";
 
 const products = [
   { id: "taza", caseSize: 12, caseCostUsd: 44.28, active: true },
@@ -53,5 +53,27 @@ describe("parseProductEdit", () => {
     expect(parseProductEdit({ ...ok, priceMxn: -1 })).toEqual({ ok: false, error: "invalid" });
     expect(parseProductEdit({ ...ok, caseSize: 0 })).toEqual({ ok: false, error: "invalid" });
     expect(parseProductEdit({ ...ok, weeklyDemandOverride: -2 })).toEqual({ ok: false, error: "invalid" });
+  });
+});
+
+describe("skuFromName", () => {
+  it("slugifies accents and spaces, and avoids taken codes", () => {
+    expect(skuFromName("Plato Hondo Ñandú", [])).toBe("plato-hondo-nandu");
+    expect(skuFromName("Taza", ["taza", "taza-2"])).toBe("taza-3");
+    expect(skuFromName("!!!", [])).toBe("pieza");
+  });
+});
+
+describe("parseNewProduct", () => {
+  const ok = { name: "  Plato   hondo ", priceMxn: 320, costUsd: 5, caseSize: 6, caseCostUsd: 30, seasonal: false, weeklyDemandOverride: null };
+  it("trims the name and accepts complete numbers", () => {
+    expect(parseNewProduct(ok, [{ name: "Taza" }])).toMatchObject({ ok: true, product: { name: "Plato hondo" } });
+  });
+  it("rejects duplicates, zero or missing numbers and bad case sizes", () => {
+    expect(parseNewProduct({ ...ok, name: "taza" }, [{ name: "Taza" }])).toEqual({ ok: false, error: "duplicate" });
+    expect(parseNewProduct({ ...ok, priceMxn: 0 }, [])).toEqual({ ok: false, error: "invalid" });
+    expect(parseNewProduct({ ...ok, costUsd: Number.NaN }, [])).toEqual({ ok: false, error: "invalid" });
+    expect(parseNewProduct({ ...ok, caseSize: 2.5 }, [])).toEqual({ ok: false, error: "invalid" });
+    expect(parseNewProduct({ ...ok, name: "x" }, [])).toEqual({ ok: false, error: "invalid" });
   });
 });

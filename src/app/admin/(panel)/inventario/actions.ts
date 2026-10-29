@@ -2,7 +2,7 @@
 
 import { refresh } from "next/cache";
 import { requireAdmin } from "@/lib/adminAuth";
-import { parseBreakage, parseCount, parseProductEdit, priceOrder, type ErrorKey, type OrderLine, type ProductEdit } from "@/lib/finance/inventoryInput";
+import { parseBreakage, parseCount, parseNewProduct, parseProductEdit, priceOrder, skuFromName, type ErrorKey, type NewProduct, type OrderLine, type ProductEdit } from "@/lib/finance/inventoryInput";
 import { loadProducts, loadSettings } from "@/lib/finance/queries";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { todayInStudio } from "@/lib/time";
@@ -106,5 +106,26 @@ export async function updateProductAction(edit: ProductEdit): Promise<FormResult
       weekly_demand_override: e.weeklyDemandOverride,
     })
     .eq("id", e.id);
+  return error ? fail("generic") : done();
+}
+
+/** Adds a sellable piece. Pieces are never deleted (sales refer to them): turn "Activa" off to retire one. */
+export async function createProductAction(input: NewProduct): Promise<FormResult> {
+  await requireAdmin();
+  const products = await loadProducts();
+  const parsed = parseNewProduct(input, products);
+  if (!parsed.ok) return fail(parsed.error);
+  const p = parsed.product;
+  const { error } = await db().from("products").insert({
+    sku: skuFromName(p.name, products.map((x) => x.sku)),
+    name: p.name,
+    price_mxn: p.priceMxn,
+    cost_usd: p.costUsd,
+    case_size: p.caseSize,
+    case_cost_usd: p.caseCostUsd,
+    seasonal: p.seasonal,
+    weekly_demand_override: p.weeklyDemandOverride,
+    sort: products.reduce((n, x) => Math.max(n, x.sort), 0) + 1,
+  });
   return error ? fail("generic") : done();
 }
