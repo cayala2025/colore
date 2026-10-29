@@ -356,3 +356,55 @@ DEFINITION OF DONE: all [CC] boxes in Sprints 1–5 are ticked, everything is gr
 
 Start now with Sprint 1, step 1.
 ```
+
+## Sprint 8 — Cobro, cortes e inventario
+
+### Business rules (Sprint 8)
+- Each sale = one ticket with 1+ items; each item is one bisque piece (product) at its list price (IVA 8% included). Payment: efectivo / tarjeta / transferencia.
+- Restock cost per item (snapshot at sale time) = product.cost_usd × fx_rate × (1 + waste_rate) + supplies_per_piece_mxn.
+- Money split per day (in this order), "apartados":
+  1. Impuestos = IVA (total × iva_rate / (1 + iva_rate)) + ISR estimate ((total − IVA) × isr_rate).
+  2. Inventario = sum of restock costs of items sold.
+  3. Gastos fijos = min(remaining, fixed_monthly_mxn / open_days_per_month × open days in the period).
+  4. Ganancia y colchón = what is left (never negative; if remaining < fixed target, show the shortfall instead).
+  - Card fee = card total × card_fee_rate; the terminal deducts it before deposit (shown, not a bucket).
+- Cash reconciliation: expected cash = cash float + cash sales; show difference vs counted.
+- Week = Monday–Sunday. Weekly targets: break-even customers/week, target customers/week, kiln capacity pieces/week (settings).
+- Monthly: IVA charged on sales (total × iva_rate / (1 + iva_rate)); show a note that IVA paid on purchases is not deducted yet (the accountant does that), ISR RESICO with the real monthly bracket table (below) applied to the month's income without IVA, RESICO year-to-date income vs the 3,500,000 MXN annual cap.
+- RESICO 2026 monthly table (income without IVA): ≤25,000 → 1.00%; ≤50,000 → 1.10%; ≤83,333.33 → 1.50%; ≤208,333.33 → 2.00%; ≤291,666.67 → 2.50%. Above the annual cap the taxpayer leaves RESICO: show a red warning, do not compute.
+- Inventory: stock = latest physical count + received purchase-order pieces after it − non-voided sale items after it + adjustments after it.
+- Reorder (min/max): weekly demand per product = average of the last 4 complete weeks when ≥2 weeks have sales, else plan_weekly_customers split by the share of each product in the latest count. Min = demand × (lead_time_weeks + safety_weeks). Max = Min + demand × review_weeks. If (stock + on order) ≤ Min → order ceil((Max − stock − on order) / case_size) cases. Seasonal products are never reordered.
+- Inventory bucket balance = sum of "Inventario" from closed days − sum of purchase orders (MXN).
+
+### Seed values (insert in migrations; editable later)
+finance_settings (single row): fx_rate 18.5, waste_rate 0.03, supplies_per_piece_mxn 20.90, iva_rate 0.08, isr_rate 0.02, card_fee_rate 0.04176, fixed_monthly_mxn 97274, open_days_per_month 26, cash_float_mxn 1000, cushion_target_mxn 291822, lead_time_weeks 2, safety_weeks 1, review_weeks 2, plan_weekly_customers 184, weekly_breakeven 141, weekly_target 221, monthly_breakeven 609, kiln_weekly_min 210, kiln_weekly_max 280, resico_annual_cap 3500000.
+products (sku, name, price_mxn, cost_usd, case_size, case_cost_usd, seasonal):
+taza "Taza" 300 3.69 12 44.28 no · joyero "Joyero" 250 3.91 4 15.65 no · matcha "Matcha bowl" 320 5.32 4 21.29 no · plato "Plato" 300 5.97 4 23.89 no · ovalado "Plato ovalado" 350 5.82 6 34.89 no · tina "Tina" 350 5.62 4 22.49 no · azulejo "Azulejo 8\"" 300 3.71 6 22.26 no · pumpkin "Pumpkin dish" 350 6.46 6 38.74 yes · calabaza "Calabaza" 350 5.54 4 22.17 yes.
+Initial inventory count dated 2026-10-28, note "Pestaña Inventario + recibo Bisque Imports #461634": taza 198, joyero 68, matcha 60, plato 48, ovalado 48, tina 40, azulejo 48, pumpkin 36, calabaza 28.
+
+### Steps
+- [ ] [CC] Migration (write, then ask before applying): `finance_settings` (single row, id = 1 check) + seed.
+- [ ] [CC] Migration: `products` (sku unique, name, price_mxn, cost_usd, case_size, case_cost_usd, seasonal, active default true, sort) + seed.
+- [ ] [CC] Migration: `payment_method` enum (cash, card, transfer); `sales` (studio_date date, sold_at timestamptz, slot_label text, payment_method, total_mxn, reference text null, booking_id null FK, created_by text, voided_at null, void_reason null) + index on studio_date; `sale_items` (sale_id FK, product_id FK, unit_price_mxn, restock_cost_mxn, piece_id null FK pieces).
+- [ ] [CC] Postgres function `create_sale(...)`: inserts sale + items in one transaction, snapshots price and restock cost from products/settings, rejects if that studio_date has a closed (not reopened) daily close. Revoke from anon/authenticated (server uses service role).
+- [ ] [CC] Migration: `daily_closes` (studio_date PK, totals, cash_float, cash_counted, cash_diff, buckets: taxes/inventory/fixed/profit, card_fee, fixed_shortfall, checks: counted/deposited/moved_to_buckets, notes, closed_by, closed_at, reopened_at null); `weekly_closes` (week_start PK, snapshot numbers, checklist jsonb, closed_by, closed_at).
+- [ ] [CC] Migration: `purchase_orders` (ordered_on, status ordered/received/cancelled, total_usd, total_mxn, fx_rate, received_on, notes, created_by) + `purchase_order_items` (product_id, cases, pieces, cost_usd); `inventory_counts` + `inventory_count_items` + seed of the initial count; `inventory_adjustments` (product_id, quantity, reason broken/lost/other, created_by); `expenses` (spent_on, category rent/electricity/water/payroll/marketing/accounting/other, amount_mxn, note, created_by).
+- [ ] [CC] Pure functions + Vitest in `src/lib/finance/`: `restockCost`, `splitMoney` (buckets for a set of sales and N open days), `cashReconciliation`, `resicoMonthly` (bracket table + cap), `stockByProduct`, `weeklyDemand`, `reorderSuggestion`, `inventoryBucketBalance`, `slotLabelFor(time)` ('11–13','16–18','18–20','20–22','Fuera de turno'), `weekRange`, `heatmap` (day × slot). Test anchor: one Taza paid by card, $300, 1 open day → IVA 22.22, ISR 5.56, inventory 91.21, card fee 12.53, fixed 168.48, profit 0, shortfall 3,572.83 (fixed target 3,741.31).
+- [ ] [CC] `/cobro` (staff POS, own simple header with link back to /admin): product grid with price and stock left (red at ≤10), tap = +1 to ticket, "−" per line, payment method segmented control, optional reference/piece code field (if it matches a piece code like C-0042, link sale_items.piece_id via server lookup; never expose customer data), "Registrar venta de $X" → server action → create_sale. Toast on success. "Ventas de hoy" list with "Anular" (asks for a reason; sets voided_at) while the day is not closed.
+- [ ] [CC] Admin nav: append tabs "Cortes" and "Inventario" (new es.ts keys). Hoy page: add one banner "Corte de ayer pendiente" when yesterday had sales and no close; nothing else on Hoy changes.
+- [ ] [CC] `/admin/cortes` with Día | Semana | Mes switch (copy the ViewSwitch pattern from Calendario into a new component; do not edit the original).
+- [ ] [CC] Cortes → Día: date nav; KPIs (piezas, tickets, ventas, efectivo, tarjeta, transferencia); cash reconciliation (float default from settings, counted input, difference in green/red); 4 bucket cards with amounts and one-line explanations + card-fee note + fixed shortfall note; checklist (efectivo cuadra / depositado / apartados movidos); notes; "Cerrar corte" / "Actualizar corte" / "Reabrir" (sets reopened_at).
+- [ ] [CC] Cortes → Semana: week nav; KPIs vs weekly_breakeven / weekly_target with a status chip; customers per day bars with the daily break-even line; heatmap day × slot ("¿Cuándo se vende?") with closed slots greyed (Mon all; 20–22 Tue/Wed/Sun); bucket totals; kiln check (pieces sold vs kiln_weekly_min–max: OK / Justo / Riesgo de no cumplir 2 semanas); list of days with sales but no close; Monday checklist (cortes cerrados, pintura con galón de respaldo, transparente de respaldo, pedido revisado, ganancia apartada); "Cerrar semana".
+- [ ] [CC] Cortes → Mes: totals; buckets; IVA to pay; ISR RESICO for the month with the bracket used; RESICO year-to-date vs cap (progress bar; warning at 80%); customers vs monthly_breakeven; real expenses captured this month vs fixed_monthly_mxn (simple form to add an expense, list with edit); profit = sales − IVA − ISR − restock − card fees − real expenses; cushion progress vs cushion_target_mxn.
+- [ ] [CC] `/admin/inventario`: stock table (en anaquel, en camino, venta por semana + source label, alcanza N semanas, mínimo, máximo, estado Bien/Pedir/Urgente/Temporada, pedir cajas, USD); KPIs (pedido sugerido USD and MXN, saldo del apartado de inventario, ¿alcanza?); "Registrar pedido" (prefilled with the suggestion, editable cases); purchase-order list with "Marcar recibido"; breakage form; monthly physical count form (all products required); small "Precios y costos" editor for products (price, cost, case, active).
+- [ ] [CC] Check every new page at 375px and on a tablet width. Fix overflow.
+- [ ] [CC] Update CLAUDE.md "Business rules" with a short "Cobro y cortes" section pointing to src/lib/finance and this sprint.
+- [ ] [CC] Regression report: in PROGRESS.md list every existing file touched and why (output of `git diff --stat main`), confirm all existing unit tests still pass unchanged, and write the manual check list.
+- [ ] [YOU] **Apply the migrations** when Claude Code asks (it will show the files first).
+- [ ] [YOU] **Check nothing broke** (on the branch, `npm run dev`): make a booking, check in a piece with /pieza, log in to /admin, open Hoy, Calendario and Piezas. Only if all work: `git switch main` → `git merge sprint-8-cobro`.
+- [ ] [YOU] **Update the schedule in /admin/horario**: capacity 35 in every slot and turn OFF Sunday 20:00–22:00 (Sunday has 3 turns now).
+- [ ] [YOU] **Test one sale at the counter**: register a $300 Taza paid in cash, see it in Cortes → Día, close the day, then reopen it and void the sale with reason "prueba".
+
+### Notes
+- If the owner has been using the "Caja Colore" artifact, sales recorded there will be imported later with a one-off script; do not build that now. Add it to QUESTIONS.md as a future item.
+- Seat capacity in CLAUDE.md says 30 and Sunday 4 slots; the business now uses 35 seats and Sunday 3 slots. Do NOT change schedule rows by migration (live data): update the CLAUDE.md table text and leave the data change to the [YOU] step above.

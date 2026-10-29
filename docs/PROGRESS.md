@@ -146,3 +146,7 @@ All [CC] steps in Sprints 1–5 are ticked (75), each committed after lint + typ
 - Admin month view (2/2): Calendario Semana | Mes switch (week stays default); month grid with people/capacity per day, color by fullness, per-slot bars on md+, legend, month summary (bookings, people, no-shows, busiest day); past months allowed; tap a day → Hoy. E2E + 375px check.
 - Step 2.2: DB test suites locked (ALLOW_LIVE_DB_TESTS=yes on the command line + TEST_EMAIL); tests use name TEST, owner email, dates 50–60 days ahead, delete only their own rows; daily-job runs, schedule edit and bulk teardown removed. Gate now runs lint/typecheck/unit/build only.
 - Step 3.1 (owner-approved): backed up then deleted ALL test bookings (1,403), pieces (562), email log (1,326) and photos (100) created before 2026-10-08 17:39 Mexicali; piece codes reset to C-0001. Backup: ~/Documents/colore-backups/2026-10-08-before-cleanup (outside the repo).
+
+## Sprint 8 — Cobro, cortes e inventario (branch sprint-8-cobro)
+Plan: (1) migrations written first, NOT applied until Carlos approves; (2) pure finance functions + Vitest in src/lib/finance; (3) /cobro POS; (4) admin nav + Hoy banner; (5) /admin/cortes Día/Semana/Mes; (6) /admin/inventario; (7) 375px/tablet check, CLAUDE.md section, regression report.
+Order: migrations + pure functions first (no DB needed), then UI against planned types.
