@@ -22,6 +22,30 @@ describe("stockByProduct", () => {
   });
 });
 
+describe("stockByProduct same-day timing", () => {
+  const base = { received: [], adjustments: [] };
+  it("subtracts a sale made after the count on the same day, not one made before", () => {
+    const s = stockByProduct(["a"], {
+      ...base,
+      count: { countedOn: "2026-11-02", countedAt: "2026-11-02T18:00:00Z", quantities: { a: 10 } },
+      sold: [
+        { productId: "a", studioDate: "2026-11-02", soldAt: "2026-11-02T17:00:00Z" },
+        { productId: "a", studioDate: "2026-11-02", soldAt: "2026-11-02T19:00:00Z" },
+      ],
+    });
+    expect(s.a).toBe(9);
+  });
+  it("applies breakage recorded after the count", () => {
+    const s = stockByProduct(["a"], {
+      received: [],
+      sold: [],
+      count: { countedOn: "2026-11-02", countedAt: "2026-11-02T18:00:00Z", quantities: { a: 10 } },
+      adjustments: [{ productId: "a", date: "2026-11-02", at: "2026-11-02T20:00:00Z", quantity: -2 }],
+    });
+    expect(s.a).toBe(8);
+  });
+});
+
 describe("weeklyDemand", () => {
   const sold = (date: string, n: number, productId = "a") => Array.from({ length: n }, () => ({ productId, studioDate: date }));
 

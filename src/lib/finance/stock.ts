@@ -4,25 +4,31 @@ import type { FinanceSettings } from "./types";
 
 export type StockInputs = {
   /** Latest physical count: date and quantity by product id. */
-  count: { countedOn: string; quantities: Record<string, number> } | null;
+  count: { countedOn: string; /** When the count was saved (ISO). Sales/adjustments after this instant count. */ countedAt?: string; quantities: Record<string, number> } | null;
   /** Received purchase orders. */
   received: { productId: string; receivedOn: string; pieces: number }[];
   /** Non-voided sold items. */
-  sold: { productId: string; studioDate: string }[];
+  sold: { productId: string; studioDate: string; soldAt?: string }[];
   /** Signed quantity changes (breakage is negative); date is the studio date. */
-  adjustments: { productId: string; date: string; quantity: number }[];
+  adjustments: { productId: string; date: string; at?: string; quantity: number }[];
 };
 
-/** Stock = latest count + received pieces after it − sold items after it + adjustments after it ("after" = later date). */
+/**
+ * Stock = latest count + received pieces after it − sold items after it + adjustments after it.
+ * Receipts only know their date, so they count when dated after the count date. Sales and adjustments
+ * compare exact times when known (so a same-day sale after the count is subtracted), else dates.
+ */
 export function stockByProduct(productIds: string[], i: StockInputs): Record<string, number> {
   const since = i.count?.countedOn ?? "0000-00-00";
+  const at = i.count?.countedAt;
+  const after = (date: string, instant?: string) => (at && instant ? Date.parse(instant) > Date.parse(at) : date > since);
   const out: Record<string, number> = {};
   for (const id of productIds) {
     out[id] =
       (i.count?.quantities[id] ?? 0) +
       i.received.filter((r) => r.productId === id && r.receivedOn > since).reduce((n, r) => n + r.pieces, 0) -
-      i.sold.filter((s) => s.productId === id && s.studioDate > since).length +
-      i.adjustments.filter((a) => a.productId === id && a.date > since).reduce((n, a) => n + a.quantity, 0);
+      i.sold.filter((s) => s.productId === id && after(s.studioDate, s.soldAt)).length +
+      i.adjustments.filter((a) => a.productId === id && after(a.date, a.at)).reduce((n, a) => n + a.quantity, 0);
   }
   return out;
 }

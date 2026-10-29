@@ -44,9 +44,9 @@ export async function loadProducts(): Promise<Product[]> {
 /** Everything stockByProduct needs: latest count, received orders, non-voided sold items, adjustments. */
 export async function loadStockInputs(): Promise<StockInputs> {
   const [counts, received, sold, adjustments] = await Promise.all([
-    db().from("inventory_counts").select("id, counted_on").order("counted_on", { ascending: false }).order("created_at", { ascending: false }).limit(1),
+    db().from("inventory_counts").select("id, counted_on, created_at").order("counted_on", { ascending: false }).order("created_at", { ascending: false }).limit(1),
     db().from("purchase_orders").select("received_on, purchase_order_items(product_id, pieces)").eq("status", "received"),
-    db().from("sale_items").select("product_id, sales!inner(studio_date, voided_at)").is("sales.voided_at", null),
+    db().from("sale_items").select("product_id, sales!inner(studio_date, sold_at, voided_at)").is("sales.voided_at", null),
     db().from("inventory_adjustments").select("product_id, quantity, adjusted_at"),
   ]);
   for (const r of [counts, received, sold, adjustments]) if (r.error) throw new Error(r.error.message);
@@ -56,15 +56,18 @@ export async function loadStockInputs(): Promise<StockInputs> {
   if (latest) {
     const { data, error } = await db().from("inventory_count_items").select("product_id, quantity").eq("count_id", latest.id);
     if (error) throw new Error(error.message);
-    count = { countedOn: latest.counted_on, quantities: Object.fromEntries((data ?? []).map((i) => [i.product_id, i.quantity])) };
+    count = { countedOn: latest.counted_on, countedAt: latest.created_at, quantities: Object.fromEntries((data ?? []).map((i) => [i.product_id, i.quantity])) };
   }
   return {
     count,
     received: (received.data ?? []).flatMap((o) =>
       (o.purchase_order_items as { product_id: string; pieces: number }[]).map((i) => ({ productId: i.product_id, receivedOn: o.received_on as string, pieces: i.pieces })),
     ),
-    sold: (sold.data ?? []).map((s) => ({ productId: s.product_id, studioDate: (s.sales as unknown as { studio_date: string }).studio_date })),
-    adjustments: (adjustments.data ?? []).map((a) => ({ productId: a.product_id, date: toStudio(new Date(a.adjusted_at)).date, quantity: a.quantity })),
+    sold: (sold.data ?? []).map((s) => {
+      const sale = s.sales as unknown as { studio_date: string; sold_at: string };
+      return { productId: s.product_id, studioDate: sale.studio_date, soldAt: sale.sold_at };
+    }),
+    adjustments: (adjustments.data ?? []).map((a) => ({ productId: a.product_id, date: toStudio(new Date(a.adjusted_at)).date, at: a.adjusted_at, quantity: a.quantity })),
   };
 }
 
@@ -241,4 +244,64 @@ export async function loadInventoryBalance(): Promise<number> {
     (closes.data ?? []).map((c) => num(c.inventory_mxn)),
     (orders.data ?? []).map((o) => num(o.total_mxn)),
   );
+}
+
+export type OrderView = {
+  id: string;
+  orderedOn: string;
+  status: "ordered" | "received" | "cancelled";
+  receivedOn: string | null;
+  totalUsd: number;
+  totalMxn: number;
+  createdBy: string;
+  lines: { name: string; cases: number; pieces: number }[];
+};
+
+export async function loadOrders(limit = 20): Promise<OrderView[]> {
+  const { data, error } = await db()
+    .from("purchase_orders")
+    .select("*, purchase_order_items(cases, pieces, products(name))")
+    .order("ordered_on", { ascending: false })
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(`purchase_orders: ${error.message}`);
+  return (data ?? []).map((o) => ({
+    id: o.id,
+    orderedOn: o.ordered_on,
+    status: o.status,
+    receivedOn: o.received_on,
+    totalUsd: num(o.total_usd),
+    totalMxn: num(o.total_mxn),
+    createdBy: o.created_by,
+    lines: (o.purchase_order_items as { cases: number; pieces: number; products: { name: string } | null }[]).map((i) => ({
+      name: i.products?.name ?? "?",
+      cases: i.cases,
+      pieces: i.pieces,
+    })),
+  }));
+}
+
+export type AdjustmentView = { id: string; name: string; quantity: number; reason: string; at: string; by: string };
+
+export async function loadAdjustments(limit = 8): Promise<AdjustmentView[]> {
+  const { data, error } = await db()
+    .from("inventory_adjustments")
+    .select("id, quantity, reason, adjusted_at, created_by, products(name)")
+    .order("adjusted_at", { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(`inventory_adjustments: ${error.message}`);
+  return (data ?? []).map((a) => ({
+    id: a.id,
+    name: (a.products as unknown as { name: string } | null)?.name ?? "?",
+    quantity: a.quantity,
+    reason: a.reason,
+    at: a.adjusted_at,
+    by: a.created_by,
+  }));
+}
+
+export async function loadLatestCountDate(): Promise<string | null> {
+  const { data, error } = await db().from("inventory_counts").select("counted_on").order("counted_on", { ascending: false }).limit(1);
+  if (error) throw new Error(error.message);
+  return data?.[0]?.counted_on ?? null;
 }

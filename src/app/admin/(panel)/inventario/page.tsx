@@ -2,9 +2,10 @@ import { connection } from "next/server";
 import { es } from "@/content/es";
 import { requireAdmin } from "@/lib/adminAuth";
 import { formatMxn } from "@/lib/finance/format";
-import { loadInventoryBalance, loadOnOrder, loadProducts, loadSettings, loadStockInputs } from "@/lib/finance/queries";
+import { loadAdjustments, loadInventoryBalance, loadLatestCountDate, loadOnOrder, loadOrders, loadProducts, loadSettings, loadStockInputs } from "@/lib/finance/queries";
 import { reorderSuggestion, stockByProduct, weeklyDemand } from "@/lib/finance/stock";
 import { todayInStudio } from "@/lib/time";
+import { BreakageForm, CountForm, OrderForm, OrdersList, ProductsEditor } from "./InventoryForms";
 
 const STATUS_STYLE: Record<string, string> = {
   Bien: "bg-success/10 text-success",
@@ -17,12 +18,15 @@ export default async function InventoryPage() {
   await requireAdmin();
   await connection();
   const t = es.finance.inventory;
-  const [products, settings, inputs, onOrder, balance] = await Promise.all([
+  const [products, settings, inputs, onOrder, balance, orders, adjustments, latestCount] = await Promise.all([
     loadProducts(),
     loadSettings(),
     loadStockInputs(),
     loadOnOrder(),
     loadInventoryBalance(),
+    loadOrders(),
+    loadAdjustments(),
+    loadLatestCountDate(),
   ]);
   const active = products.filter((p) => p.active);
   const ids = active.map((p) => p.id);
@@ -110,7 +114,17 @@ export default async function InventoryPage() {
       </div>
 
       <p className="text-xs text-muted">{t.explain}</p>
-      <p className="text-sm text-muted">{t.formsSoon}</p>
+
+      <OrderForm
+        key={rows.map((x) => x.r.casesToOrder).join("-")}
+        products={active.map((p) => ({ id: p.id, name: p.name, caseSize: p.caseSize, caseCostUsd: p.caseCostUsd }))}
+        suggested={Object.fromEntries(rows.map((x) => [x.p.id, x.r.casesToOrder]))}
+        fxRate={settings.fxRate}
+      />
+      <OrdersList orders={orders} />
+      <BreakageForm products={active.map((p) => ({ id: p.id, name: p.name, caseSize: p.caseSize, caseCostUsd: p.caseCostUsd }))} recent={adjustments} />
+      <CountForm products={active.map((p) => ({ id: p.id, name: p.name, caseSize: p.caseSize, caseCostUsd: p.caseCostUsd }))} stock={stock} latest={latestCount} />
+      <ProductsEditor products={products.map((p) => ({ id: p.id, name: p.name, priceMxn: p.priceMxn, costUsd: p.costUsd, caseSize: p.caseSize, caseCostUsd: p.caseCostUsd, active: p.active, weeklyDemandOverride: p.weeklyDemandOverride }))} />
     </div>
   );
 }
